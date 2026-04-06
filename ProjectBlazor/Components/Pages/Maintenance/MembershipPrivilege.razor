@@ -1,0 +1,415 @@
+﻿@page "/maintenance/membershipprivilege"
+@rendermode InteractiveServer
+
+<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Membership & Privilege</h3>
+
+@* Tab bar *@
+<div class="flex border-b border-gray-200 mb-4">
+    <button @onclick='() => _activeTab = "privileges"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "privileges" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+        Privileges Maintenance
+    </button>
+    <button @onclick='() => _activeTab = "tier"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "tier" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+        Membership Tier Maintenance
+    </button>
+</div>
+
+<div class="grid grid-cols-12 gap-4">
+
+    @if (_activeTab == "privileges")
+    {
+        @* ── Privileges Maintenance ── *@
+        <div class="col-span-12">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4">
+
+                @* Dark header *@
+                <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
+                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                    <h4 class="text-sm font-medium text-white">Privileges Maintenance</h4>
+                </div>
+
+                @* Controls Row *@
+                <div class="flex items-center justify-between mb-4 px-1">
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <select value="@_privPageSize" @onchange="e => { _privPageSize = int.Parse(e.Value.ToString()); _privPage = 1; }"
+                                class="border border-gray-300 rounded px-2 py-1 text-xs">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>entries per page</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <span class="font-medium">Search:</span>
+                        <input type="text" @bind="_privSearch" @bind:event="oninput"
+                               class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
+                               placeholder="Type to search..." />
+                    </div>
+                </div>
+
+                @* Add New *@
+                <div class="mb-3 px-1">
+                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                            style="background: #C9A84C;">
+                        + Add New
+                    </button>
+                </div>
+
+                @* Table *@
+                <div style="height:480px; overflow-y:auto;">
+                    <table class="w-full text-xs">
+                        <thead style="position:sticky; top:0; background:white; z-index:1;">
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 w-48 cursor-pointer select-none"
+                                    @onclick='() => SortPriv("Name")'>
+                                    Name <span class="text-gray-400">@PrivSortIcon("Name")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortPriv("Description")'>
+                                    Description <span class="text-gray-400">@PrivSortIcon("Description")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortPriv("Validity")'>
+                                    Validity <span class="text-gray-400">@PrivSortIcon("Validity")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortPriv("NoExpiry")'>
+                                    No Expiry <span class="text-gray-400">@PrivSortIcon("NoExpiry")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortPriv("BusinessTypeName")'>
+                                    Business Type Name <span class="text-gray-400">@PrivSortIcon("BusinessTypeName")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortPriv("DateCreated")'>
+                                    Date Created <span class="text-gray-400">@PrivSortIcon("DateCreated")</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in FilteredPrivItems)
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-2 px-2">
+                                        <div class="flex items-center gap-2">
+                                            <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover bg-gray-100" alt="@item.Name" />
+                                            <div>
+                                                <div class="font-medium text-gray-800">@item.Name</div>
+                                                <div class="flex gap-2 mt-1">
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">✎ Edit</button>
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">⧉ Duplicate</button>
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">🗑 Delete</button>
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#0D1B2A;">👁 Select Vendor</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 max-w-sm">
+                                        <div class="line-clamp-3">@item.Description</div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.Validity</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.NoExpiry</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.BusinessTypeName</td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateCreated</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @* Footer *@
+                <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                    <span class="text-xs text-gray-500">
+                        Showing @PrivFrom to @PrivTo of @_privItems.Count entries
+                    </span>
+                    <div class="flex items-center gap-1">
+                        @RenderPagination(_privPage, PrivTotalPages, (p) => _privPage = p)
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @* ── Membership Tier Maintenance ── *@
+        <div class="col-span-12">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4">
+
+                @* Dark header *@
+                <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
+                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                    <h4 class="text-sm font-medium text-white">Membership Tier Maintenance</h4>
+                </div>
+
+                @* Controls Row *@
+                <div class="flex items-center justify-between mb-4 px-1">
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <select value="@_tierPageSize" @onchange="e => { _tierPageSize = int.Parse(e.Value.ToString()); _tierPage = 1; }"
+                                class="border border-gray-300 rounded px-2 py-1 text-xs">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>entries per page</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-600">
+                        <span class="font-medium">Search:</span>
+                        <input type="text" @bind="_tierSearch" @bind:event="oninput"
+                               class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
+                               placeholder="Type to search..." />
+                    </div>
+                </div>
+
+                @* Add New *@
+                <div class="mb-3 px-1">
+                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                            style="background: #C9A84C;">
+                        + Add New
+                    </button>
+                </div>
+
+                @* Table *@
+                <div style="height:480px; overflow-y:auto;">
+                    <table class="w-full text-xs">
+                        <thead style="position:sticky; top:0; background:white; z-index:1;">
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortTier("Name")'>
+                                    Name <span class="text-gray-400">@TierSortIcon("Name")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortTier("Description")'>
+                                    Description <span class="text-gray-400">@TierSortIcon("Description")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortTier("DateStarted")'>
+                                    Date Started <span class="text-gray-400">@TierSortIcon("DateStarted")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortTier("DateEnded")'>
+                                    Date Ended <span class="text-gray-400">@TierSortIcon("DateEnded")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortTier("UserCount")'>
+                                    User Count <span class="text-gray-400">@TierSortIcon("UserCount")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortTier("VipCount")'>
+                                    VIP Count <span class="text-gray-400">@TierSortIcon("VipCount")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                    @onclick='() => SortTier("DateCreated")'>
+                                    Date Created <span class="text-gray-400">@TierSortIcon("DateCreated")</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in FilteredTierItems)
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-2 px-2">
+                                        <div class="font-medium text-gray-800">@item.Name</div>
+                                        <div class="flex gap-2 mt-1">
+                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">✎ Edit</button>
+                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">🗑 Delete</button>
+                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">👁 View</button>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Description</td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateStarted</td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateEnded</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.UserCount</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.VipCount</td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateCreated</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @* Footer *@
+                <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                    <span class="text-xs text-gray-500">
+                        Showing @TierFrom to @TierTo of @_tierItems.Count entries
+                    </span>
+                    <div class="flex items-center gap-1">
+                        @RenderPagination(_tierPage, TierTotalPages, (p) => _tierPage = p)
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private string _activeTab = "privileges";
+
+    // ── PAGINATION RENDERER ──
+    private RenderFragment RenderPagination(int currentPage, int totalPages, Action<int> setPage) => __builder =>
+    {
+        var pages = new List<int?>();
+        for (int i = 1; i <= totalPages; i++)
+        {
+            if (i == 1 || i == totalPages || (i >= currentPage - 1 && i <= currentPage + 1))
+                pages.Add(i);
+            else if (pages.Last() != null)
+                pages.Add(null);
+        }
+
+        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            «
+        </button>
+        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(currentPage - 1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            ‹
+        </button>
+
+        @foreach (var p in pages.Distinct())
+        {
+            if (p == null)
+            {
+                <span class="px-1 text-xs text-gray-400">…</span>
+            }
+            else
+            {
+                var pg = p.Value;
+                <button @onclick="@(() => setPage(pg))"
+                        class="@($"px-2 py-0.5 text-xs border rounded {(pg == currentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
+                        style="@(pg == currentPage ? "background:#C9A84C;" : "")">
+                    @pg
+                </button>
+            }
+        }
+
+        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(currentPage + 1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            ›
+        </button>
+        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(totalPages))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            »
+        </button>
+    };
+
+    // ── PRIVILEGES ──
+    private string _privSearch = "";
+    private int _privPageSize = 10;
+    private int _privPage = 1;
+    private string _privSortCol = "Name";
+    private bool _privSortAsc = true;
+
+    private void SortPriv(string col) { if (_privSortCol == col) _privSortAsc = !_privSortAsc; else { _privSortCol = col; _privSortAsc = true; } _privPage = 1; }
+    private string PrivSortIcon(string col) => _privSortCol == col ? (_privSortAsc ? "↑" : "↓") : "⇅";
+
+    private List<PrivilegeItem> _privItems = new()
+    {
+        new("AMNM Health Package",  "/images/health.jpg",  "Alfardan Medical with Northwestern Medicine (AMNM) is an ambulatory care center that provides advanced, patient-centric care with service excellence. Top executives will be privileged to benefit from an Annual Wellness Program.", "2025-03-04T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
+        new("Hospitality",          "/images/hotel.jpg",   "The Alfardan Oyster Privilege Club offers exclusive benefits across hospitality offerings, providing members with unique experiences.",                                                                                               "2025-03-04T00:00:00", "NO", "Rooms & Suites",            "Jul 8 2025 5:18PM"),
+        new("Co-Working Space",     "/images/cowork.jpg",  "Nestwork is a ground-breaking co-working environment created to meet the demands of today's contemporary professionals offering adaptable and cutting-edge workspace solutions for organizations of all sizes.",                       "2030-04-30T00:00:00", "NO", "Access to co-working spaces","Jul 8 2025 5:18PM"),
+        new("Dining Privileges",    "/images/dining.jpg",  "Exclusive dining benefits at partner restaurants across Doha and Istanbul, including preferred rates and VIP reservations.",                                                                                                         "2026-12-31T00:00:00", "NO", "Food & Beverages",           "Jul 8 2025 5:18PM"),
+        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
+        new("AMNM Health Package",  "/images/health.jpg",  "Alfardan Medical with Northwestern Medicine (AMNM) is an ambulatory care center that provides advanced, patient-centric care with service excellence. Top executives will be privileged to benefit from an Annual Wellness Program.", "2025-03-04T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
+        new("Hospitality",          "/images/hotel.jpg",   "The Alfardan Oyster Privilege Club offers exclusive benefits across hospitality offerings, providing members with unique experiences.",                                                                                               "2025-03-04T00:00:00", "NO", "Rooms & Suites",            "Jul 8 2025 5:18PM"),
+        new("Co-Working Space",     "/images/cowork.jpg",  "Nestwork is a ground-breaking co-working environment created to meet the demands of today's contemporary professionals offering adaptable and cutting-edge workspace solutions for organizations of all sizes.",                       "2030-04-30T00:00:00", "NO", "Access to co-working spaces","Jul 8 2025 5:18PM"),
+        new("Dining Privileges",    "/images/dining.jpg",  "Exclusive dining benefits at partner restaurants across Doha and Istanbul, including preferred rates and VIP reservations.",                                                                                                         "2026-12-31T00:00:00", "NO", "Food & Beverages",           "Jul 8 2025 5:18PM"),
+        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
+        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
+    };
+
+    private IEnumerable<PrivilegeItem> FilteredPrivItems =>
+        SortPrivItems(_privItems.Where(x => string.IsNullOrEmpty(_privSearch) ||
+            x.Name.Contains(_privSearch, StringComparison.OrdinalIgnoreCase) ||
+            x.BusinessTypeName.Contains(_privSearch, StringComparison.OrdinalIgnoreCase)))
+        .Skip((_privPage - 1) * _privPageSize).Take(_privPageSize);
+
+    private IEnumerable<PrivilegeItem> SortPrivItems(IEnumerable<PrivilegeItem> items) =>
+        (_privSortCol, _privSortAsc) switch
+        {
+            ("Name", true) => items.OrderBy(x => x.Name),
+            ("Name", false) => items.OrderByDescending(x => x.Name),
+            ("Description", true) => items.OrderBy(x => x.Description),
+            ("Description", false) => items.OrderByDescending(x => x.Description),
+            ("Validity", true) => items.OrderBy(x => x.Validity),
+            ("Validity", false) => items.OrderByDescending(x => x.Validity),
+            ("NoExpiry", true) => items.OrderBy(x => x.NoExpiry),
+            ("NoExpiry", false) => items.OrderByDescending(x => x.NoExpiry),
+            ("BusinessTypeName", true) => items.OrderBy(x => x.BusinessTypeName),
+            ("BusinessTypeName", false) => items.OrderByDescending(x => x.BusinessTypeName),
+            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
+            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
+            _ => items
+        };
+
+    private int PrivTotalPages => (int)Math.Ceiling(_privItems.Count / (double)_privPageSize);
+    private int PrivFrom => (_privPage - 1) * _privPageSize + 1;
+    private int PrivTo => Math.Min(_privPage * _privPageSize, _privItems.Count);
+
+    public record PrivilegeItem(string Name, string ImageUrl, string Description, string Validity, string NoExpiry, string BusinessTypeName, string DateCreated);
+
+    // ── MEMBERSHIP TIER ──
+    private string _tierSearch = "";
+    private int _tierPageSize = 10;
+    private int _tierPage = 1;
+    private string _tierSortCol = "Name";
+    private bool _tierSortAsc = true;
+
+    private void SortTier(string col) { if (_tierSortCol == col) _tierSortAsc = !_tierSortAsc; else { _tierSortCol = col; _tierSortAsc = true; } _tierPage = 1; }
+    private string TierSortIcon(string col) => _tierSortCol == col ? (_tierSortAsc ? "↑" : "↓") : "⇅";
+
+    private List<MembershipTierItem> _tierItems = new()
+    {
+        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",     "03/01/2024", "03/01/2025", 10,    10,  "09/29/2025"),
+        new("PLATINUM",        "PLATINUM MEMBERSHIP",      "03/04/2024", "03/04/2025", 100,   10,  "09/29/2025"),
+        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",     "01/03/2024", "01/03/2025", 1000,  50,  "09/29/2025"),
+        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN","05/20/2025", "03/20/2030", 10000, 0,   "09/29/2025"),
+        new("BRONZE",          "BRONZE MEMBERSHIP",        "01/01/2024", "01/01/2026", 500,   0,   "09/29/2025"),
+        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",     "03/01/2024", "03/01/2025", 10,    10,  "09/29/2025"),
+        new("PLATINUM",        "PLATINUM MEMBERSHIP",      "03/04/2024", "03/04/2025", 100,   10,  "09/29/2025"),
+        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",     "01/03/2024", "01/03/2025", 1000,  50,  "09/29/2025"),
+        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN","05/20/2025", "03/20/2030", 10000, 0,   "09/29/2025"),
+        new("BRONZE",          "BRONZE MEMBERSHIP",        "01/01/2024", "01/01/2026", 500,   0,   "09/29/2025"),
+        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",     "03/01/2024", "03/01/2025", 10,    10,  "09/29/2025"),
+        new("PLATINUM",        "PLATINUM MEMBERSHIP",      "03/04/2024", "03/04/2025", 100,   10,  "09/29/2025"),
+        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",     "01/03/2024", "01/03/2025", 1000,  50,  "09/29/2025"),
+        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN","05/20/2025", "03/20/2030", 10000, 0,   "09/29/2025"),
+        new("BRONZE",          "BRONZE MEMBERSHIP",        "01/01/2024", "01/01/2026", 500,   0,   "09/29/2025"),
+    };
+
+    private IEnumerable<MembershipTierItem> FilteredTierItems =>
+        SortTierItems(_tierItems.Where(x => string.IsNullOrEmpty(_tierSearch) ||
+            x.Name.Contains(_tierSearch, StringComparison.OrdinalIgnoreCase) ||
+            x.Description.Contains(_tierSearch, StringComparison.OrdinalIgnoreCase)))
+        .Skip((_tierPage - 1) * _tierPageSize).Take(_tierPageSize);
+
+    private IEnumerable<MembershipTierItem> SortTierItems(IEnumerable<MembershipTierItem> items) =>
+        (_tierSortCol, _tierSortAsc) switch
+        {
+            ("Name", true) => items.OrderBy(x => x.Name),
+            ("Name", false) => items.OrderByDescending(x => x.Name),
+            ("Description", true) => items.OrderBy(x => x.Description),
+            ("Description", false) => items.OrderByDescending(x => x.Description),
+            ("DateStarted", true) => items.OrderBy(x => x.DateStarted),
+            ("DateStarted", false) => items.OrderByDescending(x => x.DateStarted),
+            ("DateEnded", true) => items.OrderBy(x => x.DateEnded),
+            ("DateEnded", false) => items.OrderByDescending(x => x.DateEnded),
+            ("UserCount", true) => items.OrderBy(x => x.UserCount),
+            ("UserCount", false) => items.OrderByDescending(x => x.UserCount),
+            ("VipCount", true) => items.OrderBy(x => x.VipCount),
+            ("VipCount", false) => items.OrderByDescending(x => x.VipCount),
+            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
+            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
+            _ => items
+        };
+
+    private int TierTotalPages => (int)Math.Ceiling(_tierItems.Count / (double)_tierPageSize);
+    private int TierFrom => (_tierPage - 1) * _tierPageSize + 1;
+    private int TierTo => Math.Min(_tierPage * _tierPageSize, _tierItems.Count);
+
+    public record MembershipTierItem(string Name, string Description, string DateStarted, string DateEnded, int UserCount, int VipCount, string DateCreated);
+}

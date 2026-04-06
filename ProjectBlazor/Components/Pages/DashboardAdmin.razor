@@ -1,0 +1,937 @@
+﻿@page "/dashboardadmin"
+@rendermode InteractiveServer
+
+<style>
+    .mud-carousel-indicators {
+        display: none !important;
+    }
+</style>
+
+<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Dashboard Admin</h3>
+
+<div class="grid grid-cols-12 gap-4">
+
+    @* ── Top Bar ── *@
+    <div class="col-span-12">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md h-16 flex items-center justify-end gap-2 p-4">
+            <button class="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm cursor-pointer border-none"
+                    style="background: #C9A84C;">
+                <MudIcon Icon="@Icons.Material.Filled.DateRange" Style="font-size: 16px; color: white;" />
+                Select Date
+            </button>
+            <div class="relative inline-block">
+                <button @onclick="ToggleDropdown"
+                        class="flex items-center justify-between gap-2 px-4 py-2 rounded-full text-white text-sm cursor-pointer border-none w-36"
+                        style="background: #C9A84C;">
+                    @_selectedDays
+                    <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="white">
+                        <path d="M7 10l5 5 5-5z" />
+                    </svg>
+                </button>
+                @if (_dropdownOpen)
+                {
+                    <div class="absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-md rounded-lg z-50">
+                        <div @onclick='@(() => SelectDay("Last 7 Days"))' class="px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-t-lg">Last 7 Days</div>
+                        <div @onclick='@(() => SelectDay("Last 14 Days"))' class="px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 14 Days</div>
+                        <div @onclick='@(() => SelectDay("Last 30 Days"))' class="px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 30 Days</div>
+                        <div @onclick='@(() => SelectDay("Last 90 Days"))' class="px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-b-lg">Last 90 Days</div>
+                    </div>
+                }
+            </div>
+            <button class="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm cursor-pointer border-none"
+                    style="background: #C9A84C;">
+                <MudIcon Icon="@Icons.Material.Filled.FileDownload" Style="font-size: 16px; color: white;" />
+                Export
+            </button>
+        </div>
+    </div>
+
+    @* ── Total User Chart (left) ── *@
+    <div class="col-span-7">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4"
+             style="height: 396px; overflow: hidden;">
+            <p class="text-base font-medium mb-2" style="color: #C9A84C;">Total User</p>
+            <div class="w-full" style="height: 320px;">
+                <MudChart ChartType="ChartType.Line"
+                          ChartSeries="@_series"
+                          ChartLabels="@_xAxisLabels"
+                          ChartOptions="@_options"
+                          Width="100%"
+                          Height="320px"
+                          ShowLegend="false" />
+            </div>
+        </div>
+    </div>
+
+    @* ── New User Registration + Support Center (right) ── *@
+    <div class="col-span-5 flex flex-col gap-4">
+
+        @* New User Registration *@
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4"
+             style="height: 190px;">
+            <div class="relative">
+                <CardHeader Title="New User Registration"
+                            ShowClearFilter="true"
+                            ShowSelectDate="true"
+                            ShowFilterDays="true"
+                            ShowSelectCategory="false"
+                            SelectedDays="@_selectedDays2"
+                            OnClearFilter="ClearFilter2"
+                            OnSelectDate="OpenDatePicker2"
+                            OnToggleDropdown="ToggleDropdown2" />
+                @if (_dropdownOpen2)
+                {
+                    <div class="absolute right-0 mt-1 w-28 bg-white border border-gray-200 shadow-md rounded-lg z-50">
+                        <div @onclick='@(() => SelectDay2("Last 7 Days"))' class="px-2 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-t-lg">Last 7 Days</div>
+                        <div @onclick='@(() => SelectDay2("Last 14 Days"))' class="px-2 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 14 Days</div>
+                        <div @onclick='@(() => SelectDay2("Last 30 Days"))' class="px-2 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 30 Days</div>
+                        <div @onclick='@(() => SelectDay2("Last 90 Days"))' class="px-2 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-b-lg">Last 90 Days</div>
+                    </div>
+                }
+                <div class="flex flex-col mt-2 flex-1 justify-between items-center w-full">
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col items-center">
+                            <span class="text-8xl font-bold" style="color: #C9A84C;">@_newUsers</span>
+                            <span class="text-xs text-gray-500 text-center">New User(s)</span>
+                        </div>
+                        <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+                            <path d="M3 12h18M15 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="flex flex-col items-center">
+                            <span class="text-8xl font-bold" style="color: #C9A84C;">@_totalActiveUsers</span>
+                            <span class="text-xs text-gray-500 text-center">Total Active User(s)</span>
+                        </div>
+                    </div>
+                    <p class="text-xs m-0" style="color: #C9A84C;">
+                        @_registrationPercent.ToString("F2")% of expected user(s) are registered.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        @* Support Center *@
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4"
+             style="height: 190px;">
+            <p class="text-base font-medium mb-4" style="color: #C9A84C;">Support Center</p>
+            <div class="flex flex-col items-center justify-center flex-1 w-full">
+                <span class="text-8xl font-bold" style="color: #C9A84C;">@_concerns</span>
+                <span class="text-xs text-gray-500 text-center">Total concern that need to attends</span>
+            </div>
+        </div>
+    </div>
+
+    @* ── Donut Carousel ── *@
+    <div class="col-span-12 flex">
+        <MudCarousel TData="string"
+                     Class="w-full rounded-xl"
+                     Style="height: 250px;"
+                     ShowArrows="true"
+                     ShowBullets="false"
+                     AutoCycle="false">
+            <MudCarouselItem>
+                <div class="flex gap-4 w-full h-full">
+                    @DonutCard("Top 3 Restaurant", _restaurantData, _restaurantLabels)
+                    @DonutCard("Top 3 Hotels", _hotelData, _hotelLabels)
+                    @DonutCard("Top 3 Store", _storeData, _storeLabels)
+                </div>
+            </MudCarouselItem>
+            <MudCarouselItem>
+                <div class="flex gap-4 w-full h-full">
+                    @DonutCard("Top 3 Hotels", _hotelData, _hotelLabels)
+                    @DonutCard("Top 3 Store", _storeData, _storeLabels)
+                    @DonutCard("Top 3 Wellness", _wellnessData, _wellnessLabels)
+                </div>
+            </MudCarouselItem>
+            <MudCarouselItem>
+                <div class="flex gap-4 w-full h-full">
+                    @DonutCard("Top 3 Store", _storeData, _storeLabels)
+                    @DonutCard("Top 3 Wellness", _wellnessData, _wellnessLabels)
+                    @DonutCard("Top 3 Offers", _offersData, _offersLabels)
+                </div>
+            </MudCarouselItem>
+        </MudCarousel>
+    </div>
+
+    @* ── Call to Actions (left) ── *@
+    <div class="col-span-8">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="height: 550px;">
+            <div class="relative">
+                <CardHeader Title="Call to Actions"
+                            ShowClearFilter="true"
+                            ShowSelectDate="true"
+                            ShowFilterDays="true"
+                            ShowSelectCategory="true"
+                            SelectedDays="@_ctaSelectedDays"
+                            SelectedCategory="@_ctaSelectedCategory"
+                            CategoryDropdownOpen="@_ctaCategoryDropdownOpen"
+                            Categories="@_categories"
+                            OnClearFilter="ClearCtaFilter"
+                            OnSelectDate="OpenCtaDatePicker"
+                            OnToggleDropdown="ToggleCtaDropdown"
+                            OnToggleCategoryDropdown="ToggleCtaCategoryDropdown"
+                            OnCategorySelected="SelectCtaCategory" />
+                @if (_ctaDropdownOpen)
+                {
+                    <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                        <div @onclick='@(() => SelectCtaDay("Last 7 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-t-lg">Last 7 Days</div>
+                        <div @onclick='@(() => SelectCtaDay("Last 14 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 14 Days</div>
+                        <div @onclick='@(() => SelectCtaDay("Last 30 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 30 Days</div>
+                        <div @onclick='@(() => SelectCtaDay("Last 90 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-b-lg">Last 90 Days</div>
+                    </div>
+                }
+            </div>
+
+            <div class="flex items-center justify-between mt-3 mb-2">
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    <select class="border border-gray-300 rounded px-2 py-1 text-xs" @bind="_ctaPageSize">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    entries per page
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    Search:
+                    <input type="text" @bind="_ctaSearch" @bind:event="oninput"
+                           class="border border-gray-300 rounded px-2 py-1 text-xs w-40" />
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto" style="min-height: 0;">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortCta("Name")'>
+                                Name <span class="text-gray-400">@SortIcon(_ctaSortCol, _ctaSortAsc, "Name")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortCta("Category")'>
+                                Categories <span class="text-gray-400">@SortIcon(_ctaSortCol, _ctaSortAsc, "Category")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortCta("Call")'>
+                                Call <span class="text-gray-400">@SortIcon(_ctaSortCol, _ctaSortAsc, "Call")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortCta("Email")'>
+                                Email <span class="text-gray-400">@SortIcon(_ctaSortCol, _ctaSortAsc, "Email")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortCta("Book")'>
+                                Book <span class="text-gray-400">@SortIcon(_ctaSortCol, _ctaSortAsc, "Book")</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredCtaItems)
+                        {
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="py-2 px-2 text-gray-700">@item.Name</td>
+                                <td class="py-2 px-2 text-gray-600">@item.Category</td>
+                                <td class="py-2 px-2 text-gray-600">@item.Call</td>
+                                <td class="py-2 px-2 text-gray-600">@item.Email</td>
+                                <td class="py-2 px-2 text-gray-600">@item.Book</td>
+                            </tr>
+                        }
+                        @for (int i = FilteredCtaItems.Count(); i < _ctaPageSize; i++)
+                        {
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 px-2">&nbsp;</td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between mt-3">
+                <span class="text-xs text-gray-500">Showing @CtaFrom to @CtaTo of @_ctaItems.Count entries</span>
+                <div class="flex items-center gap-1">
+                    @RenderPagination(_ctaPage, CtaTotalPages, (p) => _ctaPage = p)
+                </div>
+            </div>
+            <div class="flex justify-end mt-2">
+                <button class="px-3 py-1.5 text-xs text-white rounded" style="background: #0D1B3A;">
+                    Export Excel File
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @* ── Module Click Count (right) ── *@
+    <div class="col-span-4">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="height: 550px;">
+            <div class="relative">
+                <CardHeader Title="Module Click Count"
+                            ShowClearFilter="true"
+                            ShowSelectDate="true"
+                            ShowFilterDays="true"
+                            ShowSelectCategory="false"
+                            SelectedDays="@_moduleSelectedDays"
+                            OnClearFilter="ClearModuleFilter"
+                            OnSelectDate="OpenModuleDatePicker"
+                            OnToggleDropdown="ToggleModuleDropdown" />
+                @if (_moduleDropdownOpen)
+                {
+                    <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                        <div @onclick='@(() => SelectModuleDay("Last 7 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-t-lg">Last 7 Days</div>
+                        <div @onclick='@(() => SelectModuleDay("Last 14 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 14 Days</div>
+                        <div @onclick='@(() => SelectModuleDay("Last 30 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 30 Days</div>
+                        <div @onclick='@(() => SelectModuleDay("Last 90 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-b-lg">Last 90 Days</div>
+                    </div>
+                }
+            </div>
+
+            <div class="flex items-center justify-between mt-3 mb-2">
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    <select class="border border-gray-300 rounded px-2 py-1 text-xs" @bind="_modulePageSize">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    entries per page
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    Search:
+                    <input type="text" @bind="_moduleSearch" @bind:event="oninput"
+                           class="border border-gray-300 rounded px-2 py-1 text-xs w-28" />
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto" style="min-height: 0;">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortModule("Module")'>
+                                Module <span class="text-gray-400">@SortIcon(_moduleSortCol, _moduleSortAsc, "Module")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortModule("Count")'>
+                                Count <span class="text-gray-400">@SortIcon(_moduleSortCol, _moduleSortAsc, "Count")</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredModuleItems)
+                        {
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="py-2 px-2 text-gray-700">@item.Module</td>
+                                <td class="py-2 px-2 text-gray-600">@item.Count</td>
+                            </tr>
+                        }
+                        @for (int i = FilteredModuleItems.Count(); i < _modulePageSize; i++)
+                        {
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 px-2">&nbsp;</td>
+                                <td class="py-2 px-2"></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between mt-3">
+                <span class="text-xs text-gray-500">Showing @ModuleFrom to @ModuleTo of @_moduleItems.Count entries</span>
+                <div class="flex items-center gap-1">
+                    @RenderPagination(_modulePage, ModuleTotalPages, (p) => _modulePage = p)
+                </div>
+            </div>
+            <div class="flex justify-end mt-2">
+                <button class="px-3 py-1.5 text-xs text-white rounded" style="background: #0D1B2A;">
+                    Export Excel File
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (_datePickerOpen)
+    {
+        <div class="fixed inset-0 z-50 flex items-center justify-center"
+             style="background: rgba(0,0,0,0.3);"
+             @onclick="CloseDatePicker">
+            <div class="bg-white rounded-2xl shadow-2xl p-6 w-96"
+                 @onclick:stopPropagation="true">
+
+                @* Header *@
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold" style="color: #0D1B2A;">Select Date Range</h2>
+                    <button @onclick="CloseDatePicker"
+                            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer border-none bg-transparent text-lg">
+                        ✕
+                    </button>
+                </div>
+
+                @* Date Inputs *@
+                <div class="flex gap-4 mb-6">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">From Date</label>
+                        <div class="flex items-center border-b-2 pb-2"
+                             style="border-color: #C9A84C;">
+                            <input type="date"
+                                   @bind="_dateFrom"
+                                   class="flex-1 text-sm text-gray-700 border-none outline-none bg-transparent cursor-pointer"
+                                   style="color-scheme: light;" />
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">To Date</label>
+                        <div class="flex items-center border-b-2 pb-2"
+                             style="border-color: #C9A84C;">
+                            <input type="date"
+                                   @bind="_dateTo"
+                                   class="flex-1 text-sm text-gray-700 border-none outline-none bg-transparent cursor-pointer"
+                                   style="color-scheme: light;" />
+                        </div>
+                    </div>
+                </div>
+
+                @* Error message *@
+                @if (_dateError)
+                {
+                    <p class="text-xs text-red-500 mb-3">"From Date" must be before "To Date".</p>
+                }
+
+                @* Actions *@
+                <div class="flex justify-end gap-2">
+                    <button @onclick="CloseDatePicker"
+                            class="px-4 py-2 text-xs rounded-full cursor-pointer border"
+                            style="color: #C9A84C; border-color: #C9A84C; background: transparent;">
+                        Cancel
+                    </button>
+                    <button @onclick="ApplyDateRange"
+                            class="px-4 py-2 text-xs rounded-full text-white cursor-pointer border-none"
+                            style="background: #C9A84C;">
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* ── Company Information Table ── *@
+    <div class="col-span-12">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4">
+
+            @* Header Bar *@
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium" style="color: #C9A84C;">Company Information</h3>
+                <button class="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm cursor-pointer border-none"
+                        style="background: #C9A84C;">
+                    <MudIcon Icon="@Icons.Material.Filled.FileDownload" Style="font-size: 16px; color: white;" />
+                    Export
+                </button>
+            </div>
+
+            @* Controls: entries per page + search *@
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    <select class="border border-gray-300 rounded px-2 py-1 text-xs" @bind="_companyPageSize">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    entries per page
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    Search:
+                    <input type="text" @bind="_companySearch" @bind:event="oninput"
+                           class="border border-gray-300 rounded px-2 py-1 text-xs w-48" />
+                </div>
+            </div>
+
+            @* Table *@
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortCompany("CompanyName")'>
+                                Company Name
+                                <span class="text-gray-400">@CompanySortIcon("CompanyName")</span>
+                            </th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortCompany("RegisteredUsers")'>
+                                Registered Users
+                                <span class="text-gray-400">@CompanySortIcon("RegisteredUsers")</span>
+                            </th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortCompany("UnregisteredUsers")'>
+                                Unregistered Users
+                                <span class="text-gray-400">@CompanySortIcon("UnregisteredUsers")</span>
+                            </th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortCompany("VipRegistered")'>
+                                VIP Registered
+                                <span class="text-gray-400">@CompanySortIcon("VipRegistered")</span>
+                            </th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortCompany("VipUserCount")'>
+                                VIP User Count
+                                <span class="text-gray-400">@CompanySortIcon("VipUserCount")</span>
+                            </th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortCompany("UserCount")'>
+                                User Count
+                                <span class="text-gray-400">@CompanySortIcon("UserCount")</span>
+                            </th>
+                            <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortCompany("TotalUsers")'>
+                                Total Users
+                                <span class="text-gray-400">@CompanySortIcon("TotalUsers")</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredCompanyItems)
+                        {
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="py-3 px-3 text-gray-700">@item.CompanyName</td>
+                                <td class="py-3 px-3 text-center text-gray-600">@item.RegisteredUsers</td>
+                                <td class="py-3 px-3 text-center text-gray-600">
+                                    <div>@item.UnregisteredUsers</div>
+                                    <div class="text-gray-400" style="font-size: 10px;">Unregistered VIP count: @item.UnregisteredVipCount</div>
+                                </td>
+                                <td class="py-3 px-3 text-center text-gray-600">
+                                    <div>@item.VipRegistered</div>
+                                    <div class="text-gray-400" style="font-size: 10px;">Remaining VIP count: @item.RemainingVipCount</div>
+                                </td>
+                                <td class="py-3 px-3 text-center text-gray-600">@item.VipUserCount</td>
+                                <td class="py-3 px-3 text-center text-gray-600">@item.UserCount</td>
+                                <td class="py-3 px-3 text-center text-gray-600">@item.TotalUsers</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @* Footer: showing X to Y + pagination *@
+            <div class="flex items-center justify-between mt-4">
+                <span class="text-xs text-gray-500">
+                    Showing @CompanyFrom to @CompanyTo of @_companyItems.Count entries
+                </span>
+                <div class="flex items-center gap-1">
+                    @RenderPagination(_companyPage, CompanyTotalPages, (p) => _companyPage = p)
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@code {
+
+    // DONUT CHARTTTTTTTTTTTTTTTTTTTTTTTTTTT
+    private double[] _restaurantData = { 65.00, 35.00 };
+    private string[] _restaurantLabels = { "Bebabel", "Scalini" };
+    private double[] _hotelData = { 25, 75 };
+    private string[] _hotelLabels = { "St. Regis", "Four Seasons" };
+    private double[] _storeData = { 60, 40 };
+    private string[] _storeLabels = { "Store A", "Store B" };
+    private double[] _wellnessData = { 70, 30 };
+    private string[] _wellnessLabels = { "Spa A", "Spa B" };
+    private double[] _offersData = { 70, 30 };
+    private string[] _offersLabels = { "Etc A", "Etc B" };
+
+    // TOP BARRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+    private string _selectedDays = "Filter Days";
+    private bool _dropdownOpen = false;
+    private void ToggleDropdown() => _dropdownOpen = !_dropdownOpen;
+    private void SelectDay(string day) { _selectedDays = day; _dropdownOpen = false; }
+
+    // NEW USER REGISTRATIONNNNNNNNNNNNNNN
+    private string _selectedDays2 = "Filter Days";
+    private bool _dropdownOpen2 = false;
+    private int _newUsers = 0;
+    private int _totalActiveUsers = 1427;
+    private double _registrationPercent = 0.00;
+    private void ToggleDropdown2() => _dropdownOpen2 = !_dropdownOpen2;
+    private void SelectDay2(string day) { _selectedDays2 = day; _dropdownOpen2 = false; }
+    private void ClearFilter2() { _selectedDays2 = "Filter Days"; _dropdownOpen2 = false; }
+    private void OpenDatePicker2() => OpenDatePicker("newuser");
+
+    // SUPPORT CENTERRRRRRRRRRRRRRR
+    private int _concerns = 1427;
+
+    // LINE CHARTTTTTTTTTTTTTT
+    private LineChartOptions _options = new() { YAxisTicks = 5, LineStrokeWidth = 2 };
+    private List<ChartSeries<double>> _series = new()
+    {
+        new ChartSeries<double> { Data = new double[] { 120, 250, 180, 400, 350, 550, 480, 700, 650, 800 } }
+    };
+    private string[] _xAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct" };
+
+    // DONUT CARDDDDDDDDDDDDD
+    private RenderFragment DonutCard(string title, double[] data, string[] labels) => __builder =>
+    {
+        <div class="flex-1 bg-white rounded-lg border border-gray-200 shadow-md p-4 flex flex-col">
+            <p class="text-base font-medium" style="color: #C9A84C;">@title</p>
+            <div class="flex items-center justify-center gap-8 flex-1">
+                <svg width="160" height="160" viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="30" />
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="#134E4A" stroke-width="30"
+                            stroke-dasharray="@(data[0] / 100 * 440) @(data[1] / 100 * 440)"
+                            stroke-dashoffset="0" transform="rotate(-90 100 100)" />
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="#C9A84C" stroke-width="30"
+                            stroke-dasharray="@(data[1] / 100 * 440) @(data[0] / 100 * 440)"
+                            stroke-dashoffset="-@(data[0] / 100 * 440)" transform="rotate(-90 100 100)" />
+                    <text x="100" y="105" text-anchor="middle" font-size="16" fill="#0D1B2A" font-weight="500">@data[0]%</text>
+                </svg>
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-sm" style="background:#134E4A"></div>
+                        <span class="text-xs text-gray-600">@labels[0] @data[0]%</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-sm" style="background:#C9A84C"></div>
+                        <span class="text-xs text-gray-600">@labels[1] @data[1]%</span>
+                    </div>
+                </div>
+            </div>
+
+            @* Bottom bar with filters + View Details *@ 
+            <div class="relative">
+                <CardHeader ShowClearFilter="false"
+                            ShowSelectDate="true"
+                            ShowFilterDays="true"
+                            ShowViewDetails="true"
+                            ShowSelectCategory="false"
+                            SelectedDays="@_donutSelectedDays"
+                            OnSelectDate='@(() => OpenDatePicker("donut"))'
+                            OnToggleDropdown="ToggleDonutDropdown"
+                            OnViewDetails="() => { }" />
+                @if (_donutDropdownOpen)
+                {
+                    <div class="absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                         style="min-width: 120px;">
+                        <div @onclick='@(() => SelectDonutDay("Last 7 Days"))' class="px-3 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-t-lg">Last 7 Days</div>
+                        <div @onclick='@(() => SelectDonutDay("Last 14 Days"))' class="px-3 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 14 Days</div>
+                        <div @onclick='@(() => SelectDonutDay("Last 30 Days"))' class="px-3 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 30 Days</div>
+                        <div @onclick='@(() => SelectDonutDay("Last 90 Days"))' class="px-3 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-b-lg">Last 90 Days</div>
+                    </div>
+                }
+            </div>
+        </div>
+    };
+
+    // CALL TO ACTIONS GRID
+    private string _ctaSelectedDays = "Filter Days";
+    private string _ctaSelectedCategory = "Select Category";
+    private bool _ctaDropdownOpen = false;
+    private bool _ctaCategoryDropdownOpen = false;
+    private string _ctaSearch = "";
+    private int _ctaPageSize = 10;
+    private int _ctaPage = 1;
+
+    private List<string> _categories = new()
+    {
+        "Restaurant", "Hotel", "Health",
+        "Shops & Services", "News", "Wellness",
+        "Access to co-working spaces"
+    };
+
+    private void ToggleCtaDropdown() { _ctaDropdownOpen = !_ctaDropdownOpen; _ctaCategoryDropdownOpen = false; }
+    private void ToggleCtaCategoryDropdown() { _ctaCategoryDropdownOpen = !_ctaCategoryDropdownOpen; _ctaDropdownOpen = false; }
+    private void SelectCtaDay(string day) { _ctaSelectedDays = day; _ctaDropdownOpen = false; }
+    private void SelectCtaCategory(string c) { _ctaSelectedCategory = c; _ctaCategoryDropdownOpen = false; }
+    private void OpenCtaDatePicker() => OpenDatePicker("cta");
+    private void ClearCtaFilter()
+    {
+        _ctaSelectedDays = "Filter Days";
+        _ctaSelectedCategory = "Select Category";
+        _ctaDropdownOpen = false;
+        _ctaCategoryDropdownOpen = false;
+    }
+
+    private List<CtaItem> _ctaItems = new()
+    {
+        new("1860 Lounge",             "Food & Beverages",        0, 0, 0),
+        new("Ahwet Zeitouna",          "Food & Beverages",        0, 0, 0),
+        new("Alfardan Jewellery",      "Alfardan Jewellery",      0, 0, 0),
+        new("Alfardan Jewellery Oman", "Alfardan Jewellery Oman", 0, 0, 0),
+        new("Alfardan Spa",            "Wellness",                0, 0, 0),
+        new("Al Sufra",                "Food & Beverages",        0, 0, 0),
+        new("AMNM",                    "Health",                  0, 0, 0),
+        new("Astor Grill",             "Food & Beverages",        0, 0, 0),
+        new("Babel",                   "Food & Beverages",        0, 0, 0),
+        new("Bay View",                "Food & Beverages",        0, 0, 0),
+        new("Item 11",                 "Wellness",                0, 0, 0),
+    };
+
+    private IEnumerable<CtaItem> FilteredCtaItems =>
+    SortCtaItems(
+        _ctaItems.Where(x =>
+            string.IsNullOrEmpty(_ctaSearch) ||
+            x.Name.Contains(_ctaSearch, StringComparison.OrdinalIgnoreCase) ||
+            x.Category.Contains(_ctaSearch, StringComparison.OrdinalIgnoreCase))
+    )
+    .Skip((_ctaPage - 1) * _ctaPageSize)
+    .Take(_ctaPageSize);
+
+    private IEnumerable<CtaItem> SortCtaItems(IEnumerable<CtaItem> items) =>
+        (_ctaSortCol, _ctaSortAsc) switch
+        {
+            ("Name", true) => items.OrderBy(x => x.Name),
+            ("Name", false) => items.OrderByDescending(x => x.Name),
+            ("Category", true) => items.OrderBy(x => x.Category),
+            ("Category", false) => items.OrderByDescending(x => x.Category),
+            ("Call", true) => items.OrderBy(x => x.Call),
+            ("Call", false) => items.OrderByDescending(x => x.Call),
+            ("Email", true) => items.OrderBy(x => x.Email),
+            ("Email", false) => items.OrderByDescending(x => x.Email),
+            ("Book", true) => items.OrderBy(x => x.Book),
+            ("Book", false) => items.OrderByDescending(x => x.Book),
+            _ => items
+        };
+
+    private int CtaTotalPages => (int)Math.Ceiling(_ctaItems.Count / (double)_ctaPageSize);
+    private int CtaFrom => (_ctaPage - 1) * _ctaPageSize + 1;
+    private int CtaTo => Math.Min(_ctaPage * _ctaPageSize, _ctaItems.Count);
+
+    public record CtaItem(string Name, string Category, int Call, int Email, int Book);
+
+    // CLICK COUNT GRID
+    private string _moduleSelectedDays = "Filter Days";
+    private bool _moduleDropdownOpen = false;
+    private string _moduleSearch = "";
+    private int _modulePageSize = 10;
+    private int _modulePage = 1;
+
+    private void ToggleModuleDropdown() => _moduleDropdownOpen = !_moduleDropdownOpen;
+    private void SelectModuleDay(string day) { _moduleSelectedDays = day; _moduleDropdownOpen = false; }
+    private void ClearModuleFilter() { _moduleSelectedDays = "Filter Days"; _moduleDropdownOpen = false; }
+    private void OpenModuleDatePicker() => OpenDatePicker("module");
+
+    private List<ModuleItem> _moduleItems = new()
+    {
+        new("Access to co-working spaces",   2),
+        new("Alfardan Jewellery",            0),
+        new("Alfardan Jewellery Oman",       1),
+        new("Food & Beverages",              3),
+        new("Food & Beverages Oman",         0),
+        new("Health",                        0),
+        new("International Privileges",      1),
+        new("International Privileges Oman", 2),
+        new("Rooms & Suites",                3),
+        new("Rooms & Suites Oman",           0),
+        new("Module 11",                     0),
+        new("Module 12",                     0),
+        new("Module 13",                     0),
+    };
+
+    private IEnumerable<ModuleItem> FilteredModuleItems =>
+    SortModuleItems(
+        _moduleItems.Where(x =>
+            string.IsNullOrEmpty(_moduleSearch) ||
+            x.Module.Contains(_moduleSearch, StringComparison.OrdinalIgnoreCase))
+    )
+    .Skip((_modulePage - 1) * _modulePageSize)
+    .Take(_modulePageSize);
+
+    private IEnumerable<ModuleItem> SortModuleItems(IEnumerable<ModuleItem> items) =>
+        (_moduleSortCol, _moduleSortAsc) switch
+        {
+            ("Module", true) => items.OrderBy(x => x.Module),
+            ("Module", false) => items.OrderByDescending(x => x.Module),
+            ("Count", true) => items.OrderBy(x => x.Count),
+            ("Count", false) => items.OrderByDescending(x => x.Count),
+            _ => items
+        };
+
+    private int ModuleTotalPages => (int)Math.Ceiling(_moduleItems.Count / (double)_modulePageSize);
+    private int ModuleFrom => (_modulePage - 1) * _modulePageSize + 1;
+    private int ModuleTo => Math.Min(_modulePage * _modulePageSize, _moduleItems.Count);
+
+    public record ModuleItem(string Module, int Count);
+
+    // PAGINATION RENDERER
+    private RenderFragment RenderPagination(int currentPage, int totalPages, Action<int> setPage) => __builder =>
+    {
+        var pages = new List<int?>();
+        for (int i = 1; i <= totalPages; i++)
+        {
+            if (i == 1 || i == totalPages || (i >= currentPage - 1 && i <= currentPage + 1))
+                pages.Add(i);
+            else if (pages.Last() != null)
+                pages.Add(null);
+        }
+
+        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            «
+        </button>
+        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(currentPage - 1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            ‹
+        </button>
+
+        @foreach (var p in pages)   
+
+        {
+            if (p == null)
+            {
+                <span class="px-1 text-xs text-gray-400">…</span>
+            }
+            else
+            {
+                var pg = p.Value;
+                <button @onclick="@(() => setPage(pg))"
+                        class="@($"px-2 py-0.5 text-xs border rounded {(pg == currentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
+                        style="@(pg == currentPage ? "background:#C9A84C;" : "")">
+                    @pg
+                </button>
+            }
+        }
+
+        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(currentPage + 1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            ›
+        </button>
+        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(totalPages))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            »
+        </button>
+    };
+
+    private string _donutSelectedDays = "Filter Days";
+    private bool _donutDropdownOpen = false;
+
+    private void ToggleDonutDropdown() => _donutDropdownOpen = !_donutDropdownOpen;
+    private void SelectDonutDay(string day) { _donutSelectedDays = day; _donutDropdownOpen = false; }
+
+    // DATE PICKER
+    private bool _datePickerOpen = false;
+    private DateTime _dateFrom = DateTime.Today.AddDays(-7);
+    private DateTime _dateTo = DateTime.Today;
+    private bool _dateError = false;
+    private string _activeDateTarget = ""; // tracks which card opened it
+
+    private void OpenDatePicker(string target = "")
+    {
+        _activeDateTarget = target;
+        _dateError = false;
+        _datePickerOpen = true;
+    }
+
+    private void CloseDatePicker()
+    {
+        _datePickerOpen = false;
+        _dateError = false;
+    }
+
+    private void ApplyDateRange()
+    {
+        if (_dateFrom > _dateTo)
+        {
+            _dateError = true;
+            return;
+        }
+        // Use _activeDateTarget to know which card to apply to
+        // e.g. if (_activeDateTarget == "cta") { ... }
+        _datePickerOpen = false;
+    }
+
+    // CTA sorting
+    private string _ctaSortCol = "";
+    private bool _ctaSortAsc = true;
+
+    private void SortCta(string col)
+    {
+        if (_ctaSortCol == col) _ctaSortAsc = !_ctaSortAsc;
+        else { _ctaSortCol = col; _ctaSortAsc = true; }
+        _ctaPage = 1;
+    }
+
+    // Module sorting
+    private string _moduleSortCol = "";
+    private bool _moduleSortAsc = true;
+
+    private void SortModule(string col)
+    {
+        if (_moduleSortCol == col) _moduleSortAsc = !_moduleSortAsc;
+        else { _moduleSortCol = col; _moduleSortAsc = true; }
+        _modulePage = 1;
+    }
+
+    // Shared icon helper — shows ↑ ↓ or ⇅ depending on active column/direction
+    private string SortIcon(string activeCol, bool asc, string thisCol) =>
+        activeCol == thisCol ? (asc ? "↑" : "↓") : "⇅";
+
+    
+    // COMPANY TABLE
+    private string _companySearch = "";
+    private int _companyPageSize = 10;
+    private int _companyPage = 1;
+    private string _companySortCol = "CompanyName";
+    private bool _companySortAsc = true;
+
+    private void SortCompany(string col)
+    {
+        if (_companySortCol == col) _companySortAsc = !_companySortAsc;
+        else { _companySortCol = col; _companySortAsc = true; }
+        _companyPage = 1;
+    }
+
+    private string CompanySortIcon(string col) =>
+        _companySortCol == col ? (_companySortAsc ? "↑" : "↓") : "⇅";
+
+    private List<CompanyItem> _companyItems = new()
+{
+    new("ABC Corp",                           0,   1,  0,  1,   1,    1000,  2),
+    new("Accenture Qatar",                   47,   2,  0,  8,   6,    1000, 57),
+    new("Advanced Construction Technologies",245,  0,  0, 10,   6,    1000,255),
+    new("Al Aman International Investment",   0,   1,  0,  0,   0,   10000,  1),
+    new("Al Jaidah Brothers Co.",             1,   0,  0,  2,  10,    1000,  3),
+    new("Al Massila Technology",              0,   1,  0,  0,   0,   10000,  1),
+    new("Alfardan Jewellery",                13,  31,  0,  0,  10,    1000, 44),
+    new("Alfardan Properties",                4,   1,  0,  5, 100,     100, 10),
+    new("Arab Engineering Bureau",          146,   2,  0,  0,   0,    1000,148),
+    new("BNP Paribas",                       19,  18,  0,  8,   7,    1000, 45),
+};
+
+    private IEnumerable<CompanyItem> FilteredCompanyItems =>
+        SortCompanyItems(
+            _companyItems.Where(x =>
+                string.IsNullOrEmpty(_companySearch) ||
+                x.CompanyName.Contains(_companySearch, StringComparison.OrdinalIgnoreCase))
+        )
+        .Skip((_companyPage - 1) * _companyPageSize)
+        .Take(_companyPageSize);
+
+    private IEnumerable<CompanyItem> SortCompanyItems(IEnumerable<CompanyItem> items) =>
+        (_companySortCol, _companySortAsc) switch
+        {
+            ("CompanyName", true) => items.OrderBy(x => x.CompanyName),
+            ("CompanyName", false) => items.OrderByDescending(x => x.CompanyName),
+            ("RegisteredUsers", true) => items.OrderBy(x => x.RegisteredUsers),
+            ("RegisteredUsers", false) => items.OrderByDescending(x => x.RegisteredUsers),
+            ("UnregisteredUsers", true) => items.OrderBy(x => x.UnregisteredUsers),
+            ("UnregisteredUsers", false) => items.OrderByDescending(x => x.UnregisteredUsers),
+            ("VipRegistered", true) => items.OrderBy(x => x.VipRegistered),
+            ("VipRegistered", false) => items.OrderByDescending(x => x.VipRegistered),
+            ("VipUserCount", true) => items.OrderBy(x => x.VipUserCount),
+            ("VipUserCount", false) => items.OrderByDescending(x => x.VipUserCount),
+            ("UserCount", true) => items.OrderBy(x => x.UserCount),
+            ("UserCount", false) => items.OrderByDescending(x => x.UserCount),
+            ("TotalUsers", true) => items.OrderBy(x => x.TotalUsers),
+            ("TotalUsers", false) => items.OrderByDescending(x => x.TotalUsers),
+            _ => items
+        };
+
+    private int CompanyTotalPages => (int)Math.Ceiling(_companyItems.Count / (double)_companyPageSize);
+    private int CompanyFrom => (_companyPage - 1) * _companyPageSize + 1;
+    private int CompanyTo => Math.Min(_companyPage * _companyPageSize, _companyItems.Count);
+
+    public record CompanyItem(
+        string CompanyName,
+        int RegisteredUsers,
+        int UnregisteredUsers,
+        int UnregisteredVipCount,
+        int VipRegistered,
+        int VipUserCount,
+        int UserCount,
+        int TotalUsers,
+        int RemainingVipCount = 0
+    );
+}

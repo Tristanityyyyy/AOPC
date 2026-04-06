@@ -1,0 +1,573 @@
+﻿@page "/maintenance/business"
+@rendermode InteractiveServer
+
+<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Business</h3>
+
+<div class="grid grid-cols-12 gap-4">
+
+    @* ── Business Locations (left) ── *@
+    <div class="col-span-6">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="height:750px;">
+
+            @* Dark header *@
+            <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-3"
+                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                <h4 class="text-sm font-medium text-white">Business Locations</h4>
+            </div>
+
+            @* Controls *@
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    <select value="@_locPageSize" @onchange="e => { _locPageSize = int.Parse(e.Value.ToString()); _locPage = 1; }" class="border border-gray-300 rounded px-2 py-1 text-xs">
+
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    entries per page
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    Search:
+                    <input type="text" @bind="_locSearch" @bind:event="oninput"
+                           class="border border-gray-300 rounded px-2 py-1 text-xs w-36" />
+                </div>
+            </div>
+
+            @* Table *@
+            <div class="overflow-x-auto" style="min-height:320px;">
+
+                <table class="w-full text-xs">
+                    <thead style="position:sticky;top:0;background:white;z-index:1;">
+
+                        @* Row 1: Add New button *@
+                        <tr>
+                            <td colspan="4" class="pb-2">
+                                <button class="flex items-center gap-2 px-3 py-1.5 rounded-full text-white text-xs border-none cursor-pointer"
+                                        style="background: #C9A84C;">
+                                    + Add New
+                                </button>
+                            </td>
+                        </tr>
+                        @* Row 2: Sortable column headers *@
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortLoc("Name")'>
+                                Name <span class="text-gray-400">@LocSortIcon("Name")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortLoc("PostalCode")'>
+                                Postal Code <span class="text-gray-400">@LocSortIcon("PostalCode")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortLoc("Country")'>
+                                Country <span class="text-gray-400">@LocSortIcon("Country")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortLoc("DateCreated")'>
+                                Date Created <span class="text-gray-400">@LocSortIcon("DateCreated")</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredLocItems)
+                        {
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="py-2 px-2">
+                                    <div class="font-medium text-gray-700">@item.Name</div>
+                                    <div class="flex gap-2 mt-1">
+                                        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent"
+                                                style="color: #C9A84C;">
+                                            ✎ Edit
+                                        </button>
+                                        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                            🗑 Delete
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="py-2 px-2 text-gray-600">@item.PostalCode</td>
+                                <td class="py-2 px-2 text-gray-600">@item.Country</td>
+                                <td class="py-2 px-2 text-gray-600">@item.DateCreated</td>
+                            </tr>
+                        }
+                        @for (int i = FilteredLocItems.Count(); i < _locPageSize; i++)
+                        {
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 px-2">&nbsp;</td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-between mt-3">
+                <span class="text-xs text-gray-500">
+                    Showing @LocFrom to @LocTo of @_locItems.Count entries
+                </span>
+                <div class="flex items-center gap-1">
+                    @RenderPagination(_locPage, LocTotalPages, (p) => _locPage = p)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Business Types (right) ── *@
+    <div class="col-span-6">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="height:750px;">
+
+            @* Dark header *@
+            <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-3"
+                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                <h4 class="text-sm font-medium text-white">Business Types</h4>
+            </div>
+
+            @* Controls *@
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    <select value="@_typePageSize" @onchange="e => { _typePageSize = int.Parse(e.Value.ToString()); _typePage = 1; }" class="border border-gray-300 rounded px-2 py-1 text-xs">
+
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    entries per page
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    Search:
+                    <input type="text" @bind="_typeSearch" @bind:event="oninput"
+                           class="border border-gray-300 rounded px-2 py-1 text-xs w-36" />
+                </div>
+            </div>
+
+            @* Table *@
+            <div class="overflow-x-auto" style="min-height:320px;">
+
+
+                <table class="w-full text-xs">
+                    <thead style="position:sticky;top:0;background:white;z-index:1;">
+
+                        <tr>
+                            <td colspan="3" class="pb-2">
+                                <button class="flex items-center gap-2 px-3 py-1.5 rounded-full text-white text-xs border-none cursor-pointer"
+                                        style="background: #C9A84C;">
+                                    + Add New
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortType("Name")'>
+                                Name <span class="text-gray-400">@TypeSortIcon("Name")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortType("Promo")'>
+                                Promo <span class="text-gray-400">@TypeSortIcon("Promo")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortType("DateCreated")'>
+                                Date Created <span class="text-gray-400">@TypeSortIcon("DateCreated")</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredTypeItems)
+                        {
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="py-2 px-2">
+                                    <div class="flex items-center gap-2">
+                                        <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
+                                        <div>
+                                            <div class="font-medium text-gray-700">@item.Name</div>
+                                            <div class="flex gap-2 mt-1">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent"
+                                                        style="color: #C9A84C;">
+                                                    ✎ Edit
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent"
+                                                        style="color: #C9A84C;">
+                                                    ⧉ Duplicate
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                    🗑 Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-2 px-2 text-gray-600">@item.Promo</td>
+                                <td class="py-2 px-2 text-gray-600">@item.DateCreated</td>
+                            </tr>
+                        }
+                        @for (int i = FilteredTypeItems.Count(); i < _typePageSize; i++)
+                        {
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 px-2">&nbsp;</td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-between mt-3">
+                <span class="text-xs text-gray-500">
+                    Showing @TypeFrom to @TypeTo of @_typeItems.Count entries
+                </span>
+                <div class="flex items-center gap-1">
+                    @RenderPagination(_typePage, TypeTotalPages, (p) => _typePage = p)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Hotels (full width) ── *@
+    <div class="col-span-12">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="height:680px;">
+
+            @* Dark header *@
+            <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-3"
+                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                <h4 class="text-sm font-medium text-white">Hotels</h4>
+            </div>
+
+            @* Controls *@
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    <select value="@_hotelPageSize" @onchange="e => { _hotelPageSize = int.Parse(e.Value.ToString()); _hotelPage = 1; }" class="border border-gray-300 rounded px-2 py-1 text-xs">
+
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    entries per page
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    Search:
+                    <input type="text" @bind="_hotelSearch" @bind:event="oninput"
+                           class="border border-gray-300 rounded px-2 py-1 text-xs w-48" />
+                </div>
+            </div>
+
+            @* Table *@
+            <div class="overflow-x-auto" style="min-height:320px;">
+
+                <table class="w-full text-xs">
+                    <thead style="position:sticky;top:0;background:white;z-index:1;">
+                        <tr>
+                            <td colspan="7" class="pb-2">
+                                <button class="flex items-center gap-2 px-3 py-1.5 rounded-full text-white text-xs border-none cursor-pointer"
+                                        style="background: #C9A84C;">
+                                    + Add New
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortHotel("Name")'>
+                                Name <span class="text-gray-400">@HotelSortIcon("Name")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortHotel("Location")'>
+                                Location <span class="text-gray-400">@HotelSortIcon("Location")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortHotel("Address")'>
+                                Address <span class="text-gray-400">@HotelSortIcon("Address")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortHotel("ContactNo")'>
+                                Contact No. <span class="text-gray-400">@HotelSortIcon("ContactNo")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortHotel("Email")'>
+                                Email <span class="text-gray-400">@HotelSortIcon("Email")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortHotel("Url")'>
+                                Url <span class="text-gray-400">@HotelSortIcon("Url")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                                @onclick='() => SortHotel("DateCreated")'>
+                                Date Created <span class="text-gray-400">@HotelSortIcon("DateCreated")</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in FilteredHotelItems)
+                        {
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="py-2 px-2">
+                                    <div class="flex items-center gap-2">
+                                        <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
+                                        <div>
+                                            <div class="font-medium text-gray-700">@item.Name</div>
+                                            <div class="flex gap-2 mt-1">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent"
+                                                        style="color: #C9A84C;">
+                                                    ✎ Edit
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                    🗑 Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-2 px-2 text-gray-600">@item.Location</td>
+                                <td class="py-2 px-2 text-gray-600">@item.Address</td>
+                                <td class="py-2 px-2 text-gray-600">@item.ContactNo</td>
+                                <td class="py-2 px-2 text-gray-600">@item.Email</td>
+                                <td class="py-2 px-2 text-gray-600 max-w-xs truncate">@item.Url</td>
+                                <td class="py-2 px-2 text-gray-600">@item.DateCreated</td>
+                            </tr>
+                        }
+                        @for (int i = FilteredHotelItems.Count(); i < _hotelPageSize; i++)
+                        {
+                            <tr class="border-b border-gray-100">
+                                <td class="py-2 px-2">&nbsp;</td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                                <td class="py-2 px-2"></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-between mt-3">
+                <span class="text-xs text-gray-500">
+                    Showing @HotelFrom to @HotelTo of @_hotelItems.Count entries
+                </span>
+                <div class="flex items-center gap-1">
+                    @RenderPagination(_hotelPage, HotelTotalPages, (p) => _hotelPage = p)
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+
+    // ── PAGINATION RENDERER (shared) ──
+    private RenderFragment RenderPagination(int currentPage, int totalPages, Action<int> setPage) => __builder =>
+    {
+        var pages = new List<int?>();
+        for (int i = 1; i <= totalPages; i++)
+        {
+            if (i == 1 || i == totalPages || (i >= currentPage - 1 && i <= currentPage + 1))
+                pages.Add(i);
+            else if (pages.Last() != null)
+                pages.Add(null);
+        }
+
+        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            «
+        </button>
+        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(currentPage - 1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            ‹
+        </button>
+
+        @foreach (var p in pages.Distinct())
+        {
+            if (p == null)
+            {
+                <span class="px-1 text-xs text-gray-400">…</span>
+            }
+            else
+            {
+                var pg = p.Value;
+                <button @onclick="@(() => setPage(pg))"
+                        class="@($"px-2 py-0.5 text-xs border rounded {(pg == currentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
+                        style="@(pg == currentPage ? "background:#C9A84C;" : "")">
+                    @pg
+                </button>
+            }
+        }
+
+        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(currentPage + 1))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            ›
+        </button>
+        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(totalPages))"
+                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+            »
+        </button>
+    };
+
+    // ── BUSINESS LOCATIONS ──
+    private string _locSearch = "";
+    private int _locPageSize = 10;
+    private int _locPage = 1;
+    private string _locSortCol = "Name";
+    private bool _locSortAsc = true;
+
+    private void SortLoc(string col) { if (_locSortCol == col) _locSortAsc = !_locSortAsc; else { _locSortCol = col; _locSortAsc = true; } _locPage = 1; }
+    private string LocSortIcon(string col) => _locSortCol == col ? (_locSortAsc ? "↑" : "↓") : "⇅";
+
+    private List<LocationItem> _locItems = new()
+    {
+        new("Istanbul",         "0000",  "Turkey", "2025-09-29T15:57:32.45"),
+        new("Lusail",           "26660", "Qatar",  "2025-09-29T15:57:32.45"),
+        new("Grand Hamad Seda Hotel", "26660", "Qatar",  "2025-09-29T15:57:32.45"),
+        new("The Pearl Island Oriental Philippines etc etc","26660","Qatar",  "2025-09-29T15:57:32.45"),
+         new("Istanbul",         "0000",  "Turkey", "2025-09-29T15:57:32.45"),
+        new("Lusail",           "26660", "Qatar",  "2025-09-29T15:57:32.45"),
+        new("Grand Hamad Seda Hotel", "26660", "Qatar",  "2025-09-29T15:57:32.45"),
+        new("The Pearl Island Oriental Philippines etc etc","26660","Qatar",  "2025-09-29T15:57:32.45"),
+         new("Istanbul",         "0000",  "Turkey", "2025-09-29T15:57:32.45"),
+        new("Lusail",           "26660", "Qatar",  "2025-09-29T15:57:32.45"),
+        new("Grand Hamad Seda Hotel", "26660", "Qatar",  "2025-09-29T15:57:32.45"),
+        new("The Pearl Island Oriental Philippines etc etc","26660","Qatar",  "2025-09-29T15:57:32.45")
+    };
+
+    private IEnumerable<LocationItem> FilteredLocItems =>
+        SortLocItems(_locItems.Where(x => string.IsNullOrEmpty(_locSearch) ||
+            x.Name.Contains(_locSearch, StringComparison.OrdinalIgnoreCase)))
+        .Skip((_locPage - 1) * _locPageSize).Take(_locPageSize);
+
+    private IEnumerable<LocationItem> SortLocItems(IEnumerable<LocationItem> items) =>
+        (_locSortCol, _locSortAsc) switch
+        {
+            ("Name", true) => items.OrderBy(x => x.Name),
+            ("Name", false) => items.OrderByDescending(x => x.Name),
+            ("PostalCode", true) => items.OrderBy(x => x.PostalCode),
+            ("PostalCode", false) => items.OrderByDescending(x => x.PostalCode),
+            ("Country", true) => items.OrderBy(x => x.Country),
+            ("Country", false) => items.OrderByDescending(x => x.Country),
+            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
+            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
+            _ => items
+        };
+
+    private int LocTotalPages => (int)Math.Ceiling(_locItems.Count / (double)_locPageSize);
+    private int LocFrom => (_locPage - 1) * _locPageSize + 1;
+    private int LocTo => Math.Min(_locPage * _locPageSize, _locItems.Count);
+
+    public record LocationItem(string Name, string PostalCode, string Country, string DateCreated);
+
+    // ── BUSINESS TYPES ──
+    private string _typeSearch = "";
+    private int _typePageSize = 10;
+    private int _typePage = 1;
+    private string _typeSortCol = "Name";
+    private bool _typeSortAsc = true;
+
+    private void SortType(string col) { if (_typeSortCol == col) _typeSortAsc = !_typeSortAsc; else { _typeSortCol = col; _typeSortAsc = true; } _typePage = 1; }
+    private string TypeSortIcon(string col) => _typeSortCol == col ? (_typeSortAsc ? "↑" : "↓") : "⇅";
+
+    private List<BusinessTypeItem> _typeItems = new()
+    {
+        new("Health",           "/images/health.jpg",   "Up to 20% preferred rates", "2025-07-08T17:17:46.02"),
+        new("Food & Beverages", "/images/food.jpg",    "Up to 30% preferred rates", "2025-07-08T17:17:46.02"),
+        new("Access to co-workers","/images/cowork.jpg",  "Up to 20% preferred rates", "2025-07-08T17:17:46.02"),
+         new("Health",           "/images/health.jpg",   "Up to 20% preferred rates", "2025-07-08T17:17:46.02"),
+        new("Food & Beverages", "/images/food.jpg",    "Up to 30% preferred rates", "2025-07-08T17:17:46.02"),
+        new("Access to co-workers","/images/cowork.jpg",  "Up to 20% preferred rates", "2025-07-08T17:17:46.02"),
+         new("Health",           "/images/health.jpg",   "Up to 20% preferred rates", "2025-07-08T17:17:46.02"),
+        new("Food & Beverages", "/images/food.jpg",    "Up to 30% preferred rates", "2025-07-08T17:17:46.02"),
+        new("Access to co-workers","/images/cowork.jpg",  "Up to 20% preferred rates", "2025-07-08T17:17:46.02"),
+         new("Health",           "/images/health.jpg",   "Up to 20% preferred rates", "2025-07-08T17:17:46.02"),
+        new("Food & Beverages", "/images/food.jpg",    "Up to 30% preferred rates", "2025-07-08T17:17:46.02"),
+        new("Access to co-workers","/images/cowork.jpg",  "Up to 20% preferred rates", "2025-07-08T17:17:46.02")
+    };
+
+    private IEnumerable<BusinessTypeItem> FilteredTypeItems =>
+        SortTypeItems(_typeItems.Where(x => string.IsNullOrEmpty(_typeSearch) ||
+            x.Name.Contains(_typeSearch, StringComparison.OrdinalIgnoreCase) ||
+            x.Promo.Contains(_typeSearch, StringComparison.OrdinalIgnoreCase)))
+        .Skip((_typePage - 1) * _typePageSize).Take(_typePageSize);
+
+    private IEnumerable<BusinessTypeItem> SortTypeItems(IEnumerable<BusinessTypeItem> items) =>
+        (_typeSortCol, _typeSortAsc) switch
+        {
+            ("Name", true) => items.OrderBy(x => x.Name),
+            ("Name", false) => items.OrderByDescending(x => x.Name),
+            ("Promo", true) => items.OrderBy(x => x.Promo),
+            ("Promo", false) => items.OrderByDescending(x => x.Promo),
+            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
+            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
+            _ => items
+        };
+
+    private int TypeTotalPages => (int)Math.Ceiling(_typeItems.Count / (double)_typePageSize);
+    private int TypeFrom => (_typePage - 1) * _typePageSize + 1;
+    private int TypeTo => Math.Min(_typePage * _typePageSize, _typeItems.Count);
+
+    public record BusinessTypeItem(string Name, string ImageUrl, string Promo, string DateCreated);
+
+    // ── HOTELS ──
+    private string _hotelSearch = "";
+    private int _hotelPageSize = 10;
+    private int _hotelPage = 1;
+    private string _hotelSortCol = "Name";
+    private bool _hotelSortAsc = true;
+
+    private void SortHotel(string col) { if (_hotelSortCol == col) _hotelSortAsc = !_hotelSortAsc; else { _hotelSortCol = col; _hotelSortAsc = true; } _hotelPage = 1; }
+    private string HotelSortIcon(string col) => _hotelSortCol == col ? (_hotelSortAsc ? "↑" : "↓") : "⇅";
+
+    private List<HotelItem> _hotelItems = new()
+    {
+        new("Six Senses Kocatas Mansions, Istanbul", "/images/sixsenses.jpg", "Istanbul, Turkey",   "Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye", "+90 212 355 55 00", "reservations-istanbul@sixsenses.com", "https://www.sixsenses.com/en/hotels-resorts/europe/turkey/kocatas-mansions-istanbul/", "09/29/2025"),
+        new("The St. Regis Doha",                   "/images/stregis.jpg",   "Westbay - STR, ...", "Westbay",                                                           "+974 4446 0000",   "Reservations.Doha@stregis.com",        "https://www.marriott.com/en-us/hotels/dohxr-the-st-regis-doha/overview/",              "09/29/2025"),
+        new("The St. Regis Marsa Arabia Island, The Pearl – Qatar", "/images/stregismarsa.jpg", "The Pearl Island ...", "The Pearl Qatar", "+974 4020 4444", "reservations.marsamalaz@kempinski.com", "https://www.marriott.com/en-us/hotels/dohxp-the-st-regis-marsa-arabia-island-the-pearl-qatar/overview/", "09/29/2025"),
+        new("Kempinski Residences & Suites, Doha",  "/images/kempinski.jpg", "Westbay - KRSD...",  "Al Qassar Street, Aba Almsan-Blumsan St, Doha",                     "+974 4405 3333",   "info.doha@kempinski.com",              "https://www.kempinski.com/en/residences-doha/",                                        "09/29/2025"),
+        new("Marsa Malaz Kempinski, The Pearl –",   "/images/marsa.jpg",     "The Pearl Island ...", "The Pearl, Doha, Qatar",                                          "+974 4035 5555",   "reservations.marsamalaz@kempinski.com","https://www.kempinski.com/en/marsa-malaz-kempinski-the-pearl-qatar/",                  "09/29/2025"),
+         new("Six Senses Kocatas Mansions, Istanbul", "/images/sixsenses.jpg", "Istanbul, Turkey",   "Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye", "+90 212 355 55 00", "reservations-istanbul@sixsenses.com", "https://www.sixsenses.com/en/hotels-resorts/europe/turkey/kocatas-mansions-istanbul/", "09/29/2025"),
+        new("The St. Regis Doha",                   "/images/stregis.jpg",   "Westbay - STR, ...", "Westbay",                                                           "+974 4446 0000",   "Reservations.Doha@stregis.com",        "https://www.marriott.com/en-us/hotels/dohxr-the-st-regis-doha/overview/",              "09/29/2025"),
+        new("The St. Regis Marsa Arabia Island, The Pearl – Qatar", "/images/stregismarsa.jpg", "The Pearl Island ...", "The Pearl Qatar", "+974 4020 4444", "reservations.marsamalaz@kempinski.com", "https://www.marriott.com/en-us/hotels/dohxp-the-st-regis-marsa-arabia-island-the-pearl-qatar/overview/", "09/29/2025"),
+        new("Kempinski Residences & Suites, Doha",  "/images/kempinski.jpg", "Westbay - KRSD...",  "Al Qassar Street, Aba Almsan-Blumsan St, Doha",                     "+974 4405 3333",   "info.doha@kempinski.com",              "https://www.kempinski.com/en/residences-doha/",                                        "09/29/2025"),
+        new("Marsa Malaz Kempinski, The Pearl –",   "/images/marsa.jpg",     "The Pearl Island ...", "The Pearl, Doha, Qatar",                                          "+974 4035 5555",   "reservations.marsamalaz@kempinski.com","https://www.kempinski.com/en/marsa-malaz-kempinski-the-pearl-qatar/",                  "09/29/2025"),
+         new("Six Senses Kocatas Mansions, Istanbul", "/images/sixsenses.jpg", "Istanbul, Turkey",   "Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye", "+90 212 355 55 00", "reservations-istanbul@sixsenses.com", "https://www.sixsenses.com/en/hotels-resorts/europe/turkey/kocatas-mansions-istanbul/", "09/29/2025"),
+        new("The St. Regis Doha",                   "/images/stregis.jpg",   "Westbay - STR, ...", "Westbay",                                                           "+974 4446 0000",   "Reservations.Doha@stregis.com",        "https://www.marriott.com/en-us/hotels/dohxr-the-st-regis-doha/overview/",              "09/29/2025"),
+        new("The St. Regis Marsa Arabia Island, The Pearl – Qatar", "/images/stregismarsa.jpg", "The Pearl Island ...", "The Pearl Qatar", "+974 4020 4444", "reservations.marsamalaz@kempinski.com", "https://www.marriott.com/en-us/hotels/dohxp-the-st-regis-marsa-arabia-island-the-pearl-qatar/overview/", "09/29/2025"),
+        new("Kempinski Residences & Suites, Doha",  "/images/kempinski.jpg", "Westbay - KRSD...",  "Al Qassar Street, Aba Almsan-Blumsan St, Doha",                     "+974 4405 3333",   "info.doha@kempinski.com",              "https://www.kempinski.com/en/residences-doha/",                                        "09/29/2025"),
+        new("Marsa Malaz Kempinski, The Pearl –",   "/images/marsa.jpg",     "The Pearl Island ...", "The Pearl, Doha, Qatar",                                          "+974 4035 5555",   "reservations.marsamalaz@kempinski.com","https://www.kempinski.com/en/marsa-malaz-kempinski-the-pearl-qatar/",                  "09/29/2025")
+    };
+
+    //----------NO PICTURES AT CURRENT DEVELOPMENT
+
+    private IEnumerable<HotelItem> FilteredHotelItems =>
+        SortHotelItems(_hotelItems.Where(x => string.IsNullOrEmpty(_hotelSearch) ||
+            x.Name.Contains(_hotelSearch, StringComparison.OrdinalIgnoreCase) ||
+            x.Location.Contains(_hotelSearch, StringComparison.OrdinalIgnoreCase) ||
+            x.Email.Contains(_hotelSearch, StringComparison.OrdinalIgnoreCase)))
+        .Skip((_hotelPage - 1) * _hotelPageSize).Take(_hotelPageSize);
+
+    private IEnumerable<HotelItem> SortHotelItems(IEnumerable<HotelItem> items) =>
+        (_hotelSortCol, _hotelSortAsc) switch
+        {
+            ("Name", true) => items.OrderBy(x => x.Name),
+            ("Name", false) => items.OrderByDescending(x => x.Name),
+            ("Location", true) => items.OrderBy(x => x.Location),
+            ("Location", false) => items.OrderByDescending(x => x.Location),
+            ("Address", true) => items.OrderBy(x => x.Address),
+            ("Address", false) => items.OrderByDescending(x => x.Address),
+            ("ContactNo", true) => items.OrderBy(x => x.ContactNo),
+            ("ContactNo", false) => items.OrderByDescending(x => x.ContactNo),
+            ("Email", true) => items.OrderBy(x => x.Email),
+            ("Email", false) => items.OrderByDescending(x => x.Email),
+            ("Url", true) => items.OrderBy(x => x.Url),
+            ("Url", false) => items.OrderByDescending(x => x.Url),
+            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
+            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
+            _ => items
+        };
+
+    private int HotelTotalPages => (int)Math.Ceiling(_hotelItems.Count / (double)_hotelPageSize);
+    private int HotelFrom => (_hotelPage - 1) * _hotelPageSize + 1;
+    private int HotelTo => Math.Min(_hotelPage * _hotelPageSize, _hotelItems.Count);
+
+    public record HotelItem(string Name, string ImageUrl, string Location, string Address, string ContactNo, string Email, string Url, string DateCreated);
+}

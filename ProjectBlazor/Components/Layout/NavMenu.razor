@@ -1,0 +1,96 @@
+﻿@using MudBlazor
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<div class="flex flex-col items-center w-full pt-4">
+    <AuthorizeView Roles="Admin">
+        <a href="/dashboardadmin" class="@NavClass("/dashboard")">
+            <MudIcon Icon="@Icons.Material.Filled.Dashboard" Class="text-white" />
+            <span>Dashboard</span>
+        </a>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="User">
+        <a href="/dashboarduser" class="@NavClass("/dashboarduser")">
+            <MudIcon Icon="@Icons.Material.Filled.Dashboard" Class="text-white" />
+            <span>Dashboard</span>
+        </a>
+        <a href="/users" class="@NavClass("/users")">
+            <MudIcon Icon="@Icons.Material.Filled.VerifiedUser" Class="text-white" />
+            <span>Users</span>
+        </a>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <div class="w-48">
+                <button @onclick="ToggleMaintenance"
+                        class="flex items-center gap-2 w-full px-4 py-2 rounded-lg text-stone-300 hover:bg-amber-500/10 cursor-pointer bg-transparent border-none text-sm mb-1">
+                    <MudIcon Icon="@Icons.Material.Filled.Build" Class="text-white" />
+                    <span class="flex-1 text-left">Maintenance</span>
+                    <MudIcon Icon="@(_maintenanceExpanded? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                             Class="text-stone-300" />
+                </button>
+
+                @if (_maintenanceExpanded)
+                {
+                    <div class="flex flex-col">
+                        <a href="/maintenance/business" class="@SubClass()">Business</a>
+                        <a href="/maintenance/corporate" class="@SubClass()">Corporate</a>
+                        <a href="/maintenance/membershipprivilege" class="@SubClass()">Membership Privilege</a>
+                        <a href="/maintenance/offering" class="@SubClass()">Offering</a>
+                        <a href="/maintenance/vendor" class="@SubClass()">Vendor</a>
+                        <a href="/maintenance/position" class="@SubClass()">Position</a>
+                        <a href="/maintenance/registration" class="@SubClass()">Registration</a>
+                    </div>
+                }
+            </div>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <a href="/audittrail" class="@NavClass("/audittrail")">
+                <MudIcon Icon="@Icons.Material.Filled.ManageSearch" Class="text-white" />
+                <span>Audit Trail</span>
+            </a>
+            <a href="/qrcodelogs" class="@NavClass("/qrcodelogs")">
+                <MudIcon Icon="@Icons.Material.Filled.QrCodeScanner" Class="text-white" />
+                <span>QR Code Logs</span>
+            </a>
+            <a href="/supportlogs" class="@NavClass("/supportlogs")">
+                <MudIcon Icon="@Icons.Material.Filled.SupportAgent" Class="text-white" />
+                <span>Support Logs</span>
+            </a>
+            <a href="/notifications" class="@NavClass("/notifications")">
+                <MudIcon Icon="@Icons.Material.Filled.Notifications" Class="text-white" />
+                <span>Notifications</span>
+            </a>
+        </Authorized>
+    </AuthorizeView>
+
+    <a href="/account/logout" class="@NavClass("/account/logout")">
+        <MudIcon Icon="@Icons.Material.Filled.Logout" Class="text-white" />
+        <span>Logout</span>
+    </a>
+
+</div>
+
+@code {
+    private bool _maintenanceExpanded = false;
+
+    private void ToggleMaintenance() => _maintenanceExpanded = !_maintenanceExpanded;
+
+    private string NavClass(string href)
+    {
+        var isActive = Navigation.Uri.Contains(href, StringComparison.OrdinalIgnoreCase);
+        return isActive
+            ? "flex items-center gap-2 w-48 px-4 py-2 rounded-lg bg-amber-500/15 text-amber-500 no-underline text-sm mb-1"
+            : "flex items-center gap-2 w-48 px-4 py-2 rounded-lg text-stone-300 hover:bg-amber-500/10 hover:text-amber-400 no-underline text-sm mb-1";
+    }
+
+    private string SubClass()
+    {
+        return "block py-2 pl-8 pr-4 text-stone-400 hover:text-amber-400 no-underline text-xs mb-0.5";
+    }
+}

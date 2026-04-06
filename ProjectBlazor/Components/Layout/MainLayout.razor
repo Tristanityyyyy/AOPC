@@ -1,0 +1,75 @@
+﻿@inherits LayoutComponentBase
+@using MudBlazor
+
+<MudThemeProvider Theme="_theme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Style="background: linear-gradient(135deg, #0D1B2A, #1B2B3A);">
+        <img src="/images/AOPCWHITEPNG.png"
+             alt="Alfardan Oyster Logo"
+             style="max-height: 50px; width: auto;" />
+        <MudSpacer />
+        <AuthorizeView>
+            <NotAuthorized>
+                <MudButton Href="/login"
+                           Variant="Variant.Outlined"
+                           Style="color: white; border-color: white;">
+                    Login
+                </MudButton>
+            </NotAuthorized>
+            <Authorized>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 12px;">
+                    <MudText Style="color: white; font-size: 14px; font-weight: 500; line-height: 1.2;">
+                        @context.User.Identity?.Name
+                    </MudText>
+                    <MudText Style="color: #C9A84C; font-size: 11px; line-height: 1.2;">
+                        @context.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+                    </MudText>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen"
+               Elevation="2"
+               Variant="DrawerVariant.Responsive"
+               ClipMode="DrawerClipMode.Always"
+               Style="background: linear-gradient(180deg, #0D1B2A, #1B2B3A);">
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+<AntiforgeryToken />
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private MudTheme _theme = new MudTheme
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#C9A84C",
+            PrimaryDarken = "#0D1B2A",
+            AppbarBackground = "#0D1B2A",
+        }
+    };
+}

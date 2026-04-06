@@ -1,0 +1,10 @@
+wwwroot\css\app.css
+wwwroot\css\input.css
+wwwroot\css\output.css
+wwwroot\favicon.png
+wwwroot\images\AOPCBG.jpg
+wwwroot\images\AOPCBlack.jpg
+wwwroot\images\AOPCWHITEPNG.png
+wwwroot\images\background.png
+wwwroot\images\Icon very dark blue.png
+wwwroot\images\Icon White.png

@@ -1,0 +1,93 @@
+﻿<div class="flex flex-row @(string.IsNullOrEmpty(Title) ? "justify-center" : "justify-between") items-center gap-4 w-full">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <p class="text-base font-medium m-0" style="color: #C9A84C;">@Title</p>
+    }
+    <div class="flex gap-1 items-center flex-shrink-0">
+        @if (ShowClearFilter)
+        {
+            <button class="px-2 py-1 text-xs cursor-pointer"
+                    style="background: transparent; border: 1px solid #C9A84C; color: #C9A84C; border-radius: 20px; white-space: nowrap;"
+                    @onclick="OnClearFilter">
+                Clear Filter
+            </button>
+        }
+        @if (ShowSelectCategory)
+        {
+            <div class="relative inline-block">
+                <button @onclick="OnToggleCategoryDropdown"
+                        class="flex items-center justify-between gap-0.5 px-2 py-1 rounded-full text-white text-xs cursor-pointer border-none"
+                        style="background: #C9A84C; white-space: nowrap; min-width: 110px;">
+                    @SelectedCategory
+                    <svg class="w-2 h-2 flex-shrink-0" viewBox="0 0 24 24" fill="white">
+                        <path d="M7 10l5 5 5-5z" />
+                    </svg>
+                </button>
+                @if (CategoryDropdownOpen)
+                {
+                    <div class="absolute left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                         style="min-width: 140px;">
+                        @foreach (var category in Categories)
+                        {
+                            var cat = category;
+                            <div @onclick="@(() => OnCategorySelected.InvokeAsync(cat))"
+                                 class="px-3 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer first:rounded-t-lg last:rounded-b-lg"
+                                 style="white-space: nowrap;">
+                                @category
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        @if (ShowSelectDate)
+        {
+            <button class="flex items-center gap-0.5 px-2 py-1 rounded-full text-white text-xs cursor-pointer border-none"
+                    style="background: #C9A84C; white-space: nowrap;"
+                    @onclick="OnSelectDate">
+                <MudIcon Icon="@Icons.Material.Filled.DateRange" Style="font-size: 12px; color: white;" />
+                Select Date
+            </button>
+        }
+        @if (ShowFilterDays)
+        {
+            <div class="relative inline-block">
+                <button @onclick="OnToggleDropdown"
+                        class="flex items-center justify-between gap-0.5 px-2 py-1 rounded-full text-white text-xs cursor-pointer border-none"
+                        style="background: #C9A84C; white-space: nowrap; min-width: 80px;">
+                    @SelectedDays
+                    <svg class="w-2 h-2 flex-shrink-0" viewBox="0 0 24 24" fill="white">
+                        <path d="M7 10l5 5 5-5z" />
+                    </svg>
+                </button>
+            </div>
+        }
+        @if (ShowViewDetails)
+        {
+            <button class="flex items-center gap-0.5 px-2 py-1 rounded-full text-white text-xs cursor-pointer border-none"
+                    style="background: #0D1B3A; white-space: nowrap;"
+                    @onclick="OnViewDetails">
+                View Details
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public bool ShowClearFilter { get; set; } = false;
+    [Parameter] public bool ShowSelectDate { get; set; } = true;
+    [Parameter] public bool ShowFilterDays { get; set; } = true;
+    [Parameter] public bool ShowSelectCategory { get; set; } = false;
+    [Parameter] public string SelectedDays { get; set; } = "Filter Days";
+    [Parameter] public string SelectedCategory { get; set; } = "Select Category";
+    [Parameter] public bool CategoryDropdownOpen { get; set; } = false;
+    [Parameter] public List<string> Categories { get; set; } = new();
+    [Parameter] public EventCallback OnClearFilter { get; set; }
+    [Parameter] public EventCallback OnSelectDate { get; set; }
+    [Parameter] public EventCallback OnToggleDropdown { get; set; }
+    [Parameter] public EventCallback OnToggleCategoryDropdown { get; set; }
+    [Parameter] public EventCallback<string> OnCategorySelected { get; set; }
+    [Parameter] public bool ShowViewDetails { get; set; } = false;
+    [Parameter] public EventCallback OnViewDetails { get; set; }
+}

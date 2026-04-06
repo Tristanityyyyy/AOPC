@@ -1,0 +1,158 @@
+﻿@page "/login"
+@layout ProjectBlazor.Components.Layout.BlankLayout
+
+@using ProjectBlazor.Models.ViewModels
+@using ProjectBlazor.Data
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using MudBlazor
+@inject AppDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<MudThemeProvider />
+
+<div style="min-height: 100vh;
+            background-image: url('/images/AOPCBG.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;">
+
+    <MudPaper Elevation="4" Style="width: 800px; height: 480px; border-radius: 16px; overflow: hidden; display: flex;">
+
+        <div style="width: 50%;
+                    background-color: black;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 2rem;">
+            <img src="/images/AOPCWHITEPNG.png" style="width: 200px; height: 80px;" class="mb-3" />
+            <MudText Typo="Typo.h5" Style="color: white; font-weight: 700; text-align: center">CONTENT MANAGEMENT SYSTEM</MudText>
+            <MudText Typo="Typo.body2" Align="Align.Center"
+                     Style="color: rgba(255,255,255,0.5); margin-top: 8px; text-align: center;">
+                Your all-in-one content management solution.
+            </MudText>
+        </div>
+
+        <div style="width: 50%;
+                    background: #ffffff;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    padding: 2.5rem;
+                    overflow-y: hidden;">
+
+            <MudText Typo="Typo.h5" Align="Align.Center"
+                     Style="font-weight: bold; margin-bottom: 1.5rem;">
+                LOGIN
+            </MudText>
+
+            <form method="post" @formname="LoginForm">
+                <AntiforgeryToken />
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-size:12px; color:#666;">User Name</label>
+                    <input name="username"
+                           type="text"
+                           placeholder="Username"
+                           style="width:100%; padding:12px; border:1px solid #ccc;
+                                  border-radius:4px; font-size:14px; box-sizing:border-box;" />
+                </div>
+
+                <div style="margin-bottom: 0.75rem;">
+                    <label style="font-size:12px; color:#666;">Password</label>
+                    <input name="password"
+                           type="password"
+                           placeholder="Password"
+                           style="width:100%; padding:12px; border:1px solid #ccc;
+                                  border-radius:4px; font-size:14px; box-sizing:border-box;" />
+                </div>
+
+                <div style="margin-bottom: 0.75rem; display:flex; align-items:center; gap:8px;">
+                    <input name="rememberme" type="checkbox" id="rememberMe" />
+                    <label for="rememberMe" style="font-size:14px;">Remember Me</label>
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <MudAlert Severity="Severity.Error" Style="margin-bottom: 0.75rem;">
+                        @errorMessage
+                    </MudAlert>
+                }
+
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           FullWidth="true"
+                           Size="Size.Large"
+                           Style="margin-bottom: 0.75rem; background-color: black;">
+                    Login
+                </MudButton>
+
+                <MudLink Href="/forgot-password"
+                         Style="display: block; text-align: center;">
+                    Forgot Password?
+                </MudLink>
+            </form>
+        </div>
+    </MudPaper>
+</div>
+
+@code {
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    // ✅ No longer using [SupplyParameterFromForm]
+    public LoginViewModel Model { get; set; } = new();
+
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpContext?.Request.Method == "POST")
+        {
+            await Authenticate();
+        }
+    }
+
+    private async Task Authenticate()
+    {
+        // ✅ Manually read form values — bypasses the null binding issue
+        var form = HttpContext!.Request.Form;
+        var username = form["username"].ToString();
+        var password = form["password"].ToString();
+
+        if (string.IsNullOrWhiteSpace(username) ||
+            string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Please enter username and password.";
+            return;
+        }
+
+        var user = await DbContext.UserAccounts
+            .FirstOrDefaultAsync(u => u.Username == username);
+
+        if (user is null || user.Password != password)
+        {
+            errorMessage = "Invalid username or password.";
+            return;
+        }
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role)
+        };
+
+        var identity = new ClaimsIdentity(claims,
+            CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+        await HttpContext!.SignInAsync(principal);
+
+        NavigationManager.NavigateTo("/dashboardadmin", forceLoad: true);
+    }
+}
