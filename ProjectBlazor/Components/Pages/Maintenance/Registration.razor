@@ -1,6 +1,430 @@
 ﻿@page "/maintenance/registration"
-<h3>Registration</h3>
+@rendermode InteractiveServer
+
+<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Registration</h3>
+
+@* Tab bar *@
+<div class="flex border-b border-gray-200 mb-4">
+    <button @onclick='() => _activeTab = "user"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "user" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+        👥 User Registration
+    </button>
+    <button @onclick='() => _activeTab = "oyster"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "oyster" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+        👥 Oyster Admin Registration
+    </button>
+    <button @onclick='() => _activeTab = "corporate"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "corporate" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+        🏢 Corporate Admin Registration
+    </button>
+</div>
+
+@* ── USER REGISTRATION ── *@
+@if (_activeTab == "user")
+{
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4">
+                <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
+                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                    <h4 class="text-sm font-medium text-white">User Registration</h4>
+                </div>
+                @ControlsRow1()
+                @ControlsRow2("_userSearch", "_userPageSize", "_userPage")
+                <div class="mb-3 px-1">
+                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                            style="background:#C9A84C;">
+                        + Add New
+                    </button>
+                </div>
+                <div class="overflow-y-auto" style="max-height:600px;">
+                    <table class="w-full text-xs">
+                        <thead style="position:sticky; top:0; background:white; z-index:1;">
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" style="width: 18%;" @onclick='() => SortUser("FullName")'>Full Name <span class="text-gray-400">@SortIconUser("FullName")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortUser("Username")'>Username <span class="text-gray-400">@SortIconUser("Username")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortUser("Email")'>Email <span class="text-gray-400">@SortIconUser("Email")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortUser("Gender")'>Gender <span class="text-gray-400">@SortIconUser("Gender")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortUser("CompanyName")'>Company Name <span class="text-gray-400">@SortIconUser("CompanyName")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortUser("Position")'>Position <span class="text-gray-400">@SortIconUser("Position")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortUser("Status")'>Status <span class="text-gray-400">@SortIconUser("Status")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortUser("Vip")'>VIP <span class="text-gray-400">@SortIconUser("Vip")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortUser("DateCreated")'>Date Created <span class="text-gray-400">@SortIconUser("DateCreated")</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (item, index) in FilteredUserItems.Select((x, i) => (x, i)))
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
+                                    <td class="py-2 px-2" style="height: 72px;">
+                                        <div class="relative w-full" style="height: 72px;">
+                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">
+                                                @item.Code
+                                            </div>
+                                            <div class="absolute left-0 flex items-center gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 14px;">
+                                                <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
+                                                </div>
+                                                <div class="font-medium text-gray-800 text-xs">@item.FullName</div>
+                                            </div>
+                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 42px;">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 align-middle" style="height: 72px;">@item.Username</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Email</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Gender</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.CompanyName</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Position</td>
+                                    <td class="py-2 px-2">
+                                        <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span>
+                                    </td>
+                                    <td class="py-2 px-2">
+                                        <span class="@(item.Vip == "Yes" ? "text-amber-600 font-medium" : "text-gray-400")">@item.Vip</span>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateCreated</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                    <span class="text-xs text-gray-500">Showing @UserFrom to @UserTo of @_userTotalCount entries</span>
+                    <Pagination CurrentPage="_userPage" TotalPages="UserTotalPages" SetPageAction="p => _userPage = p" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* ── OYSTER ADMIN REGISTRATION (no VIP column) ── *@
+@if (_activeTab == "oyster")
+{
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4">
+                <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
+                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                    <h4 class="text-sm font-medium text-white">Oyster Admin Registration</h4>
+                </div>
+                @ControlsRow1()
+                @ControlsRow2("_oysterSearch", "_oysterPageSize", "_oysterPage")
+                <div class="mb-3 px-1">
+                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                            style="background:#C9A84C;">
+                        + Add New
+                    </button>
+                </div>
+                <div class="overflow-y-auto" style="max-height:600px;">
+                    <table class="w-full text-xs">
+                        <thead style="position:sticky; top:0; background:white; z-index:1;">
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" style="width: 18%;" @onclick='() => SortOyster("FullName")'>Full Name <span class="text-gray-400">@SortIconOyster("FullName")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortOyster("Username")'>Username <span class="text-gray-400">@SortIconOyster("Username")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortOyster("Email")'>Email <span class="text-gray-400">@SortIconOyster("Email")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortOyster("Gender")'>Gender <span class="text-gray-400">@SortIconOyster("Gender")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortOyster("CompanyName")'>Company Name <span class="text-gray-400">@SortIconOyster("CompanyName")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortOyster("Position")'>Position <span class="text-gray-400">@SortIconOyster("Position")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortOyster("Status")'>Status <span class="text-gray-400">@SortIconOyster("Status")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortOyster("DateCreated")'>Date Created <span class="text-gray-400">@SortIconOyster("DateCreated")</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (item, index) in FilteredOysterItems.Select((x, i) => (x, i)))
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
+                                    <td class="py-2 px-2" style="height: 72px;">
+                                        <div class="relative w-full" style="height: 72px;">
+                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">
+                                                @item.Code
+                                            </div>
+                                            <div class="absolute left-0 flex items-center gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 14px;">
+                                                <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
+                                                </div>
+                                                <div class="font-medium text-gray-800 text-xs">@item.FullName</div>
+                                            </div>
+                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 42px;">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 align-middle" style="height: 72px;">@item.Username</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Email</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Gender</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.CompanyName</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Position</td>
+                                    <td class="py-2 px-2">
+                                        <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateCreated</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                    <span class="text-xs text-gray-500">Showing @OysterFrom to @OysterTo of @_oysterTotalCount entries</span>
+                    <Pagination CurrentPage="_oysterPage" TotalPages="OysterTotalPages" SetPageAction="p => _oysterPage = p" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* ── CORPORATE ADMIN REGISTRATION ── *@
+@if (_activeTab == "corporate")
+{
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4">
+                <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
+                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                    <h4 class="text-sm font-medium text-white">Corporate Admin Registration</h4>
+                </div>
+                @ControlsRow1()
+                @ControlsRow2("_corpSearch", "_corpPageSize", "_corpPage")
+                <div class="mb-3 px-1">
+                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                            style="background:#C9A84C;">
+                        + Add New
+                    </button>
+                </div>
+                <div class="overflow-y-auto" style="max-height:600px;">
+                    <table class="w-full text-xs">
+                        <thead style="position:sticky; top:0; background:white; z-index:1;">
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" style="width: 18%;" @onclick='() => SortCorp("FullName")'>Full Name <span class="text-gray-400">@SortIconCorp("FullName")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortCorp("Username")'>Username <span class="text-gray-400">@SortIconCorp("Username")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortCorp("Email")'>Email <span class="text-gray-400">@SortIconCorp("Email")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortCorp("Gender")'>Gender <span class="text-gray-400">@SortIconCorp("Gender")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortCorp("CompanyName")'>Company Name <span class="text-gray-400">@SortIconCorp("CompanyName")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortCorp("Position")'>Position <span class="text-gray-400">@SortIconCorp("Position")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortCorp("Status")'>Status <span class="text-gray-400">@SortIconCorp("Status")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortCorp("Vip")'>VIP <span class="text-gray-400">@SortIconCorp("Vip")</span></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none" @onclick='() => SortCorp("DateCreated")'>Date Created <span class="text-gray-400">@SortIconCorp("DateCreated")</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (item, index) in FilteredCorpItems.Select((x, i) => (x, i)))
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
+                                    <td class="py-2 px-2" style="height: 72px;">
+                                        <div class="relative w-full" style="height: 72px;">
+                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">
+                                                @item.Code
+                                            </div>
+                                            <div class="absolute left-0 flex items-center gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 14px;">
+                                                <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
+                                                </div>
+                                                <div class="font-medium text-gray-800 text-xs">@item.FullName</div>
+                                            </div>
+                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 42px;">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 align-middle" style="height: 72px;">@item.Username</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Email</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Gender</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.CompanyName</td>
+                                    <td class="py-2 px-2 text-gray-600">@item.Position</td>
+                                    <td class="py-2 px-2">
+                                        <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span>
+                                    </td>
+                                    <td class="py-2 px-2">
+                                        <span class="@(item.Vip == "Yes" ? "text-amber-600 font-medium" : "text-gray-400")">@item.Vip</span>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateCreated</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                    <span class="text-xs text-gray-500">Showing @CorpFrom to @CorpTo of @_corpTotalCount entries</span>
+                    <Pagination CurrentPage="_corpPage" TotalPages="CorpTotalPages" SetPageAction="p => _corpPage = p" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
+    private string _activeTab = "user";
+    private string? _uploadedFileName;
 
+    // ── Per-tab state ──────────────────────────────────────────
+    private string _userSearch = ""; private int _userPageSize = 10; private int _userPage = 1; private int _userTotalCount = 0; private string _userSortCol = "FullName"; private bool _userSortAsc = true;
+    private string _oysterSearch = ""; private int _oysterPageSize = 10; private int _oysterPage = 1; private int _oysterTotalCount = 0; private string _oysterSortCol = "FullName"; private bool _oysterSortAsc = true;
+    private string _corpSearch = ""; private int _corpPageSize = 10; private int _corpPage = 1; private int _corpTotalCount = 0; private string _corpSortCol = "FullName"; private bool _corpSortAsc = true;
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e) { _uploadedFileName = e.File.Name; await Task.CompletedTask; }
+
+    // ── Shared render fragments ────────────────────────────────
+    private RenderFragment ControlsRow1() =>
+    @<div class="flex items-center justify-between mb-3 px-1">
+        <div class="flex items-center gap-2">
+            <button class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium" style="background:#C9A84C;">☰ Filter</button>
+            <button class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium" style="background:#C9A84C;">✉ Bulk Email</button>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-600 font-medium">Import Excel File:</span>
+            <InputFile id="regFileInput" OnChange="HandleFileUpload" accept=".xlsx,.xls" class="hidden" />
+            <label for="regFileInput" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs text-gray-600 cursor-pointer hover:bg-gray-50 transition">
+                <MudIcon Icon="@Icons.Material.Filled.AttachFile" Style="font-size:13px;" />
+                @(_uploadedFileName ?? "Choose File")
+            </label>
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium" style="background:#C9A84C;">
+                <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-600 hover:bg-gray-50 transition">
+                <MudIcon Icon="@Icons.Material.Filled.Download" Style="font-size:13px;" /> Download Template
+            </button>
+        </div>
+    </div>;
+
+    private RenderFragment ControlsRow2(string searchField, string pageSizeField, string pageField) =>
+    @<div class="flex items-center justify-between mb-3 px-1">
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+            <select class="border border-gray-300 rounded px-2 py-1 text-xs"
+                    value="@GetPageSize(pageSizeField)"
+                    @onchange="e => SetPageSize(pageSizeField, int.Parse(e.Value!.ToString()!))">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+            <span>entries per page</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+            <span class="font-medium">Search:</span>
+            <input type="text" value="@GetSearch(searchField)"
+                   @oninput="e => SetSearch(searchField, e.Value!.ToString()!)"
+                   class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
+                   placeholder="Type to search..." />
+        </div>
+    </div>;
+
+    // ── Search/PageSize helpers ────────────────────────────────
+    private string GetSearch(string f) => f == "_userSearch" ? _userSearch : f == "_oysterSearch" ? _oysterSearch : _corpSearch;
+    private void SetSearch(string f, string v) { if (f == "_userSearch") { _userSearch = v; _userPage = 1; } else if (f == "_oysterSearch") { _oysterSearch = v; _oysterPage = 1; } else { _corpSearch = v; _corpPage = 1; } }
+    private int GetPageSize(string f) => f == "_userPageSize" ? _userPageSize : f == "_oysterPageSize" ? _oysterPageSize : _corpPageSize;
+    private void SetPageSize(string f, int v) { if (f == "_userPageSize") { _userPageSize = v; _userPage = 1; } else if (f == "_oysterPageSize") { _oysterPageSize = v; _oysterPage = 1; } else { _corpPageSize = v; _corpPage = 1; } }
+
+    // ── Sort helpers ───────────────────────────────────────────
+    private void SortUser(string col) { if (_userSortCol == col) _userSortAsc = !_userSortAsc; else { _userSortCol = col; _userSortAsc = true; } _userPage = 1; }
+    private void SortOyster(string col) { if (_oysterSortCol == col) _oysterSortAsc = !_oysterSortAsc; else { _oysterSortCol = col; _oysterSortAsc = true; } _oysterPage = 1; }
+    private void SortCorp(string col) { if (_corpSortCol == col) _corpSortAsc = !_corpSortAsc; else { _corpSortCol = col; _corpSortAsc = true; } _corpPage = 1; }
+    private string SortIconUser(string col) => _userSortCol == col ? (_userSortAsc ? "↑" : "↓") : "⇅";
+    private string SortIconOyster(string col) => _oysterSortCol == col ? (_oysterSortAsc ? "↑" : "↓") : "⇅";
+    private string SortIconCorp(string col) => _corpSortCol == col ? (_corpSortAsc ? "↑" : "↓") : "⇅";
+
+    // ── Data ───────────────────────────────────────────────────
+    private List<RegistrationItem> _userItems = new()
+    {
+        new("USR-001", "Kholoud Oweidat",   "kholoud.oweidat",  "kholodowedat@gmail.com",       "Female", "Embassy of the Netherlands", "Senior Consular Officer", "Active",   "Yes", "09/29/2025"),
+        new("USR-002", "Marwan Bishara",    "Marwan.Bishara",    "marwanbishara@yahoo.com",       "Male",   "Fadaat Media",               "Senior Consultant",       "Active",   "No",  "09/29/2025"),
+        new("USR-003", "Sara Bishara",      "sara.bishara",      "s.bishara@tarsheed.com",        "Female", "Fadaat Media",               "Managing Director",       "Active",   "Yes", "09/29/2025"),
+        new("USR-004", "Ahmed Al-Mansoori", "ahmed.mansoori",    "ahmed.mansoori@qatargas.com",   "Male",   "Qatar Gas",                  "Operations Manager",      "Active",   "No",  "09/29/2025"),
+        new("USR-005", "Layla Hassan",      "layla.hassan",      "layla.hassan@ooredoo.com.qa",   "Female", "Ooredoo",                    "Marketing Director",      "Active",   "No",  "09/28/2025"),
+    };
+
+    private List<RegistrationItem> _oysterItems = new()
+    {
+        new("OYS-001", "Khalid Al-Thani",   "khalid.althani",   "k.althani@qatarinvestment.com", "Male",   "Qatar Investment Authority", "Senior Analyst",          "Inactive", "-",   "09/27/2025"),
+        new("OYS-002", "Nora Al-Subaie",    "nora.subaie",      "nora.s@alfardan.com.qa",        "Female", "Alfardan Group",             "HR Manager",              "Active",   "-",   "09/26/2025"),
+        new("OYS-003", "Omar Farouk",       "omar.farouk",      "omar.farouk@petroserv.com",     "Male",   "Petro Services",             "President",               "Active",   "-",   "09/25/2025"),
+    };
+
+    private List<RegistrationItem> _corpItems = new()
+    {
+        new("CRP-001", "Fatima Al-Kuwari",  "fatima.kuwari",    "f.kuwari@barwa.com.qa",         "Female", "Barwa Real Estate",          "Legal Counsel",           "Active",   "No",  "09/24/2025"),
+        new("CRP-002", "Tariq Mahmoud",     "tariq.mahmoud",    "tariq.m@qatarcool.com",         "Male",   "Qatar Cool",                 "Chief Engineer",          "Active",   "No",  "09/23/2025"),
+        new("CRP-003", "Hessa Al-Jaber",    "hessa.jaber",      "hessa.jaber@qnb.com.qa",        "Female", "Qatar National Bank",        "Branch Manager",          "Inactive", "No",  "09/22/2025"),
+        new("CRP-004", "Samir Qaddoura",    "samir.qaddoura",   "s.qaddoura@milaha.com",         "Male",   "Milaha",                     "Fleet Director",          "Active",   "No",  "09/21/2025"),
+        new("CRP-005", "Reem Al-Ansari",    "reem.ansari",      "r.ansari@ashghal.gov.qa",       "Female", "Ashghal",                    "Project Manager",         "Active",   "Yes", "09/20/2025"),
+    };
+
+    // ── Filtered + sorted + paged ──────────────────────────────
+    private IEnumerable<RegistrationItem> FilteredUserItems => GetFiltered(_userItems, _userSearch, _userSortCol, _userSortAsc, _userPage, _userPageSize, out _userTotalCount);
+    private IEnumerable<RegistrationItem> FilteredOysterItems => GetFiltered(_oysterItems, _oysterSearch, _oysterSortCol, _oysterSortAsc, _oysterPage, _oysterPageSize, out _oysterTotalCount);
+    private IEnumerable<RegistrationItem> FilteredCorpItems => GetFiltered(_corpItems, _corpSearch, _corpSortCol, _corpSortAsc, _corpPage, _corpPageSize, out _corpTotalCount);
+
+    private IEnumerable<RegistrationItem> GetFiltered(List<RegistrationItem> src, string search, string sortCol, bool sortAsc, int page, int pageSize, out int total)
+    {
+        var q = src.Where(x => string.IsNullOrEmpty(search) ||
+            x.FullName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+            x.Username.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+            x.Email.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+            x.CompanyName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+            x.Position.Contains(search, StringComparison.OrdinalIgnoreCase));
+
+        q = (sortCol, sortAsc) switch
+        {
+            ("Username", true) => q.OrderBy(x => x.Username),
+            ("Username", false) => q.OrderByDescending(x => x.Username),
+            ("Email", true) => q.OrderBy(x => x.Email),
+            ("Email", false) => q.OrderByDescending(x => x.Email),
+            ("Gender", true) => q.OrderBy(x => x.Gender),
+            ("Gender", false) => q.OrderByDescending(x => x.Gender),
+            ("CompanyName", true) => q.OrderBy(x => x.CompanyName),
+            ("CompanyName", false) => q.OrderByDescending(x => x.CompanyName),
+            ("Position", true) => q.OrderBy(x => x.Position),
+            ("Position", false) => q.OrderByDescending(x => x.Position),
+            ("Status", true) => q.OrderBy(x => x.Status),
+            ("Status", false) => q.OrderByDescending(x => x.Status),
+            ("Vip", true) => q.OrderBy(x => x.Vip),
+            ("Vip", false) => q.OrderByDescending(x => x.Vip),
+            ("DateCreated", true) => q.OrderBy(x => x.DateCreated),
+            ("DateCreated", false) => q.OrderByDescending(x => x.DateCreated),
+            _ => q.OrderBy(x => x.FullName)
+        };
+
+        total = q.Count();
+        return q.Skip((page - 1) * pageSize).Take(pageSize);
+    }
+
+    // ── Pagination ─────────────────────────────────────────────
+    private int UserTotalPages => (int)Math.Ceiling(_userTotalCount / (double)_userPageSize);
+    private int OysterTotalPages => (int)Math.Ceiling(_oysterTotalCount / (double)_oysterPageSize);
+    private int CorpTotalPages => (int)Math.Ceiling(_corpTotalCount / (double)_corpPageSize);
+    private int UserFrom => _userTotalCount == 0 ? 0 : (_userPage - 1) * _userPageSize + 1;
+    private int OysterFrom => _oysterTotalCount == 0 ? 0 : (_oysterPage - 1) * _oysterPageSize + 1;
+    private int CorpFrom => _corpTotalCount == 0 ? 0 : (_corpPage - 1) * _corpPageSize + 1;
+    private int UserTo => Math.Min(_userPage * _userPageSize, _userTotalCount);
+    private int OysterTo => Math.Min(_oysterPage * _oysterPageSize, _oysterTotalCount);
+    private int CorpTo => Math.Min(_corpPage * _corpPageSize, _corpTotalCount);
+
+    public record RegistrationItem(
+        string Code, string FullName, string Username, string Email, string Gender,
+        string CompanyName, string Position, string Status, string Vip, string DateCreated);
 }
