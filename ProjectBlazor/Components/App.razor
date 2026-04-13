@@ -11,12 +11,40 @@
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/output.css" />
     <link rel="stylesheet" href="css/app.css" />
-
 </head>
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    @* ↓ THIS was missing *@
+    <script>
+        window.richEditor = {
+            getHtml: (id) => {
+                const el = document.getElementById(id);
+                return el ? el.innerHTML : '';
+            },
+            setHtml: (id, html) => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = html ?? '';
+            },
+            bindToolbar: (toolbarId, editorId) => {
+                const toolbar = document.getElementById(toolbarId);
+                const editor  = document.getElementById(editorId);
+                if (!toolbar || !editor) return;
+
+                toolbar.addEventListener('mousedown', (e) => {
+                    e.preventDefault(); // keeps focus inside the editor
+
+                    const btn = e.target.closest('button[data-cmd]');
+                    if (!btn) return;
+
+                    editor.focus();
+                    document.execCommand(btn.getAttribute('data-cmd'), false, null);
+                });
+            }
+        };
+    </script>
 </body>
 </html>

@@ -4,19 +4,9 @@
 <h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Corporate Maintenance</h3>
 
 <div class="grid grid-cols-12 gap-4">
-
     <div class="col-span-12">
-        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="max-height:920px;">
-            @* Dark header *@
-            <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                <h4 class="text-sm font-medium text-white">Corporate Maintenance</h4>
-            </div>
-
-            @* Row 1: entries per page | toolbar right *@
-            <div class="flex items-center justify-between mb-4 px-1">
-
-                @* Left: entries per page *@
+        <MaintenanceCard Title="Corporate Maintenance" Height="920px">
+            <ToolbarLeft>
                 <div class="flex items-center gap-2 text-xs text-gray-600">
                     <select value="@_corpPageSize" @onchange="e => { _corpPageSize = int.Parse(e.Value.ToString()); _corpPage = 1; }"
                             class="border border-gray-300 rounded px-2 py-1 text-xs">
@@ -26,26 +16,22 @@
                     </select>
                     <span>entries per page</span>
                 </div>
-
-                @* Right: toolbar *@
+            </ToolbarLeft>
+            <ToolbarRight>
                 <div class="flex items-center gap-2">
 
-                    @* Hidden real file input *@
+                    @* Buttons group *@
                     <InputFile id="excelFileInput" OnChange="HandleFileUpload" accept=".xlsx,.xls" class="hidden" />
-
-                    @* Styled label that triggers it *@
                     <label for="excelFileInput"
                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs text-gray-600 cursor-pointer hover:bg-gray-50 transition">
                         <MudIcon Icon="@Icons.Material.Filled.AttachFile" Style="font-size:13px;" />
                         @(_uploadedFileName ?? "Choose File")
                     </label>
-
                     <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium transition"
                             style="background:#C9A84C;">
                         <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" />
                         Upload
                     </button>
-
                     <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-600 hover:bg-gray-50 transition">
                         <MudIcon Icon="@Icons.Material.Filled.Download" Style="font-size:13px;" />
                         Download Template
@@ -55,167 +41,404 @@
                     <div class="w-px h-4 bg-gray-300 mx-1"></div>
 
                     @* Search *@
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        <span class="font-medium">Search:</span>
-                        <input type="text" @bind="_corpSearch" @bind:event="oninput"
-                               class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
-                               placeholder="Type to search..." />
-                    </div>
+                    <span class="text-xs text-gray-600 font-medium">Search:</span>
+                    <input type="text" @bind="_corpSearch" @bind:event="oninput"
+                           class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
+                           placeholder="Type to search..." />
 
                 </div>
-            </div>
-
-            @* Row 2: Add New — stands alone, left aligned *@
-            <div class="mb-4 px-1">
-                <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                        style="background: #C9A84C;">
-                    + Add New
-                </button>
-            </div>
-
-            @* Table *@
-            <div class="overflow-auto">
+            </ToolbarRight>
+            <Body>
+                <div class="mb-4 px-1">
+                    <button @onclick="OpenAddCorporate" class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                            style="background: #C9A84C;">
+                        + Add New
+                    </button>
+                </div>
                 <table class="w-full text-xs">
                     <thead style="position:sticky; top:0; background:white; z-index:1;">
                         <tr class="border-b-2 border-gray-200">
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 20%;"
                                 @onclick='() => SortCorp("Name")'>
                                 Name <span class="text-gray-400">@CorpSortIcon("Name")</span>
                             </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 20%;"
                                 @onclick='() => SortCorp("Address")'>
                                 Address <span class="text-gray-400">@CorpSortIcon("Address")</span>
                             </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 10%;"
                                 @onclick='() => SortCorp("ContactNumber")'>
                                 Contact Number <span class="text-gray-400">@CorpSortIcon("ContactNumber")</span>
                             </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 12%;"
                                 @onclick='() => SortCorp("EmailAddress")'>
                                 Email Address <span class="text-gray-400">@CorpSortIcon("EmailAddress")</span>
                             </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 8%;"
                                 @onclick='() => SortCorp("MembershipTier")'>
                                 Membership Tier <span class="text-gray-400">@CorpSortIcon("MembershipTier")</span>
                             </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 8%;"
                                 @onclick='() => SortCorp("UserCount")'>
                                 User Count <span class="text-gray-400">@CorpSortIcon("UserCount")</span>
                             </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 7%;"
                                 @onclick='() => SortCorp("VipCount")'>
                                 VIP Count <span class="text-gray-400">@CorpSortIcon("VipCount")</span>
                             </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 15%;"
                                 @onclick='() => SortCorp("MembershipDescription")'>
                                 Membership Description <span class="text-gray-400">@CorpSortIcon("MembershipDescription")</span>
+                            </th>
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 10%;"
+                                @onclick='() => SortCorp("DateCreated")'>
+                                Date Created <span class="text-gray-400">@CorpSortIcon("DateCreated")</span>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in FilteredCorpItems)
+                        @foreach (var (item, index) in FilteredCorpItems.Select((x, i) => (x, i)))
                         {
-                            <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                <td class="py-2 px-2">
-                                    <div class="font-medium text-gray-800">@item.Name</div>
-                                    <div class="flex gap-2 mt-1">
-                                        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent"
-                                                style="color: #C9A84C;">
-                                            ✎ Edit
-                                        </button>
-                                        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                            🗑 Delete
-                                        </button>
-                                        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
-                                            👁 View
-                                        </button>
+                            <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
+                                <td class="py-2 px-2" style="height: 64px;">
+                                    <div class="relative w-full" style="height: 64px;">
+                                        <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 8px;">
+                                            @item.Code
+                                        </div>
+                                        <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 16px;">
+                                            @item.Name
+                                        </div>
+                                        <div class="absolute left-0 flex gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 36px;">
+                                            <button @onclick="() => OpenEditCorporate(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                Edit
+                                            </button>
+                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                Delete
+                                            </button>
+                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
+                                                <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                View
+                                            </button>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="py-2 px-2 text-gray-600">@item.Address</td>
-                                <td class="py-2 px-2 text-gray-600">@item.ContactNumber</td>
-                                <td class="py-2 px-2 text-gray-600">@item.EmailAddress</td>
-                                <td class="py-2 px-2 text-gray-600">@item.MembershipTier</td>
-                                <td class="py-2 px-2 text-gray-600">@item.UserCount</td>
-                                <td class="py-2 px-2 text-gray-600">@item.VipCount</td>
-                                <td class="py-2 px-2 text-gray-600">@item.MembershipDescription</td>
+                                <td class="py-2 px-2 text-gray-600" style="width: 20%;">@item.Address</td>
+                                <td class="py-2 px-2 text-gray-600" style="width: 10%;">@item.ContactNumber</td>
+                                <td class="py-2 px-2 text-gray-600" style="width: 12%;">@item.EmailAddress</td>
+                                <td class="py-2 px-2 text-gray-600" style="width: 8%;">@item.MembershipTier</td>
+                                <td class="py-2 px-2 text-gray-600" style="width: 8%;">@item.UserCount</td>
+                                <td class="py-2 px-2 text-gray-600" style="width: 7%;">@item.VipCount</td>
+                                <td class="py-2 px-2 text-gray-600" style="width: 15%;">@item.MembershipDescription</td>
+                                <td class="py-2 px-2 text-gray-600" style="width: 10%;">@item.DateCreated</td>
                             </tr>
                         }
-                      
                     </tbody>
                 </table>
-            </div>
-
-            @* Footer *@
-            <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+            </Body>
+            <Footer>
                 <span class="text-xs text-gray-500">
                     Showing @CorpFrom to @CorpTo of @_corpItems.Count entries
                 </span>
                 <div class="flex items-center gap-1">
-                    @RenderPagination(_corpPage, CorpTotalPages, (p) => _corpPage = p)
+                    <Pagination CurrentPage="_corpPage" TotalPages="CorpTotalPages" SetPageAction="p => _corpPage = p" />
                 </div>
-            </div>
-
-        </div>
+            </Footer>
+        </MaintenanceCard>
     </div>
-
 </div>
 
-@code {
+@* Add Corporate Dialog *@
+@if (_showAddCorporateDialog)
+{
+    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: 90vh;">
 
+            @* Header *@
+            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
+                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                <div class="flex items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.Business" Style="font-size:18px; color:white;" />
+                    <span class="text-sm font-semibold text-white">Add Corporate</span>
+                </div>
+                <button @onclick="() => _showAddCorporateDialog = false"
+                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
+                        style="background: rgba(255,255,255,0.15);">
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
+                </button>
+            </div>
+
+            @* Scrollable Body *@
+            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Corporate Name</label>
+                        <input type="text" @bind="_addCorpName"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1"
+                               style="focus:ring-color:#C9A84C;" placeholder="Enter corporate name" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Contact Number</label>
+                        <input type="text" @bind="_addCorpContactNumber"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="e.g. +974 4446 0000" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Email Address</label>
+                        <input type="email" @bind="_addCorpEmailAddress"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="e.g. info@company.com" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Tier</label>
+                        <select @bind="_addCorpMembershipTier" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs">
+                            <option value="">Select Tier</option>
+                            <option value="EXCLUSIVE">EXCLUSIVE</option>
+                            <option value="EXCLUSIVE OMAN">EXCLUSIVE OMAN</option>
+                            <option value="EXCLUSIVE - VIP">EXCLUSIVE - VIP</option>
+                            <option value="BRONZE">BRONZE</option>
+                            <option value="SILVER">SILVER</option>
+                            <option value="GOLD">GOLD</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">VIP Count</label>
+                        <input type="number" @bind="_addCorpVipCount"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="0" />
+                    </div>
+                    <div></div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Date Start</label>
+                        <input type="date" @bind="_addCorpDateStart"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Date End</label>
+                        <input type="date" @bind="_addCorpDateEnd"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Address</label>
+                    <textarea @bind="_addCorpAddress" rows="2"
+                              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none" placeholder="Enter full address"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button @onclick="() => _showAddCorporateDialog = false" class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">Cancel</button>
+                    <button @onclick="AddCorporate" class="px-5 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer" style="background:#C9A84C;">Add Corporate</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@* Edit Corporate Dialog *@
+@if (_showEditCorporateDialog)
+{
+    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: 90vh;">
+
+            @* Header *@
+            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
+                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                <div class="flex items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.Business" Style="font-size:18px; color:white;" />
+                    <span class="text-sm font-semibold text-white">Edit Corporate</span>
+                </div>
+                <button @onclick="CancelEditCorporate"
+                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
+                        style="background: rgba(255,255,255,0.15);">
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
+                </button>
+            </div>
+
+            @* Scrollable Body *@
+            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Corporate Name</label>
+                        <input type="text" @bind="_editCorpName"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1"
+                               style="focus:ring-color:#C9A84C;" placeholder="Enter corporate name" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Contact Number</label>
+                        <input type="text" @bind="_editCorpContactNumber"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="e.g. +974 4446 0000" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Email Address</label>
+                        <input type="email" @bind="_editCorpEmailAddress"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="e.g. info@company.com" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Tier</label>
+                        <select @bind="_editCorpMembershipTier" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs">
+                            <option value="">Select Tier</option>
+                            <option value="EXCLUSIVE">EXCLUSIVE</option>
+                            <option value="EXCLUSIVE OMAN">EXCLUSIVE OMAN</option>
+                            <option value="EXCLUSIVE - VIP">EXCLUSIVE - VIP</option>
+                            <option value="BRONZE">BRONZE</option>
+                            <option value="SILVER">SILVER</option>
+                            <option value="GOLD">GOLD</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">VIP Count</label>
+                        <input type="number" @bind="_editCorpVipCount"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="0" />
+                    </div>
+                    <div></div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Date Start</label>
+                        <input type="date" @bind="_editCorpDateStart"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Date End</label>
+                        <input type="date" @bind="_editCorpDateEnd"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Address</label>
+                    <textarea @bind="_editCorpAddress" rows="2"
+                              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none" placeholder="Enter full address"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button @onclick="CancelEditCorporate" class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">Cancel</button>
+                    <button @onclick="SaveEditCorporate" class="px-5 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer" style="background:#C9A84C;">Save Changes</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
     private string? _uploadedFileName;
+
+    // ── Add Corporate State ──
+    private bool _showAddCorporateDialog = false;
+    private string _addCorpName = "";
+    private string _addCorpAddress = "";
+    private string _addCorpContactNumber = "";
+    private string _addCorpEmailAddress = "";
+    private string _addCorpMembershipTier = "";
+    private int _addCorpVipCount = 0;
+    private DateTime _addCorpDateStart = DateTime.Today;
+    private DateTime _addCorpDateEnd = DateTime.Today.AddYears(1);
+
+    // ── Edit Corporate State ──
+    private bool _showEditCorporateDialog = false;
+    private CorporateItem? _editingCorporate;
+    private string _editCorpCode = "";
+    private string _editCorpName = "";
+    private string _editCorpAddress = "";
+    private string _editCorpContactNumber = "";
+    private string _editCorpEmailAddress = "";
+    private string _editCorpMembershipTier = "";
+    private int _editCorpUserCount = 0;
+    private int _editCorpVipCount = 0;
+    private string _editCorpMembershipDescription = "";
+    private string _editCorpDateCreated = "";
+    private DateTime _editCorpDateStart = DateTime.Today;
+    private DateTime _editCorpDateEnd = DateTime.Today.AddYears(1);
+
+    private void OpenEditCorporate(CorporateItem item)
+    {
+        _editingCorporate = item;
+        _editCorpCode = item.Code;
+        _editCorpName = item.Name;
+        _editCorpAddress = item.Address;
+        _editCorpContactNumber = item.ContactNumber;
+        _editCorpEmailAddress = item.EmailAddress;
+        _editCorpMembershipTier = item.MembershipTier;
+        _editCorpUserCount = item.UserCount;
+        _editCorpVipCount = item.VipCount;
+        _editCorpMembershipDescription = item.MembershipDescription;
+        _editCorpDateCreated = item.DateCreated;
+        DateTime.TryParse(item.DateStart, out var ds);
+        DateTime.TryParse(item.DateEnd, out var de);
+        _editCorpDateStart = ds == default ? DateTime.Today : ds;
+        _editCorpDateEnd = de == default ? DateTime.Today.AddYears(1) : de;
+        _showEditCorporateDialog = true;
+    }
+
+    private void CancelEditCorporate()
+    {
+        _showEditCorporateDialog = false;
+        _editingCorporate = null;
+    }
+
+    private void SaveEditCorporate()
+    {
+        if (_editingCorporate == null) return;
+
+        var index = _corpItems.IndexOf(_editingCorporate);
+        if (index >= 0)
+        {
+            _corpItems[index] = new CorporateItem(
+                _editCorpCode,
+                _editCorpName,
+                _editCorpAddress,
+                _editCorpContactNumber,
+                _editCorpEmailAddress,
+                _editCorpMembershipTier,
+                _editCorpUserCount,
+                _editCorpVipCount,
+                _editCorpMembershipDescription,
+                _editCorpDateCreated,
+                _editCorpDateStart.ToString("yyyy-MM-dd"),
+                _editCorpDateEnd.ToString("yyyy-MM-dd")
+            );
+        }
+        _showEditCorporateDialog = false;
+        _editingCorporate = null;
+    }
+
+    private void OpenAddCorporate()
+    {
+        _addCorpName = "";
+        _addCorpAddress = "";
+        _addCorpContactNumber = "";
+        _addCorpEmailAddress = "";
+        _addCorpMembershipTier = "";
+        _addCorpVipCount = 0;
+        _addCorpDateStart = DateTime.Today;
+        _addCorpDateEnd = DateTime.Today.AddYears(1);
+        _showAddCorporateDialog = true;
+    }
+
+    private void AddCorporate()
+    {
+        var newCorp = new CorporateItem(
+            $"CM-{(_corpItems.Count + 1):D3}",
+            _addCorpName,
+            _addCorpAddress,
+            _addCorpContactNumber,
+            _addCorpEmailAddress,
+            _addCorpMembershipTier,
+            0,
+            _addCorpVipCount,
+            $"{_addCorpMembershipTier} MEMBERSHIP",
+            DateTime.Now.ToString("MM/dd/yyyy"),
+            _addCorpDateStart.ToString("yyyy-MM-dd"),
+            _addCorpDateEnd.ToString("yyyy-MM-dd")
+        );
+        _corpItems.Insert(0, newCorp);
+        _showAddCorporateDialog = false;
+    }
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)
     {
         _uploadedFileName = e.File.Name;
         await Task.CompletedTask;
     }
-
-    private RenderFragment RenderPagination(int currentPage, int totalPages, Action<int> setPage) => __builder =>
-    {
-        var pages = new List<int?>();
-        for (int i = 1; i <= totalPages; i++)
-        {
-            if (i == 1 || i == totalPages || (i >= currentPage - 1 && i <= currentPage + 1))
-                pages.Add(i);
-            else if (pages.Last() != null)
-                pages.Add(null);
-        }
-
-        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(1))"
-                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            «
-        </button>
-        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(currentPage - 1))"
-                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            ‹
-        </button>
-
-        @foreach (var p in pages.Distinct())
-        {
-            if (p == null)
-            {
-                <span class="px-1 text-xs text-gray-400">…</span>
-            }
-            else
-            {
-                var pg = p.Value;
-                <button @onclick="@(() => setPage(pg))"
-                        class="@($"px-2 py-0.5 text-xs border rounded {(pg == currentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
-                        style="@(pg == currentPage ? "background:#C9A84C;" : "")">
-                    @pg
-                </button>
-            }
-        }
-
-        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(currentPage + 1))"
-                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            ›
-        </button>
-        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(totalPages))"
-                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            »
-        </button>
-    };
 
     private string _corpSearch = "";
     private int _corpPageSize = 10;
@@ -233,27 +456,34 @@
 
     private List<CorporateItem> _corpItems = new()
     {
-        new("Corp Oman",           "Oman",                                                                          "44408591",      "ccaspc@alfardan.com.qa",    "EXCLUSIVE OMAN",  10000, 5,   "EXCLUSIVE MEMBERSHIP OMAN"),
-        new("ABC Corp",            "Doha",                                                                          "12345678",      "test@testing.com",          "EXCLUSIVE",       1000,  1,   "EXCLUSIVE MEMBERSHIP"),
-        new("OMAN TECH IN...",     "Al Fardan Heights Building, Muscat, Al Maardh St, 6th Floor",                  "+968 91738184", "hto-pod@htoman.com",        "EXCLUSIVE OMAN",  10000, 0,   "EXCLUSIVE MEMBERSHIP OMAN"),
-        new("Al Massila Techn...", "AL Fardan Hights Ghala, 2nd Floor, office 225",                                "79066600",      "malek.haj@metco.net",       "EXCLUSIVE OMAN",  10000, 0,   "EXCLUSIVE MEMBERSHIP OMAN"),
-        new("Ibrahim Jaidah ...",  "Finaa Alfardan Building, First Floor, Office # 5-18, Muscat, Sultanate of Oman","+968 2411 7030","tenders@ibrahimjaidah.com", "EXCLUSIVE OMAN",  10000, 0,   "EXCLUSIVE MEMBERSHIP OMAN"),
-        new("Korea Trade Con...",  "Final Al Fardhan, Azaiba",                                                     "24117011/12",   "muscat@kotra.or.kr",        "EXCLUSIVE OMAN",  10000, 0,   "EXCLUSIVE MEMBERSHIP OMAN"),
-        new("Alfardan Proper...",  "Doha, Qatar",                                                                   "33297781",      "app@alfardan.com.qa",       "EXCLUSIVE",       100,   100, "EXCLUSIVE MEMBERSHIP"),
-        new("Odecci",              "0004 Miranda street, Manatal, Pandi, Bulacan 3014",                            "+639163626853", "info@odecci.com",           "EXCLUSIVE - VIP", 10,    10,  "TOP LEVEL EXECUTIVES"),
-        new("Workinton Qatar",     "Grand Hamad Street",                                                            "44408572",      "kmcrgcn@workinton.com.qa",  "BRONZE",          100,   100, "BRONZE MEMBERSHIP"),
-        new("Fadaat Media",        "P.O.Box 11591, Doha, Qatar",                                                   "40310500",      "info@fadaatmedia.com",      "EXCLUSIVE",       1000,  24,  "EXCLUSIVE MEMBERSHIP"),
-        new("Gulf Corp",           "West Bay, Doha",                                                                "44501234",      "info@gulfcorp.qa",          "EXCLUSIVE OMAN",  500,   5,   "EXCLUSIVE MEMBERSHIP OMAN"),
-        new("Pearl Ventures",      "The Pearl, Doha, Qatar",                                                        "40312000",      "contact@pearlventures.qa",  "EXCLUSIVE",       200,   20,  "EXCLUSIVE MEMBERSHIP"),
+        new("CM-001", "Corp Oman",           "Oman",                                                                          "44408591",      "ccaspc@alfardan.com.qa",    "EXCLUSIVE OMAN",  10000, 5,   "EXCLUSIVE MEMBERSHIP OMAN", "09/29/2025", "2025-01-01", "2025-12-31"),
+        new("CM-002","ABC Corp",            "Doha",                                                                          "12345678",      "test@testing.com",          "EXCLUSIVE",       1000,  1,   "EXCLUSIVE MEMBERSHIP", "09/28/2025", "2025-01-01", "2025-12-31"),
+        new("CM-003","OMAN TECH IN...",     "Al Fardan Heights Building, Muscat, Al Maardh St, 6th Floor",                  "+968 91738184", "hto-pod@htoman.com",        "EXCLUSIVE OMAN",  10000, 0,   "EXCLUSIVE MEMBERSHIP OMAN", "09/27/2025", "2025-01-01", "2025-12-31"),
+        new("CM-004","Al Massila Techn...", "AL Fardan Hights Ghala, 2nd Floor, office 225",                                "79066600",      "malek.haj@metco.net",       "EXCLUSIVE OMAN",  10000, 0,   "EXCLUSIVE MEMBERSHIP OMAN", "09/26/2025", "2025-01-01", "2025-12-31"),
+        new("CM-005","Ibrahim Jaidah ...",  "Finaa Alfardan Building, First Floor, Office # 5-18, Muscat, Sultanate of Oman","+968 2411 7030","tenders@ibrahimjaidah.com", "EXCLUSIVE OMAN",  10000, 0,   "EXCLUSIVE MEMBERSHIP OMAN", "09/25/2025", "2025-01-01", "2025-12-31"),
+        new("CM-006","Korea Trade Con...",  "Final Al Fardhan, Azaiba",                                                     "24117011/12",   "muscat@kotra.or.kr",        "EXCLUSIVE OMAN",  10000, 0,   "EXCLUSIVE MEMBERSHIP OMAN", "09/24/2025", "2025-01-01", "2025-12-31"),
+        new("CM-007","Alfardan Proper...",  "Doha, Qatar",                                                                   "33297781",      "app@alfardan.com.qa",       "EXCLUSIVE",       100,   100, "EXCLUSIVE MEMBERSHIP", "09/23/2025", "2025-01-01", "2025-12-31"),
+        new("CM-008","Odecci",              "0004 Miranda street, Manatal, Pandi, Bulacan 3014",                            "+639163626853", "info@odecci.com",           "EXCLUSIVE - VIP", 10,    10,  "TOP LEVEL EXECUTIVES", "09/22/2025", "2025-01-01", "2025-12-31"),
+        new("CM-009","Workinton Qatar",     "Grand Hamad Street",                                                            "44408572",      "kmcrgcn@workinton.com.qa",  "BRONZE",          100,   100, "BRONZE MEMBERSHIP", "09/21/2025", "2025-01-01", "2025-12-31"),
+        new("CM-010","Fadaat Media",        "P.O.Box 11591, Doha, Qatar",                                                   "40310500",      "info@fadaatmedia.com",      "EXCLUSIVE",       1000,  24,  "EXCLUSIVE MEMBERSHIP", "09/20/2025", "2025-01-01", "2025-12-31"),
+        new("CM-011","Gulf Corp",           "West Bay, Doha",                                                                "44501234",      "info@gulfcorp.qa",          "EXCLUSIVE OMAN",  500,   5,   "EXCLUSIVE MEMBERSHIP OMAN", "09/19/2025", "2025-01-01", "2025-12-31"),
+        new("CM-012","Pearl Ventures",      "The Pearl, Doha, Qatar",                                                        "40312000",      "contact@pearlventures.qa",  "EXCLUSIVE",       200,   20,  "EXCLUSIVE MEMBERSHIP", "09/18/2025", "2025-01-01", "2025-12-31"),
     };
 
-    private IEnumerable<CorporateItem> FilteredCorpItems =>
-        SortCorpItems(_corpItems.Where(x => string.IsNullOrEmpty(_corpSearch) ||
-            x.Name.Contains(_corpSearch, StringComparison.OrdinalIgnoreCase) ||
-            x.Address.Contains(_corpSearch, StringComparison.OrdinalIgnoreCase) ||
-            x.EmailAddress.Contains(_corpSearch, StringComparison.OrdinalIgnoreCase) ||
-            x.MembershipTier.Contains(_corpSearch, StringComparison.OrdinalIgnoreCase)))
-        .Skip((_corpPage - 1) * _corpPageSize).Take(_corpPageSize);
+    private IEnumerable<CorporateItem> FilteredCorpItems
+    {
+        get
+        {
+            var filtered = _corpItems.Where(x => string.IsNullOrEmpty(_corpSearch) ||
+                x.Name.Contains(_corpSearch, StringComparison.OrdinalIgnoreCase) ||
+                x.Address.Contains(_corpSearch, StringComparison.OrdinalIgnoreCase) ||
+                x.EmailAddress.Contains(_corpSearch, StringComparison.OrdinalIgnoreCase) ||
+                x.MembershipTier.Contains(_corpSearch, StringComparison.OrdinalIgnoreCase));
+
+            var sorted = SortCorpItems(filtered);
+            return sorted.Skip((_corpPage - 1) * _corpPageSize).Take(_corpPageSize);
+        }
+    }
 
     private IEnumerable<CorporateItem> SortCorpItems(IEnumerable<CorporateItem> items) =>
         (_corpSortCol, _corpSortAsc) switch
@@ -274,6 +504,8 @@
             ("VipCount", false) => items.OrderByDescending(x => x.VipCount),
             ("MembershipDescription", true) => items.OrderBy(x => x.MembershipDescription),
             ("MembershipDescription", false) => items.OrderByDescending(x => x.MembershipDescription),
+            ("DateCreated", true) => items.OrderBy(x => DateTime.TryParse(x.DateCreated, out var d) ? d : DateTime.MinValue),
+            ("DateCreated", false) => items.OrderByDescending(x => DateTime.TryParse(x.DateCreated, out var d) ? d : DateTime.MinValue),
             _ => items
         };
 
@@ -282,6 +514,7 @@
     private int CorpTo => Math.Min(_corpPage * _corpPageSize, _corpItems.Count);
 
     public record CorporateItem(
-        string Name, string Address, string ContactNumber, string EmailAddress,
-        string MembershipTier, int UserCount, int VipCount, string MembershipDescription);
+        string Code, string Name, string Address, string ContactNumber, string EmailAddress,
+        string MembershipTier, int UserCount, int VipCount, string MembershipDescription, 
+        string DateCreated, string DateStart, string DateEnd);
 }

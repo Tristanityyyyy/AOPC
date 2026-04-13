@@ -4,19 +4,9 @@
 <h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Offering Maintenance</h3>
 
 <div class="grid grid-cols-12 gap-4">
-
     <div class="col-span-12">
-        <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4">
-            @* Dark header *@
-            <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                <h4 class="text-sm font-medium text-white">Offering Maintenance</h4>
-            </div>
-
-            @* Row 1: entries per page | toolbar right *@
-            <div class="flex items-center justify-between mb-4 px-1">
-
-                @* Left: entries per page *@
+        <MaintenanceCard Title="Offering Maintenance">
+            <ToolbarLeft>
                 <div class="flex items-center gap-2 text-xs text-gray-600">
                     <select value="@_offerPageSize" @onchange="e => { _offerPageSize = int.Parse(e.Value.ToString()); _offerPage = 1; }"
                             class="border border-gray-300 rounded px-2 py-1 text-xs">
@@ -26,159 +16,142 @@
                     </select>
                     <span>entries per page</span>
                 </div>
-
-                @* Right: toolbar *@
+            </ToolbarLeft>
+            <ToolbarRight>
                 <div class="flex items-center gap-2">
-
-                    @* Import Excel label *@
                     <span class="text-xs text-gray-600 font-medium">Import Excel File:</span>
-
-                    @* Hidden real file input *@
                     <InputFile id="offerFileInput" OnChange="HandleFileUpload" accept=".xlsx,.xls" class="hidden" />
-
-                    @* Styled label that triggers it *@
                     <label for="offerFileInput"
                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs text-gray-600 cursor-pointer hover:bg-gray-50 transition">
                         <MudIcon Icon="@Icons.Material.Filled.AttachFile" Style="font-size:13px;" />
                         @(_uploadedFileName ?? "Choose File")
                     </label>
-
                     <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium transition"
                             style="background:#C9A84C;">
                         <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" />
                         Upload
                     </button>
-
                     <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-600 hover:bg-gray-50 transition">
                         <MudIcon Icon="@Icons.Material.Filled.Download" Style="font-size:13px;" />
                         Download Template
                     </button>
-
-                    @* Divider *@
                     <div class="w-px h-4 bg-gray-300 mx-1"></div>
-
-                    @* Search *@
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        <span class="font-medium">Search:</span>
-                        <input type="text" @bind="_offerSearch" @bind:event="oninput"
-                               class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
-                               placeholder="Type to search..." />
-                    </div>
-
+                    <span class="text-xs text-gray-600 font-medium">Search:</span>
+                    <input type="text" @bind="_offerSearch" @bind:event="oninput"
+                           class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
+                           placeholder="Type to search..." />
                 </div>
-            </div>
-
-            @* Row 2: Add New *@
-            <div class="mb-4 px-1">
-                <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                        style="background: #C9A84C;">
-                    + Add New
-                </button>
-            </div>
-
-            @* Table *@
-            @* Table *@
-            <div class="overflow-y-auto" style="max-height:600px; min-height:0;">
-                <table class="w-full text-xs">
-                    <thead style="position:sticky; top:0; background:white; z-index:1;">
-                        <tr class="border-b-2 border-gray-200">
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 w-10"></th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
-                                @onclick='() => SortOffer("PromoName")'>
-                                Promo Name <span class="text-gray-400">@OfferSortIcon("PromoName")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
-                                @onclick='() => SortOffer("PromoDescription")'>
-                                Promo Description <span class="text-gray-400">@OfferSortIcon("PromoDescription")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
-                                @onclick='() => SortOffer("VendorName")'>
-                                Vendor Name <span class="text-gray-400">@OfferSortIcon("VendorName")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
-                                @onclick='() => SortOffer("BusinessTypeName")'>
-                                Business Type Name <span class="text-gray-400">@OfferSortIcon("BusinessTypeName")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
-                                @onclick='() => SortOffer("MembershipTier")'>
-                                Membership Tier <span class="text-gray-400">@OfferSortIcon("MembershipTier")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
-                                @onclick='() => SortOffer("DateCreated")'>
-                                DateCreated <span class="text-gray-400">@OfferSortIcon("DateCreated")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none"
-                                @onclick='() => SortOffer("Status")'>
-                                Status <span class="text-gray-400">@OfferSortIcon("Status")</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var (item, index) in FilteredOfferItems.Select((x, i) => (x, i)))
-                        {
-                            <tr class="border-b border-gray-100 hover:bg-amber-50 @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
-                                @* Thumbnail *@
-                                <td class="py-2 px-2">
-                                    <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 flex items-center justify-center"
-                                         style="background:#1a2e3b;">
-                                        @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
-                                        {
-                                            <img src="@item.ThumbnailUrl" alt="@item.PromoName" class="w-full h-full object-cover" />
-                                        }
-                                        else
-                                        {
-                                            <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="font-size:16px; color:#C9A84C;" />
-                                        }
-                                    </div>
-                                </td>
-                                @* Promo Name + actions *@
-                                <td class="py-2 px-2">
-                                    <div class="font-medium text-gray-800">@item.PromoName</div>
-                                    <div class="flex gap-2 mt-1">
-                                        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent"
-                                                style="color: #C9A84C;">
-                                            ✎ Edit
-                                        </button>
-                                        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                            🗑 Delete
-                                        </button>
-                                    </div>
-                                </td>
-                                <td class="py-2 px-2 text-gray-600 max-w-xs">
-                                    <div class="line-clamp-3">@item.PromoDescription</div>
-                                </td>
-                                <td class="py-2 px-2 text-gray-600">@item.VendorName</td>
-                                <td class="py-2 px-2 text-gray-600">@item.BusinessTypeName</td>
-                                <td class="py-2 px-2 text-gray-600">@item.MembershipTier</td>
-                                <td class="py-2 px-2 text-gray-600">@item.DateCreated.ToString("M/d/yyyy")</td>
-                                <td class="py-2 px-2">
-                                    <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">
-                                        @item.Status
-                                    </span>
-                                </td>
+            </ToolbarRight>
+            <Body>
+                <div class="mb-4 px-1">
+                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                            style="background: #C9A84C;">
+                        + Add New
+                    </button>
+                </div>
+                <div class="overflow-y-auto flex-1" style="min-height:0;">
+                    <table class="w-full text-xs">
+                        <thead style="position:sticky; top:0; background:white; z-index:1;">
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap" style="width: 5%;"></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 15%;"
+                                    @onclick='() => SortOffer("PromoName")'>
+                                    Promo Name <span class="text-gray-400">@OfferSortIcon("PromoName")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 20%;"
+                                    @onclick='() => SortOffer("PromoDescription")'>
+                                    Promo Description <span class="text-gray-400">@OfferSortIcon("PromoDescription")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 12%;"
+                                    @onclick='() => SortOffer("VendorName")'>
+                                    Vendor Name <span class="text-gray-400">@OfferSortIcon("VendorName")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 13%;"
+                                    @onclick='() => SortOffer("BusinessTypeName")'>
+                                    Business Type Name <span class="text-gray-400">@OfferSortIcon("BusinessTypeName")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 10%;"
+                                    @onclick='() => SortOffer("MembershipTier")'>
+                                    Membership Tier <span class="text-gray-400">@OfferSortIcon("MembershipTier")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 10%;"
+                                    @onclick='() => SortOffer("DateCreated")'>
+                                    DateCreated <span class="text-gray-400">@OfferSortIcon("DateCreated")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 8%;"
+                                    @onclick='() => SortOffer("Status")'>
+                                    Status <span class="text-gray-400">@OfferSortIcon("Status")</span>
+                                </th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            @* Footer *@
-            <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                        </thead>
+                        <tbody>
+                            @foreach (var (item, index) in FilteredOfferItems.Select((x, i) => (x, i)))
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
+                                    <td class="py-2 px-2" style="width: 5%;">
+                                        <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 flex items-center justify-center pointer-events-none"
+                                             style="background:#1a2e3b;">
+                                            @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
+                                            {
+                                                <img src="@item.ThumbnailUrl" alt="@item.PromoName" class="w-full h-full object-cover" />
+                                            }
+                                            else
+                                            {
+                                                <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="font-size:16px; color:#C9A84C;" />
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2" style="height: 64px; width: 15%;">
+                                        <div class="relative w-full" style="height: 64px;">
+                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 8px;">
+                                                @item.Code
+                                            </div>
+                                            <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 16px;">
+                                                @item.PromoName
+                                            </div>
+                                            <div class="absolute left-0 flex gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 36px;">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                    Edit
+                                                </button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600" style="width: 20%;">
+                                        <div class="line-clamp-3">@item.PromoDescription</div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600" style="width: 12%;">@item.VendorName</td>
+                                    <td class="py-2 px-2 text-gray-600" style="width: 13%;">@item.BusinessTypeName</td>
+                                    <td class="py-2 px-2 text-gray-600" style="width: 10%;">@item.MembershipTier</td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap" style="width: 10%;">@item.DateCreated.ToString("M/d/yyyy")</td>
+                                    <td class="py-2 px-2" style="width: 8%;">
+                                        <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+            <Footer>
                 <span class="text-xs text-gray-500">
                     Showing @OfferFrom to @OfferTo of @_totalFilteredCount entries
                 </span>
                 <div class="flex items-center gap-1">
-                    @RenderPagination(_offerPage, OfferTotalPages, (p) => _offerPage = p)
+                    <Pagination CurrentPage="_offerPage" TotalPages="OfferTotalPages" SetPageAction="p => _offerPage = p" />
                 </div>
-            </div>
-
-        </div>
+            </Footer>
+        </MaintenanceCard>
     </div>
-
 </div>
 
 @code {
-
     private string? _uploadedFileName;
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)
@@ -187,62 +160,6 @@
         await Task.CompletedTask;
     }
 
-    private RenderFragment RenderPagination(int currentPage, int totalPages, Action<int> setPage) => __builder =>
-    {
-        var pages = new List<int?>();
-        for (int i = 1; i <= totalPages; i++)
-        {
-            if (i == 1 || i == totalPages || (i >= currentPage - 1 && i <= currentPage + 1))
-            {
-                pages.Add(i);
-            }
-            else if (pages.Count > 0 && pages[^1] != null)
-            {
-                pages.Add(null); // ellipsis, only once
-            }
-        }
-
-        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(1))"
-                class="px-2 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            <span style="font-family:serif;">«</span>
-        </button>
-
-        @* PREV - replaces the ‹ button *@
-        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(currentPage - 1))"
-                class="px-2 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            <span style="font-family:serif;">‹</span>
-        </button>
-
-        @foreach (var p in pages)
-        {
-            if (p == null)
-            {
-                <span class="px-1 text-xs text-gray-400">…</span>
-            }
-            else
-            {
-                var pg = p.Value;
-                <button @onclick="@(() => setPage(pg))"
-                        class="@($"px-2 py-0.5 text-xs border rounded {(pg == currentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
-                        style="@(pg == currentPage ? "background:#C9A84C;" : "")">
-                    @pg
-                </button>
-            }
-        }
-
-        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(currentPage + 1))"
-                class="px-2 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            <span style="font-family:serif;">›</span>
-        </button>
-
-        @* LAST - replaces the » button *@
-        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(totalPages))"
-                class="px-2 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            <span style="font-family:serif;">»</span>
-        </button>
-    };
-
-    // ── State ──────────────────────────────────────────────────────────────
     private string _offerSearch = "";
     private int _offerPageSize = 10;
     private int _offerPage = 1;
@@ -258,23 +175,22 @@
     }
     private string OfferSortIcon(string col) => _offerSortCol == col ? (_offerSortAsc ? "↑" : "↓") : "⇅";
 
-    // ── Sample data ────────────────────────────────────────────────────────
     private List<OfferingItem> _offerItems = new()
     {
-        new(null, "Fisherman's Night",        "Savor the finest treasures of the sea at Vine Terrace. Every Wednesday | 6 PM – 10.30 PM QAR 295 per person including soft beverages QAR 145 per child (6-12 years)", "Vine Terrace",       "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Mediterranean BBQ Night",  "Join us for an evening of exquisite aromas and grilled delights at Vine Terrace. Every Thursday | 6 PM – 10.30 PM QAR 295 per person including soft beverages QAR 145 per child (6-12 years)", "Vine Terrace", "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Gentlemen Night",          "For the discerning gentleman. Taste, class, and bold aromas. * 1 selected cigar + 2 crafted cocktails * Price: 225 QAR", "Sky Lounge",         "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Melody Night",             "Midweek melodies, vintage charm. • Live music performance • Happy Hour menu available", "The Lounge",          "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Strictly Old School",      "Ladies Package 3 sips for QAR 125", "Club Social",                                                                   "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Turkish Delight Tuesdays", "DJ EBRU setting the stage with 80's & 90's Turkish Hits. Turkish locals, we've got you! Enjoy a 20% discount, and ladies get two complimentary beverage. IT'S A NIGHT MADE FOR YOU!", "Alfardan Club", "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Sounds of Africa",         "2 complimentary sips for the Ladies 9:30pm to 2:00am Every Wednesday", "Rift Bar",           "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Business Lunch",           "Reimagining business lunch as a refined affair that strikes the perfect balance between work and leisure, featuring exquisite cuisine in an ambiance conducive for success. 100 QAR 2 courses 120 QAR 3 courses", "Executive Dining", "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "FAUCHON Afternoon Tea",    "Afternoon Tea QAR 290 for two persons", "FAUCHON",                                                                   "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Pizza & Vino",             "175 QAR per person for two hours of unlimited pizzas, grapes, and hops. Available every Sunday from 6pm to 10pm.", "Vino Corner",        "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Agora Night",              "A gathering of sips & bites. Every Wednesday from 7pm till 9:30pm, QAR 170 per person including unlimited sips & bites", "Agora Terrace",  "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Botana Bloom",             "Special Spritz Selection (QAR 45 per drink) & Signature Chicken Nachos (QAR 70)", "Botana",              "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
-        new(null, "Spa Sunday Retreat",       "Full-body rejuvenation package every Sunday. 60-min massage + access to thermal suite. QAR 350 per person.", "Serenity Spa",      "Wellness",         "BRONZE",    new DateTime(2025,7,1),  "Active"),
-        new(null, "Golf Morning Classic",     "Tee off with complimentary green fee + breakfast. Weekdays 7 AM – 11 AM.", "Royal Golf Club",   "Sports & Leisure", "EXCLUSIVE - VIP", new DateTime(2025,7,15), "Active"),
+        new("Offering-001", null, "Fisherman's Night",        "Savor the finest treasures of the sea at Vine Terrace. Every Wednesday | 6 PM – 10.30 PM QAR 295 per person including soft beverages QAR 145 per child (6-12 years)", "Vine Terrace",       "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-002",null, "Mediterranean BBQ Night",  "Join us for an evening of exquisite aromas and grilled delights at Vine Terrace. Every Thursday | 6 PM – 10.30 PM QAR 295 per person including soft beverages QAR 145 per child (6-12 years)", "Vine Terrace", "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-003",null, "Gentlemen Night",          "For the discerning gentleman. Taste, class, and bold aromas. * 1 selected cigar + 2 crafted cocktails * Price: 225 QAR", "Sky Lounge",         "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-004",null, "Melody Night",             "Midweek melodies, vintage charm. • Live music performance • Happy Hour menu available", "The Lounge",          "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-005",null, "Strictly Old School",      "Ladies Package 3 sips for QAR 125", "Club Social",                                                                   "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-006",null, "Turkish Delight Tuesdays", "DJ EBRU setting the stage with 80's & 90's Turkish Hits. Turkish locals, we've got you! Enjoy a 20% discount, and ladies get two complimentary beverage. IT'S A NIGHT MADE FOR YOU!", "Alfardan Club", "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-007",null, "Sounds of Africa",         "2 complimentary sips for the Ladies 9:30pm to 2:00am Every Wednesday", "Rift Bar",           "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-008",null, "Business Lunch",           "Reimagining business lunch as a refined affair that strikes the perfect balance between work and leisure, featuring exquisite cuisine in an ambiance conducive for success. 100 QAR 2 courses 120 QAR 3 courses", "Executive Dining", "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-009",null, "FAUCHON Afternoon Tea",    "Afternoon Tea QAR 290 for two persons", "FAUCHON",                                                                   "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-010",null, "Pizza & Vino",             "175 QAR per person for two hours of unlimited pizzas, grapes, and hops. Available every Sunday from 6pm to 10pm.", "Vino Corner",        "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-012",null, "Agora Night",              "A gathering of sips & bites. Every Wednesday from 7pm till 9:30pm, QAR 170 per person including unlimited sips & bites", "Agora Terrace",  "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-013",null, "Botana Bloom",             "Special Spritz Selection (QAR 45 per drink) & Signature Chicken Nachos (QAR 70)", "Botana",              "Food & Beverages", "EXCLUSIVE", new DateTime(2025,6,11), "Expired"),
+        new("Offering-014",null, "Spa Sunday Retreat",       "Full-body rejuvenation package every Sunday. 60-min massage + access to thermal suite. QAR 350 per person.", "Serenity Spa",      "Wellness",         "BRONZE",    new DateTime(2025,7,1),  "Active"),
+        new("Offering-015",null, "Golf Morning Classic",     "Tee off with complimentary green fee + breakfast. Weekdays 7 AM – 11 AM.", "Royal Golf Club",   "Sports & Leisure", "EXCLUSIVE - VIP", new DateTime(2025,7,15), "Active"),
     };
 
     private IEnumerable<OfferingItem> FilteredOfferItems
@@ -320,8 +236,8 @@
     private int OfferFrom => _totalFilteredCount == 0 ? 0 : (_offerPage - 1) * _offerPageSize + 1;
     private int OfferTo => Math.Min(_offerPage * _offerPageSize, _totalFilteredCount);
 
-    // ── Model ──────────────────────────────────────────────────────────────
     public record OfferingItem(
+        string Code,
         string? ThumbnailUrl,
         string PromoName,
         string PromoDescription,

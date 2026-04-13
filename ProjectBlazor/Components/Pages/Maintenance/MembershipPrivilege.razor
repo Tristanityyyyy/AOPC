@@ -1,5 +1,6 @@
 ﻿@page "/maintenance/membershipprivilege"
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 
 <h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Membership & Privilege</h3>
 
@@ -52,7 +53,8 @@
 
                 @* Add New *@
                 <div class="mb-3 px-1">
-                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                    <button @onclick="OpenAddPrivilege"
+                            class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
                             style="background: #C9A84C;">
                         + Add New
                     </button>
@@ -99,10 +101,23 @@
                                             <div>
                                                 <div class="font-medium text-gray-800">@item.Name</div>
                                                 <div class="flex gap-2 mt-1">
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">✎ Edit</button>
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">⧉ Duplicate</button>
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">🗑 Delete</button>
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#0D1B2A;">👁 Select Vendor</button>
+                                                    <button @onclick="() => OpenEditPrivilege(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                        Edit
+                                                    </button>
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                        Duplicate
+                                                    </button>
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                        Delete
+                                                    </button>
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #0D1B2A;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                        Select Vendor
+                                                    </button>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -165,7 +180,7 @@
 
                 @* Add New *@
                 <div class="mb-3 px-1">
-                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                    <button @onclick="OpenAddTier" class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
                             style="background: #C9A84C;">
                         + Add New
                     </button>
@@ -213,9 +228,18 @@
                                     <td class="py-2 px-2">
                                         <div class="font-medium text-gray-800">@item.Name</div>
                                         <div class="flex gap-2 mt-1">
-                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">✎ Edit</button>
-                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">🗑 Delete</button>
-                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">👁 View</button>
+                                            <button @onclick="() => OpenEditTier(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                Edit
+                                            </button>
+                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                Delete
+                                            </button>
+                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
+                                                <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                View
+                                            </button>
                                         </div>
                                     </td>
                                     <td class="py-2 px-2 text-gray-600">@item.Description</td>
@@ -245,9 +269,493 @@
 
 </div>
 
+@* ── Add Privilege Dialog ── *@
+@if (_showAddPrivilegeDialog)
+{
+    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: calc(100vh - 90px);">
+
+            @* Header *@
+            <div class="flex items-center justify-between px-6 py-3 rounded-t-xl"
+                 style="background:linear-gradient(135deg,#0D1B2A 0%,#134E4A 80%,#0F766E 100%); border-bottom:2px solid rgba(201,168,76,0.35);">
+                <span class="text-sm font-semibold text-white">Add Privilege</span>
+                <button @onclick="() => _showAddPrivilegeDialog = false"
+                        class="w-7 h-7 flex items-center justify-center rounded text-white text-xs font-bold cursor-pointer border-none"
+                        style="background:rgba(255,255,255,0.1);">
+                    ✕
+                </button>
+            </div>
+
+            @* Body *@
+            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
+                <div class="flex items-center gap-6 mb-2">
+                    <div class="relative">
+                        <img src="@(string.IsNullOrEmpty(_addPrivImageUrl) ? "/images/default.jpg" : _addPrivImageUrl)"
+                             class="w-24 h-24 rounded-full object-cover border-2 border-gray-200 bg-gray-100" />
+                    </div>
+                    <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer"
+                           style="background:#C9A84C;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
+                            <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" stroke-linejoin="round" />
+                        </svg>
+                        Upload Image
+                        <InputFile OnChange="OnAddImageSelected" accept="image/*" class="hidden" />
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
+                    <input type="text" @bind="_addPrivName"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                    <textarea @bind="_addPrivDescription" rows="4"
+                              class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Validity</label>
+                    <input type="date" @bind="_addPrivValidityDate"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type Name <span class="text-red-500">*</span></label>
+                    <select @bind="_addPrivBusinessTypeName"
+                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                        <option value="">-Select Business Type-</option>
+                        <option value="Health">Health</option>
+                        <option value="Rooms & Suites">Rooms & Suites</option>
+                        <option value="Food & Beverages">Food & Beverages</option>
+                        <option value="Access to co-working spaces">Access to co-working spaces</option>
+                    </select>
+                </div>
+
+                @* Terms and Conditions *@
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Terms and Conditions <span class="text-red-500">*</span></label>
+                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
+                        <div id="addTermsToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+                            @RichToolbarButtons()
+                        </div>
+                        <div id="addPrivTermsEditor"
+                             class="min-h-[100px] max-h-[200px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
+                             contenteditable="true">
+                        </div>
+                    </div>
+                </div>
+
+                @* Mechanics *@
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Mechanics <span class="text-red-500">*</span></label>
+                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
+                        <div id="addMechToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+                            @RichToolbarButtons()
+                        </div>
+                        <div id="addPrivMechEditor"
+                             class="min-h-[140px] max-h-[240px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
+                             contenteditable="true">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button @onclick="() => _showAddPrivilegeDialog = false"
+                        class="text-xs text-gray-500 underline cursor-pointer bg-transparent border-none hover:text-gray-700">
+                    Cancel
+                </button>
+                <button @onclick="SaveAddPrivilege"
+                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
+                        style="background:#C9A84C;">
+                    Submit
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@* ── Edit Privilege Dialog ── *@
+@if (_showEditPrivilegeDialog)
+{
+    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: calc(100vh - 90px);">
+
+            @* Header *@
+            <div class="flex items-center justify-between px-6 py-3 rounded-t-xl"
+                 style="background:linear-gradient(135deg,#0D1B2A 0%,#134E4A 80%,#0F766E 100%); border-bottom:2px solid rgba(201,168,76,0.35);">
+                <span class="text-sm font-semibold text-white">Edit Privilege</span>
+                <button @onclick="CancelEditPrivilege"
+                        class="w-7 h-7 flex items-center justify-center rounded text-white text-xs font-bold cursor-pointer border-none"
+                        style="background:rgba(255,255,255,0.1);">
+                    ✕
+                </button>
+            </div>
+
+            @* Body *@
+            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
+                <div class="flex items-center gap-6 mb-2">
+                    <div class="relative">
+                        <img src="@(string.IsNullOrEmpty(_addPrivImageUrl) ? "/images/default.jpg" : _addPrivImageUrl)"
+                             class="w-24 h-24 rounded-full object-cover border-2 border-gray-200 bg-gray-100" />
+                    </div>
+                    <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer"
+                           style="background:#C9A84C;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
+                            <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" stroke-linejoin="round" />
+                        </svg>
+                        Upload Image
+                        <InputFile OnChange="OnAddImageSelected" accept="image/*" class="hidden" />
+                    </label>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
+                    <input type="text" @bind="_editPrivName"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                    <textarea @bind="_editPrivDescription" rows="4"
+                              class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Validity</label>
+                    <input type="date" @bind="_editPrivValidityDate"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type Name <span class="text-red-500">*</span></label>
+                    <select @bind="_editPrivBusinessTypeName"
+                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                        <option value="">-Select Business Type-</option>
+                        <option value="Health">Health</option>
+                        <option value="Rooms & Suites">Rooms & Suites</option>
+                        <option value="Food & Beverages">Food & Beverages</option>
+                        <option value="Access to co-working spaces">Access to co-working spaces</option>
+                    </select>
+                </div>
+
+                @* Terms and Conditions *@
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Terms and Conditions <span class="text-red-500">*</span></label>
+                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
+                        <div id="editTermsToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+                            @RichToolbarButtons()
+                        </div>
+                        <div id="editPrivTermsEditor"
+                             class="min-h-[100px] max-h-[200px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
+                             contenteditable="true">
+                        </div>
+                    </div>
+                </div>
+
+                @* Mechanics *@
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Mechanics <span class="text-red-500">*</span></label>
+                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
+                        <div id="editMechToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+                            @RichToolbarButtons()
+                        </div>
+                        <div id="editPrivMechEditor"
+                             class="min-h-[140px] max-h-[240px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
+                             contenteditable="true">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button @onclick="CancelEditPrivilege"
+                        class="text-xs text-gray-500 underline cursor-pointer bg-transparent border-none hover:text-gray-700">
+                    Cancel
+                </button>
+                <button @onclick="SaveEditPrivilege"
+                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
+                        style="background:#C9A84C;">
+                    Submit
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+@* ── Add/Edit Membership Tier Dialog ── *@
+@if (_showAddTierDialog || _showEditTierDialog)
+{
+    var isEdit = _showEditTierDialog;
+    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col" style="max-height: calc(100vh - 90px);">
+
+            @* Header *@
+            <div class="flex items-center justify-between px-6 py-3 rounded-t-xl"
+                 style="background:linear-gradient(135deg,#0D1B2A 0%,#134E4A 80%,#0F766E 100%); border-bottom:2px solid rgba(201,168,76,0.35);">
+                <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Membership Tier" : "Membership Tier Form")</span>
+                <button @onclick="CloseTierDialog"
+                        class="w-7 h-7 flex items-center justify-center rounded text-white text-xs font-bold cursor-pointer border-none"
+                        style="background:rgba(255,255,255,0.1);">
+                    ✕
+                </button>
+            </div>
+
+            @* Body *@
+            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
+
+                @* 4 Upload Areas *@
+                <div class="grid grid-cols-4 gap-4">
+                    @* Membership Card *@
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="text-xs text-gray-600 text-center">Upload Membership Card Here</span>
+                        <label class="w-full cursor-pointer">
+                            <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden"
+                                 style="height:100px;">
+                                @if (!string.IsNullOrEmpty(_tierMembershipCardUrl))
+                                {
+                                    <img src="@_tierMembershipCardUrl" class="w-full h-full object-cover" />
+                                }
+                                else
+                                {
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-gray-300">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d1d5db" stroke-width="1.5" fill="none" />
+                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="#d1d5db" stroke-width="1.5" fill="none" />
+                                        <circle cx="8" cy="8" r="1.5" fill="#d1d5db" />
+                                    </svg>
+                                }
+                            </div>
+                            <InputFile OnChange="e => OnTierImageSelected(e, 0)" accept="image/*" class="hidden" />
+                        </label>
+                    </div>
+
+                    @* VIP Card *@
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="text-xs text-gray-600 text-center">Upload VIP Card Here</span>
+                        <label class="w-full cursor-pointer">
+                            <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden"
+                                 style="height:100px;">
+                                @if (!string.IsNullOrEmpty(_tierVipCardUrl))
+                                {
+                                    <img src="@_tierVipCardUrl" class="w-full h-full object-cover" />
+                                }
+                                else
+                                {
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d1d5db" stroke-width="1.5" fill="none" />
+                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="#d1d5db" stroke-width="1.5" fill="none" />
+                                        <circle cx="8" cy="8" r="1.5" fill="#d1d5db" />
+                                    </svg>
+                                }
+                            </div>
+                            <InputFile OnChange="e => OnTierImageSelected(e, 1)" accept="image/*" class="hidden" />
+                        </label>
+                    </div>
+
+                    @* QR Code Frame *@
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="text-xs text-gray-600 text-center">Upload QR Code Frame Here</span>
+                        <label class="w-full cursor-pointer">
+                            <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden"
+                                 style="height:100px;">
+                                @if (!string.IsNullOrEmpty(_tierQrFrameUrl))
+                                {
+                                    <img src="@_tierQrFrameUrl" class="w-full h-full object-cover" />
+                                }
+                                else
+                                {
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d1d5db" stroke-width="1.5" fill="none" />
+                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="#d1d5db" stroke-width="1.5" fill="none" />
+                                        <circle cx="8" cy="8" r="1.5" fill="#d1d5db" />
+                                    </svg>
+                                }
+                            </div>
+                            <InputFile OnChange="e => OnTierImageSelected(e, 2)" accept="image/*" class="hidden" />
+                        </label>
+                    </div>
+
+                    @* VIP Badge *@
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="text-xs text-gray-600 text-center">Upload VIP Badge Here</span>
+                        <label class="w-full cursor-pointer">
+                            <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden"
+                                 style="height:100px;">
+                                @if (!string.IsNullOrEmpty(_tierVipBadgeUrl))
+                                {
+                                    <img src="@_tierVipBadgeUrl" class="w-full h-full object-cover" />
+                                }
+                                else
+                                {
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d1d5db" stroke-width="1.5" fill="none" />
+                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="#d1d5db" stroke-width="1.5" fill="none" />
+                                        <circle cx="8" cy="8" r="1.5" fill="#d1d5db" />
+                                    </svg>
+                                }
+                            </div>
+                            <InputFile OnChange="e => OnTierImageSelected(e, 3)" accept="image/*" class="hidden" />
+                        </label>
+                    </div>
+                </div>
+
+                @* Text Card Color + Membership Country *@
+                <div class="grid grid-cols-2 gap-4 items-start">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Text Card Color:</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" @bind="_tierTextCardColor"
+                                   class="w-12 h-10 rounded border border-gray-300 cursor-pointer p-0.5" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Country</label>
+                        <select @bind="_tierCountry"
+                                class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                            <option value="">-Select Country-</option>
+                            <option value="Qatar">Qatar</option>
+                            <option value="Oman">Oman</option>
+                            <option value="UAE">UAE</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="Kuwait">Kuwait</option>
+                            <option value="Bahrain">Bahrain</option>
+                        </select>
+                    </div>
+                </div>
+
+                @* Membership Name + Description *@
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Name <span class="text-red-500">*</span></label>
+                        <input type="text" @bind="_tierName"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                        <input type="text" @bind="_tierDescription"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                </div>
+
+                @* Date Used + Date Ended *@
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Date Used</label>
+                        <input type="date" @bind="_tierDateStarted"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Date Ended</label>
+                        <input type="date" @bind="_tierDateEnded"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                </div>
+
+                @* User Count + VIP Count *@
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">User Count</label>
+                        <input type="number" @bind="_tierUserCount"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">VIP Count</label>
+                        <input type="number" @bind="_tierVipCount"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                </div>
+
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button @onclick="CloseTierDialog"
+                        class="text-xs cursor-pointer bg-transparent border-none hover:text-gray-700 underline"
+                        style="color:#C9A84C;">
+                    Cancel
+                </button>
+                <button @onclick="SaveTierDialog"
+                        class="px-6 py-2 text-xs rounded text-white font-medium border-none cursor-pointer"
+                        style="background:#C9A84C;">
+                    Submit
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
 @code {
 
     private string _activeTab = "privileges";
+
+    // ── RICH TOOLBAR BUTTONS (shared across all 4 editors) ──
+    private RenderFragment RichToolbarButtons() => __builder =>
+    {
+        <button type="button" data-cmd="bold"
+                class="w-7 h-7 flex items-center justify-center rounded text-xs font-bold text-gray-600 hover:bg-gray-200 border-none bg-transparent cursor-pointer">
+            <b>B</b>
+        </button>
+        <button type="button" data-cmd="italic"
+                class="w-7 h-7 flex items-center justify-center rounded text-xs italic text-gray-600 hover:bg-gray-200 border-none bg-transparent cursor-pointer">
+            <i>I</i>
+        </button>
+        <div class="w-px h-4 bg-gray-300 mx-1"></div>
+        <button type="button" data-cmd="insertUnorderedList"
+                class="w-7 h-7 flex items-center justify-center rounded text-gray-600 hover:bg-gray-200 border-none bg-transparent cursor-pointer"
+                title="Bullet List">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <circle cx="4" cy="7" r="2" fill="currentColor" />
+                <circle cx="4" cy="12" r="2" fill="currentColor" />
+                <circle cx="4" cy="17" r="2" fill="currentColor" />
+                <line x1="9" y1="7" x2="20" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="9" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="9" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+        </button>
+        <button type="button" data-cmd="insertOrderedList"
+                class="w-7 h-7 flex items-center justify-center rounded text-gray-600 hover:bg-gray-200 border-none bg-transparent cursor-pointer"
+                title="Numbered List">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <line x1="10" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="10" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="10" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <rect x="3" y="4" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1.5" fill="none" />
+                <rect x="3" y="10" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1.5" fill="none" />
+                <rect x="3" y="16" width="4" height="4" rx="0.5" stroke="currentColor" stroke-width="1.5" fill="none" />
+            </svg>
+        </button>
+        <div class="w-px h-4 bg-gray-300 mx-1"></div>
+        <button type="button" data-cmd="indent"
+                class="w-7 h-7 flex items-center justify-center rounded text-gray-600 hover:bg-gray-200 border-none bg-transparent cursor-pointer"
+                title="Indent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="9" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="9" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <polyline points="3,9 6,12 3,15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+            </svg>
+        </button>
+        <button type="button" data-cmd="outdent"
+                class="w-7 h-7 flex items-center justify-center rounded text-gray-600 hover:bg-gray-200 border-none bg-transparent cursor-pointer"
+                title="Outdent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="9" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <line x1="9" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <polyline points="7,9 4,12 7,15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+            </svg>
+        </button>
+    };
 
     // ── PAGINATION RENDERER ──
     private RenderFragment RenderPagination(int currentPage, int totalPages, Action<int> setPage) => __builder =>
@@ -309,17 +817,17 @@
 
     private List<PrivilegeItem> _privItems = new()
     {
-        new("AMNM Health Package",  "/images/health.jpg",  "Alfardan Medical with Northwestern Medicine (AMNM) is an ambulatory care center that provides advanced, patient-centric care with service excellence. Top executives will be privileged to benefit from an Annual Wellness Program.", "2025-03-04T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
-        new("Hospitality",          "/images/hotel.jpg",   "The Alfardan Oyster Privilege Club offers exclusive benefits across hospitality offerings, providing members with unique experiences.",                                                                                               "2025-03-04T00:00:00", "NO", "Rooms & Suites",            "Jul 8 2025 5:18PM"),
-        new("Co-Working Space",     "/images/cowork.jpg",  "Nestwork is a ground-breaking co-working environment created to meet the demands of today's contemporary professionals offering adaptable and cutting-edge workspace solutions for organizations of all sizes.",                       "2030-04-30T00:00:00", "NO", "Access to co-working spaces","Jul 8 2025 5:18PM"),
-        new("Dining Privileges",    "/images/dining.jpg",  "Exclusive dining benefits at partner restaurants across Doha and Istanbul, including preferred rates and VIP reservations.",                                                                                                         "2026-12-31T00:00:00", "NO", "Food & Beverages",           "Jul 8 2025 5:18PM"),
-        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
-        new("AMNM Health Package",  "/images/health.jpg",  "Alfardan Medical with Northwestern Medicine (AMNM) is an ambulatory care center that provides advanced, patient-centric care with service excellence. Top executives will be privileged to benefit from an Annual Wellness Program.", "2025-03-04T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
-        new("Hospitality",          "/images/hotel.jpg",   "The Alfardan Oyster Privilege Club offers exclusive benefits across hospitality offerings, providing members with unique experiences.",                                                                                               "2025-03-04T00:00:00", "NO", "Rooms & Suites",            "Jul 8 2025 5:18PM"),
-        new("Co-Working Space",     "/images/cowork.jpg",  "Nestwork is a ground-breaking co-working environment created to meet the demands of today's contemporary professionals offering adaptable and cutting-edge workspace solutions for organizations of all sizes.",                       "2030-04-30T00:00:00", "NO", "Access to co-working spaces","Jul 8 2025 5:18PM"),
-        new("Dining Privileges",    "/images/dining.jpg",  "Exclusive dining benefits at partner restaurants across Doha and Istanbul, including preferred rates and VIP reservations.",                                                                                                         "2026-12-31T00:00:00", "NO", "Food & Beverages",           "Jul 8 2025 5:18PM"),
-        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
-        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                   "Jul 8 2025 5:18PM"),
+        new("AMNM Health Package",  "/images/health.jpg",  "Alfardan Medical with Northwestern Medicine (AMNM) is an ambulatory care center that provides advanced, patient-centric care with service excellence. Top executives will be privileged to benefit from an Annual Wellness Program.", "2025-03-04T00:00:00", "NO", "Health",                    "Jul 8 2025 5:18PM", "<ul><li>Valid for 12 months</li><li>Includes annual health checkup</li></ul>", "<ul><li>Book appointments online</li><li>Present membership card at reception</li></ul>"),
+        new("Hospitality",          "/images/hotel.jpg",   "The Alfardan Oyster Privilege Club offers exclusive benefits across hospitality offerings, providing members with unique experiences.",                                                                                               "2025-03-04T00:00:00", "NO", "Rooms & Suites",             "Jul 8 2025 5:18PM", "<ul><li>10% off room rates</li><li>Priority check-in</li></ul>",             "<ul><li>Show membership at booking</li><li>Valid ID required</li></ul>"),
+        new("Co-Working Space",     "/images/cowork.jpg",  "Nestwork is a ground-breaking co-working environment created to meet the demands of today's contemporary professionals offering adaptable and cutting-edge workspace solutions for organizations of all sizes.",                       "2030-04-30T00:00:00", "NO", "Access to co-working spaces", "Jul 8 2025 5:18PM"),
+        new("Dining Privileges",    "/images/dining.jpg",  "Exclusive dining benefits at partner restaurants across Doha and Istanbul, including preferred rates and VIP reservations.",                                                                                                         "2026-12-31T00:00:00", "NO", "Food & Beverages",            "Jul 8 2025 5:18PM"),
+        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                    "Jul 8 2025 5:18PM"),
+        new("AMNM Health Package",  "/images/health.jpg",  "Alfardan Medical with Northwestern Medicine (AMNM) is an ambulatory care center that provides advanced, patient-centric care with service excellence. Top executives will be privileged to benefit from an Annual Wellness Program.", "2025-03-04T00:00:00", "NO", "Health",                    "Jul 8 2025 5:18PM"),
+        new("Hospitality",          "/images/hotel.jpg",   "The Alfardan Oyster Privilege Club offers exclusive benefits across hospitality offerings, providing members with unique experiences.",                                                                                               "2025-03-04T00:00:00", "NO", "Rooms & Suites",             "Jul 8 2025 5:18PM"),
+        new("Co-Working Space",     "/images/cowork.jpg",  "Nestwork is a ground-breaking co-working environment created to meet the demands of today's contemporary professionals offering adaptable and cutting-edge workspace solutions for organizations of all sizes.",                       "2030-04-30T00:00:00", "NO", "Access to co-working spaces", "Jul 8 2025 5:18PM"),
+        new("Dining Privileges",    "/images/dining.jpg",  "Exclusive dining benefits at partner restaurants across Doha and Istanbul, including preferred rates and VIP reservations.",                                                                                                         "2026-12-31T00:00:00", "NO", "Food & Beverages",            "Jul 8 2025 5:18PM"),
+        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                    "Jul 8 2025 5:18PM"),
+        new("Wellness Package",     "/images/wellness.jpg","Access to premium wellness centers and spa facilities with up to 20% preferred rates for all members.",                                                                                                                              "2027-06-30T00:00:00", "NO", "Health",                    "Jul 8 2025 5:18PM"),
     };
 
     private IEnumerable<PrivilegeItem> FilteredPrivItems =>
@@ -350,7 +858,126 @@
     private int PrivFrom => (_privPage - 1) * _privPageSize + 1;
     private int PrivTo => Math.Min(_privPage * _privPageSize, _privItems.Count);
 
-    public record PrivilegeItem(string Name, string ImageUrl, string Description, string Validity, string NoExpiry, string BusinessTypeName, string DateCreated);
+    public record PrivilegeItem(
+        string Name, string ImageUrl, string Description,
+        string Validity, string NoExpiry, string BusinessTypeName, string DateCreated,
+        string TermsHtml = "", string MechanicsHtml = "");
+
+    // ── ADD PRIVILEGE ──
+    private bool _showAddPrivilegeDialog = false;
+    private bool _addDialogJustOpened = false;
+    private string _addPrivName = "";
+    private string _addPrivDescription = "";
+    private DateTime _addPrivValidityDate = DateTime.Today;
+    private string _addPrivBusinessTypeName = "";
+    private string _addPrivTermsHtml = "";
+    private string _addPrivMechanicsHtml = "";
+
+    private void OpenAddPrivilege()
+    {
+        _addPrivName = "";
+        _addPrivDescription = "";
+        _addPrivValidityDate = DateTime.Today;
+        _addPrivBusinessTypeName = "";
+        _addPrivTermsHtml = "";
+        _addPrivMechanicsHtml = "";
+        _showAddPrivilegeDialog = true;
+        _addDialogJustOpened = true;
+    }
+
+    private async Task SaveAddPrivilege()
+    {
+        _addPrivTermsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "addPrivTermsEditor");
+        _addPrivMechanicsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "addPrivMechEditor");
+
+        _privItems.Insert(0, new PrivilegeItem(
+            _addPrivName,
+            "/images/default.jpg",
+            _addPrivDescription,
+            _addPrivValidityDate.ToString("yyyy-MM-ddTHH:mm:ss"),
+            "NO",
+            _addPrivBusinessTypeName,
+            DateTime.Now.ToString("MMM d yyyy h:mmtt"),
+            _addPrivTermsHtml,
+            _addPrivMechanicsHtml
+        ));
+        _showAddPrivilegeDialog = false;
+    }
+
+    // ── EDIT PRIVILEGE ──
+    private bool _showEditPrivilegeDialog = false;
+    private bool _editDialogJustOpened = false;
+    private PrivilegeItem? _editingPrivilege;
+    private string _editPrivName = "";
+    private string _editPrivDescription = "";
+    private DateTime _editPrivValidityDate = DateTime.Today;
+    private string _editPrivBusinessTypeName = "";
+    private string _editPrivTermsHtml = "";
+    private string _editPrivMechanicsHtml = "";
+
+    private void OpenEditPrivilege(PrivilegeItem item)
+    {
+        _editingPrivilege = item;
+        _editPrivName = item.Name;
+        _editPrivDescription = item.Description;
+        DateTime.TryParse(item.Validity, out var v);
+        _editPrivValidityDate = v == default ? DateTime.Today : v;
+        _editPrivBusinessTypeName = item.BusinessTypeName;
+        _editPrivTermsHtml = item.TermsHtml ?? "";
+        _editPrivMechanicsHtml = item.MechanicsHtml ?? "";
+        _showEditPrivilegeDialog = true;
+        _editDialogJustOpened = true;
+    }
+
+    private void CancelEditPrivilege()
+    {
+        _showEditPrivilegeDialog = false;
+        _editingPrivilege = null;
+    }
+
+    private async Task SaveEditPrivilege()
+    {
+        if (_editingPrivilege == null) return;
+
+        _editPrivTermsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "editPrivTermsEditor");
+        _editPrivMechanicsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "editPrivMechEditor");
+
+        var index = _privItems.IndexOf(_editingPrivilege);
+        if (index >= 0)
+        {
+            _privItems[index] = _editingPrivilege with
+            {
+                Name = _editPrivName,
+                Description = _editPrivDescription,
+                Validity = _editPrivValidityDate.ToString("yyyy-MM-ddTHH:mm:ss"),
+                BusinessTypeName = _editPrivBusinessTypeName,
+                TermsHtml = _editPrivTermsHtml,
+                MechanicsHtml = _editPrivMechanicsHtml
+            };
+        }
+        _showEditPrivilegeDialog = false;
+        _editingPrivilege = null;
+    }
+
+    // ── LIFECYCLE: bind toolbars after dialog renders ──
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_showAddPrivilegeDialog && _addDialogJustOpened)
+        {
+            _addDialogJustOpened = false;
+            await JS.InvokeVoidAsync("richEditor.bindToolbar", "addTermsToolbar", "addPrivTermsEditor");
+            await JS.InvokeVoidAsync("richEditor.bindToolbar", "addMechToolbar", "addPrivMechEditor");
+        }
+
+        if (_showEditPrivilegeDialog && _editDialogJustOpened)
+        {
+            _editDialogJustOpened = false;
+            await JS.InvokeVoidAsync("richEditor.setHtml", "editPrivTermsEditor", _editPrivTermsHtml);
+            await JS.InvokeVoidAsync("richEditor.setHtml", "editPrivMechEditor", _editPrivMechanicsHtml);
+            await JS.InvokeVoidAsync("richEditor.bindToolbar", "editTermsToolbar", "editPrivTermsEditor");
+            await JS.InvokeVoidAsync("richEditor.bindToolbar", "editMechToolbar", "editPrivMechEditor");
+        }
+    }
 
     // ── MEMBERSHIP TIER ──
     private string _tierSearch = "";
@@ -364,21 +991,21 @@
 
     private List<MembershipTierItem> _tierItems = new()
     {
-        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",     "03/01/2024", "03/01/2025", 10,    10,  "09/29/2025"),
-        new("PLATINUM",        "PLATINUM MEMBERSHIP",      "03/04/2024", "03/04/2025", 100,   10,  "09/29/2025"),
-        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",     "01/03/2024", "01/03/2025", 1000,  50,  "09/29/2025"),
-        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN","05/20/2025", "03/20/2030", 10000, 0,   "09/29/2025"),
-        new("BRONZE",          "BRONZE MEMBERSHIP",        "01/01/2024", "01/01/2026", 500,   0,   "09/29/2025"),
-        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",     "03/01/2024", "03/01/2025", 10,    10,  "09/29/2025"),
-        new("PLATINUM",        "PLATINUM MEMBERSHIP",      "03/04/2024", "03/04/2025", 100,   10,  "09/29/2025"),
-        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",     "01/03/2024", "01/03/2025", 1000,  50,  "09/29/2025"),
-        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN","05/20/2025", "03/20/2030", 10000, 0,   "09/29/2025"),
-        new("BRONZE",          "BRONZE MEMBERSHIP",        "01/01/2024", "01/01/2026", 500,   0,   "09/29/2025"),
-        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",     "03/01/2024", "03/01/2025", 10,    10,  "09/29/2025"),
-        new("PLATINUM",        "PLATINUM MEMBERSHIP",      "03/04/2024", "03/04/2025", 100,   10,  "09/29/2025"),
-        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",     "01/03/2024", "01/03/2025", 1000,  50,  "09/29/2025"),
-        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN","05/20/2025", "03/20/2030", 10000, 0,   "09/29/2025"),
-        new("BRONZE",          "BRONZE MEMBERSHIP",        "01/01/2024", "01/01/2026", 500,   0,   "09/29/2025"),
+        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",      "03/01/2024", "03/01/2025", 10,    10, "09/29/2025"),
+        new("PLATINUM",        "PLATINUM MEMBERSHIP",       "03/04/2024", "03/04/2025", 100,   10, "09/29/2025"),
+        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",      "01/03/2024", "01/03/2025", 1000,  50, "09/29/2025"),
+        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN", "05/20/2025", "03/20/2030", 10000,  0, "09/29/2025"),
+        new("BRONZE",          "BRONZE MEMBERSHIP",         "01/01/2024", "01/01/2026", 500,    0, "09/29/2025"),
+        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",      "03/01/2024", "03/01/2025", 10,    10, "09/29/2025"),
+        new("PLATINUM",        "PLATINUM MEMBERSHIP",       "03/04/2024", "03/04/2025", 100,   10, "09/29/2025"),
+        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",      "01/03/2024", "01/03/2025", 1000,  50, "09/29/2025"),
+        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN", "05/20/2025", "03/20/2030", 10000,  0, "09/29/2025"),
+        new("BRONZE",          "BRONZE MEMBERSHIP",         "01/01/2024", "01/01/2026", 500,    0, "09/29/2025"),
+        new("EXCLUSIVE - VIP", "TOP LEVEL EXECUTIVES",      "03/01/2024", "03/01/2025", 10,    10, "09/29/2025"),
+        new("PLATINUM",        "PLATINUM MEMBERSHIP",       "03/04/2024", "03/04/2025", 100,   10, "09/29/2025"),
+        new("EXCLUSIVE",       "EXCLUSIVE MEMBERSHIP",      "01/03/2024", "01/03/2025", 1000,  50, "09/29/2025"),
+        new("EXCLUSIVE OMAN",  "EXCLUSIVE MEMBERSHIP OMAN", "05/20/2025", "03/20/2030", 10000,  0, "09/29/2025"),
+        new("BRONZE",          "BRONZE MEMBERSHIP",         "01/01/2024", "01/01/2026", 500,    0, "09/29/2025"),
     };
 
     private IEnumerable<MembershipTierItem> FilteredTierItems =>
@@ -411,5 +1038,126 @@
     private int TierFrom => (_tierPage - 1) * _tierPageSize + 1;
     private int TierTo => Math.Min(_tierPage * _tierPageSize, _tierItems.Count);
 
+    private string _addPrivImageUrl = "";
+    private string _editPrivImageUrl = "";
+
+    private async Task OnAddImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024).ReadAsync(buffer);
+        var base64 = Convert.ToBase64String(buffer);
+        _addPrivImageUrl = $"data:{file.ContentType};base64,{base64}";
+    }
+
+    private async Task OnEditImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024).ReadAsync(buffer);
+        var base64 = Convert.ToBase64String(buffer);
+        _editPrivImageUrl = $"data:{file.ContentType};base64,{base64}";
+    }
     public record MembershipTierItem(string Name, string Description, string DateStarted, string DateEnded, int UserCount, int VipCount, string DateCreated);
+
+    // ── TIER DIALOG STATE ──
+    private bool _showAddTierDialog = false;
+    private bool _showEditTierDialog = false;
+    private MembershipTierItem? _editingTier;
+
+    // Tier form fields
+    private string _tierName = "";
+    private string _tierDescription = "";
+    private DateTime _tierDateStarted = DateTime.Today;
+    private DateTime _tierDateEnded = DateTime.Today;
+    private int _tierUserCount = 0;
+    private int _tierVipCount = 0;
+    private string _tierCountry = "";
+    private string _tierTextCardColor = "#000000";
+    private string _tierMembershipCardUrl = "";
+    private string _tierVipCardUrl = "";
+    private string _tierQrFrameUrl = "";
+    private string _tierVipBadgeUrl = "";
+
+    private void OpenAddTier()
+    {
+        _tierName = ""; _tierDescription = ""; _tierCountry = "";
+        _tierTextCardColor = "#000000";
+        _tierDateStarted = DateTime.Today; _tierDateEnded = DateTime.Today;
+        _tierUserCount = 0; _tierVipCount = 0;
+        _tierMembershipCardUrl = ""; _tierVipCardUrl = "";
+        _tierQrFrameUrl = ""; _tierVipBadgeUrl = "";
+        _showAddTierDialog = true;
+    }
+
+    private void OpenEditTier(MembershipTierItem item)
+    {
+        _editingTier = item;
+        _tierName = item.Name;
+        _tierDescription = item.Description;
+        DateTime.TryParse(item.DateStarted, out var ds);
+        DateTime.TryParse(item.DateEnded, out var de);
+        _tierDateStarted = ds == default ? DateTime.Today : ds;
+        _tierDateEnded = de == default ? DateTime.Today : de;
+        _tierUserCount = item.UserCount;
+        _tierVipCount = item.VipCount;
+        _tierCountry = ""; _tierTextCardColor = "#000000";
+        _tierMembershipCardUrl = ""; _tierVipCardUrl = "";
+        _tierQrFrameUrl = ""; _tierVipBadgeUrl = "";
+        _showEditTierDialog = true;
+    }
+
+    private void CloseTierDialog()
+    {
+        _showAddTierDialog = false;
+        _showEditTierDialog = false;
+        _editingTier = null;
+    }
+
+    private void SaveTierDialog()
+    {
+        if (_showEditTierDialog && _editingTier != null)
+        {
+            var index = _tierItems.IndexOf(_editingTier);
+            if (index >= 0)
+            {
+                _tierItems[index] = _editingTier with
+                {
+                    Name = _tierName,
+                    Description = _tierDescription,
+                    DateStarted = _tierDateStarted.ToString("MM/dd/yyyy"),
+                    DateEnded = _tierDateEnded.ToString("MM/dd/yyyy"),
+                    UserCount = _tierUserCount,
+                    VipCount = _tierVipCount
+                };
+            }
+        }
+        else
+        {
+            _tierItems.Insert(0, new MembershipTierItem(
+                _tierName, _tierDescription,
+                _tierDateStarted.ToString("MM/dd/yyyy"),
+                _tierDateEnded.ToString("MM/dd/yyyy"),
+                _tierUserCount, _tierVipCount,
+                DateTime.Now.ToString("MM/dd/yyyy")));
+        }
+        CloseTierDialog();
+    }
+
+    private async Task OnTierImageSelected(InputFileChangeEventArgs e, int slot)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(5 * 1024 * 1024).ReadAsync(buffer);
+        var base64 = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+        switch (slot)
+        {
+            case 0: _tierMembershipCardUrl = base64; break;
+            case 1: _tierVipCardUrl = base64; break;
+            case 2: _tierQrFrameUrl = base64; break;
+            case 3: _tierVipBadgeUrl = base64; break;
+        }
+    }
+
+
 }

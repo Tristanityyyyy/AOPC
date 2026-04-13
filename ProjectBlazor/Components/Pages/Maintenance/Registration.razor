@@ -3,22 +3,205 @@
 
 <h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Registration</h3>
 
+@* ── FILTER POPUP ── *@
+@if (_showFilter)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0,0,0,0.3);">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+            <div class="flex items-center justify-between mb-5">
+                <span class="font-semibold text-base" style="color:#C9A84C;">Filter</span>
+                <button @onclick="() => _showFilter = false"
+                        class="w-6 h-6 flex items-center justify-center rounded text-white text-xs font-bold border-none cursor-pointer"
+                        style="background:#222;">
+                    ✕
+                </button>
+            </div>
+
+            @* Company Name *@
+            <div class="flex items-center gap-4 mb-4">
+                <span class="text-xs font-semibold text-gray-700 w-28">Company name:</span>
+                <select class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-xs" @bind="_filterCompany">
+                    <option value="">-Select Corporate-</option>
+                    @foreach (var c in AllCompanies)
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </select>
+            </div>
+
+            @* Gender *@
+            <div class="flex items-center gap-4 mb-4">
+                <span class="text-xs font-semibold text-gray-700 w-28">Gender:</span>
+                <div class="flex items-center gap-4 flex-1">
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="radio" name="gender" value="Male" checked="@(_filterGender == "Male")"
+                               @onchange='() => _filterGender = "Male"' /> Male
+                    </label>
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="radio" name="gender" value="Female" checked="@(_filterGender == "Female")"
+                               @onchange='() => _filterGender = "Female"' /> Female
+                    </label>
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="checkbox" checked="@(_filterGender == "")"
+                               @onchange='() => _filterGender = ""' /> Show all
+                    </label>
+                </div>
+            </div>
+
+            @* Position *@
+            <div class="flex items-center gap-4 mb-4">
+                <span class="text-xs font-semibold text-gray-700 w-28">Position:</span>
+                <div class="flex items-center gap-3 flex-1">
+                    <select class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-xs" @bind="_filterPosition">
+                        <option value="">-Select Option-</option>
+                        @foreach (var p in AllPositions)
+                        {
+                            <option value="@p">@p</option>
+                        }
+                    </select>
+                    <label class="flex items-center gap-1 text-xs cursor-pointer whitespace-nowrap">
+                        <input type="checkbox" checked="@(_filterPosition == "")"
+                               @onchange='() => _filterPosition = ""' /> Show all
+                    </label>
+                </div>
+            </div>
+
+            @* VIP *@
+            <div class="flex items-center gap-4 mb-4">
+                <span class="text-xs font-semibold text-gray-700 w-28" style="color:#C9A84C; font-weight:700;">VIP:</span>
+                <div class="flex items-center gap-4 flex-1">
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="checkbox" checked="@(_filterVip == "Yes")"
+                               @onchange='() => _filterVip = _filterVip == "Yes" ? "" : "Yes"'  /> Yes
+                    </label>
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="checkbox" checked="@(_filterVip == "No")"
+                               @onchange='() => _filterVip = _filterVip == "No" ? "" : "No"'  /> No
+                    </label>
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="checkbox" checked="@(_filterVip == "")"
+                               @onchange='() => _filterVip = ""' /> Show all
+                    </label>
+                </div>
+            </div>
+
+            @* Status *@
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-xs font-semibold text-gray-700 w-28">Status:</span>
+                <div class="flex items-center gap-4 flex-1">
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="radio" name="status" value="Active" checked="@(_filterStatus == "Active")"
+                               @onchange='() => _filterStatus = "Active"' /> Registered
+                    </label>
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="radio" name="status" value="Inactive" checked="@(_filterStatus == "Inactive")"
+                               @onchange='() => _filterStatus = "Inactive"' /> Unregistered
+                    </label>
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="checkbox" checked="@(_filterStatus == "")"
+                               @onchange='() => _filterStatus = ""' /> Show all
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3">
+                <button @onclick="ClearFilter"
+                        class="px-5 py-2 text-xs rounded-lg border border-gray-300 bg-white text-gray-600 cursor-pointer hover:bg-gray-50 transition underline">
+                    Clear
+                </button>
+                <button @onclick="ApplyFilter"
+                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
+                        style="background:#C9A84C;">
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@* ── BULK EMAIL POPUP ── *@
+@if (_showBulkEmail)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center" style="background: rgba(0,0,0,0.3);">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl" style="max-height: 80vh; display: flex; flex-direction: column;">
+            @* Header *@
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <span class="font-semibold text-base" style="color:#C9A84C;">Select Unregister users</span>
+                <div class="flex items-center gap-2">
+                    <select class="border border-gray-300 rounded-lg px-3 py-1.5 text-xs" @bind="_bulkEmailCompany">
+                        <option value="">-Select Corporate-</option>
+                        @foreach (var c in AllCompanies)
+                        {
+                            <option value="@c">@c</option>
+                        }
+                    </select>
+                    <button class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium"
+                            style="background:#C9A84C;">
+                        <MudIcon Icon="@Icons.Material.Filled.Search" Style="font-size:13px;" Color="Color.Inherit" />
+                    </button>
+                    <button @onclick="() => _showBulkEmail = false"
+                            class="flex items-center justify-center px-3 py-1.5 rounded-lg text-white text-xs font-bold border-none cursor-pointer"
+                            style="background:#C9A84C;">
+                        <MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" />
+                        Bulk Email
+                    </button>
+                </div>
+            </div>
+
+            @* User list *@
+            <div class="overflow-y-auto px-6 py-4 flex-1">
+                <div class="grid grid-cols-3 gap-x-4 gap-y-3">
+                    @foreach (var item in BulkEmailUsers)
+                    {
+                        <label class="flex items-center gap-2 text-xs cursor-pointer">
+                            <input type="checkbox"
+                                   checked="@_selectedBulkUsers.Contains(item.FullName)"
+                                   @onchange="() => ToggleBulkUser(item.FullName)" />
+                            @item.FullName
+                        </label>
+                    }
+                </div>
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-between px-6 py-3 border-t border-gray-100">
+                <span class="text-xs font-semibold" style="color:#C9A84C;">
+                    User Count: @_selectedBulkUsers.Count
+                </span>
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-1 text-xs cursor-pointer">
+                        <input type="checkbox" checked="@(_selectedBulkUsers.Count == BulkEmailUsers.Count())"
+                               @onchange="ToggleSelectAll" /> Send to all
+                    </label>
+                    <button class="px-5 py-1.5 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
+                            style="background:#C9A84C;">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @* Tab bar *@
 <div class="flex border-b border-gray-200 mb-4">
     <button @onclick='() => _activeTab = "user"'
-            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            class="flex items-center gap-1 px-5 py-2 text-xs font-medium border-b-2 transition"
             style="@(_activeTab == "user" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
-        👥 User Registration
+        <MudIcon Icon="@Icons.Material.Filled.Group" Style="font-size: 14px;" Color="Color.Inherit" />
+        User Registration
     </button>
     <button @onclick='() => _activeTab = "oyster"'
-            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            class="flex items-center gap-1 px-5 py-2 text-xs font-medium border-b-2 transition"
             style="@(_activeTab == "oyster" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
-        👥 Oyster Admin Registration
+        <MudIcon Icon="@Icons.Material.Filled.AdminPanelSettings" Style="font-size: 14px;" Color="Color.Inherit" />
+        Oyster Admin Registration
     </button>
     <button @onclick='() => _activeTab = "corporate"'
-            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            class="flex items-center gap-1 px-5 py-2 text-xs font-medium border-b-2 transition"
             style="@(_activeTab == "corporate" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
-        🏢 Corporate Admin Registration
+        <MudIcon Icon="@Icons.Material.Filled.Business" Style="font-size: 14px;" Color="Color.Inherit" />
+        Corporate Admin Registration
     </button>
 </div>
 
@@ -32,7 +215,18 @@
                      style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
                     <h4 class="text-sm font-medium text-white">User Registration</h4>
                 </div>
-                @ControlsRow1()
+                @if (_activeTab == "user")
+                {
+                    @ControlsRow1(showFilter: true, showBulkEmail: true)
+                }
+                else if (_activeTab == "oyster")
+                {
+                    @ControlsRow1(showFilter: false, showBulkEmail: false)
+                }
+                else
+                {
+                    @ControlsRow1(showFilter: true, showBulkEmail: false)
+                }
                 @ControlsRow2("_userSearch", "_userPageSize", "_userPage")
                 <div class="mb-3 px-1">
                     <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
@@ -61,25 +255,24 @@
                                 <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
                                     <td class="py-2 px-2" style="height: 72px;">
                                         <div class="relative w-full" style="height: 72px;">
-                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">
-                                                @item.Code
-                                            </div>
+                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">@item.Code</div>
                                             <div class="absolute left-0 flex items-center gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 14px;">
-                                                <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
-                                                </div>
+                                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                                {
+                                                    <img src="@item.ImageUrl" class="w-8 h-8 rounded-full object-cover" alt="@item.FullName" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
+                                                    </div>
+                                                }
                                                 <div class="font-medium text-gray-800 text-xs">@item.FullName</div>
                                             </div>
-                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 42px;">
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit
-                                                </button>
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete
-                                                </button>
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email
-                                                </button>
+                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 50px;">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;"><MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit</button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500"><MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete</button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;"><MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email</button>
                                             </div>
                                         </div>
                                     </td>
@@ -88,12 +281,8 @@
                                     <td class="py-2 px-2 text-gray-600">@item.Gender</td>
                                     <td class="py-2 px-2 text-gray-600">@item.CompanyName</td>
                                     <td class="py-2 px-2 text-gray-600">@item.Position</td>
-                                    <td class="py-2 px-2">
-                                        <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span>
-                                    </td>
-                                    <td class="py-2 px-2">
-                                        <span class="@(item.Vip == "Yes" ? "text-amber-600 font-medium" : "text-gray-400")">@item.Vip</span>
-                                    </td>
+                                    <td class="py-2 px-2"><span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span></td>
+                                    <td class="py-2 px-2"><span class="@(item.Vip == "Yes" ? "text-amber-600 font-medium" : "text-gray-400")">@item.Vip</span></td>
                                     <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateCreated</td>
                                 </tr>
                             }
@@ -102,14 +291,16 @@
                 </div>
                 <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
                     <span class="text-xs text-gray-500">Showing @UserFrom to @UserTo of @_userTotalCount entries</span>
-                    <Pagination CurrentPage="_userPage" TotalPages="UserTotalPages" SetPageAction="p => _userPage = p" />
+                    <div class="flex items-center gap-1">
+                        <Pagination CurrentPage="_userPage" TotalPages="UserTotalPages" SetPageAction="p => _userPage = p" />
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 }
 
-@* ── OYSTER ADMIN REGISTRATION (no VIP column) ── *@
+@* ── OYSTER ADMIN REGISTRATION ── *@
 @if (_activeTab == "oyster")
 {
     <div class="grid grid-cols-12 gap-4">
@@ -119,13 +310,21 @@
                      style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
                     <h4 class="text-sm font-medium text-white">Oyster Admin Registration</h4>
                 </div>
-                @ControlsRow1()
+                @if (_activeTab == "user")
+                {
+                    @ControlsRow1(showFilter: true, showBulkEmail: true)
+                }
+                else if (_activeTab == "oyster")
+                {
+                    @ControlsRow1(showFilter: false, showBulkEmail: false)
+                }
+                else
+                {
+                    @ControlsRow1(showFilter: true, showBulkEmail: false)
+                }
                 @ControlsRow2("_oysterSearch", "_oysterPageSize", "_oysterPage")
                 <div class="mb-3 px-1">
-                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background:#C9A84C;">
-                        + Add New
-                    </button>
+                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium" style="background:#C9A84C;">+ Add New</button>
                 </div>
                 <div class="overflow-y-auto" style="max-height:600px;">
                     <table class="w-full text-xs">
@@ -147,25 +346,24 @@
                                 <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
                                     <td class="py-2 px-2" style="height: 72px;">
                                         <div class="relative w-full" style="height: 72px;">
-                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">
-                                                @item.Code
-                                            </div>
+                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">@item.Code</div>
                                             <div class="absolute left-0 flex items-center gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 14px;">
-                                                <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
-                                                </div>
+                                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                                {
+                                                    <img src="@item.ImageUrl" class="w-8 h-8 rounded-full object-cover" alt="@item.FullName" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
+                                                    </div>
+                                                }
                                                 <div class="font-medium text-gray-800 text-xs">@item.FullName</div>
                                             </div>
-                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 42px;">
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit
-                                                </button>
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete
-                                                </button>
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email
-                                                </button>
+                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 50px;">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;"><MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit</button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500"><MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete</button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;"><MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email</button>
                                             </div>
                                         </div>
                                     </td>
@@ -174,9 +372,7 @@
                                     <td class="py-2 px-2 text-gray-600">@item.Gender</td>
                                     <td class="py-2 px-2 text-gray-600">@item.CompanyName</td>
                                     <td class="py-2 px-2 text-gray-600">@item.Position</td>
-                                    <td class="py-2 px-2">
-                                        <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span>
-                                    </td>
+                                    <td class="py-2 px-2"><span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span></td>
                                     <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateCreated</td>
                                 </tr>
                             }
@@ -185,7 +381,9 @@
                 </div>
                 <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
                     <span class="text-xs text-gray-500">Showing @OysterFrom to @OysterTo of @_oysterTotalCount entries</span>
-                    <Pagination CurrentPage="_oysterPage" TotalPages="OysterTotalPages" SetPageAction="p => _oysterPage = p" />
+                    <div class="flex items-center gap-1">
+                        <Pagination CurrentPage="_oysterPage" TotalPages="OysterTotalPages" SetPageAction="p => _oysterPage = p" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -202,13 +400,21 @@
                      style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
                     <h4 class="text-sm font-medium text-white">Corporate Admin Registration</h4>
                 </div>
-                @ControlsRow1()
+                @if (_activeTab == "user")
+                {
+                    @ControlsRow1(showFilter: true, showBulkEmail: true)
+                }
+                else if (_activeTab == "oyster")
+                {
+                    @ControlsRow1(showFilter: false, showBulkEmail: false)
+                }
+                else
+                {
+                    @ControlsRow1(showFilter: true, showBulkEmail: false)
+                }
                 @ControlsRow2("_corpSearch", "_corpPageSize", "_corpPage")
                 <div class="mb-3 px-1">
-                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background:#C9A84C;">
-                        + Add New
-                    </button>
+                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium" style="background:#C9A84C;">+ Add New</button>
                 </div>
                 <div class="overflow-y-auto" style="max-height:600px;">
                     <table class="w-full text-xs">
@@ -231,25 +437,24 @@
                                 <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
                                     <td class="py-2 px-2" style="height: 72px;">
                                         <div class="relative w-full" style="height: 72px;">
-                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">
-                                                @item.Code
-                                            </div>
+                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 4px;">@item.Code</div>
                                             <div class="absolute left-0 flex items-center gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 14px;">
-                                                <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
-                                                </div>
+                                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                                {
+                                                    <img src="@item.ImageUrl" class="w-8 h-8 rounded-full object-cover" alt="@item.FullName" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-gray-200">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Person" Style="font-size:16px; color:#9ca3af;" />
+                                                    </div>
+                                                }
                                                 <div class="font-medium text-gray-800 text-xs">@item.FullName</div>
                                             </div>
-                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 42px;">
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit
-                                                </button>
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete
-                                                </button>
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email
-                                                </button>
+                                            <div class="absolute left-0 flex gap-2 pt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-3" style="top: 50px;">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;"><MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:13px;" Color="Color.Inherit" /> Edit</button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500"><MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:13px;" Color="Color.Inherit" /> Delete</button>
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:#C9A84C;"><MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Send Email</button>
                                             </div>
                                         </div>
                                     </td>
@@ -258,12 +463,8 @@
                                     <td class="py-2 px-2 text-gray-600">@item.Gender</td>
                                     <td class="py-2 px-2 text-gray-600">@item.CompanyName</td>
                                     <td class="py-2 px-2 text-gray-600">@item.Position</td>
-                                    <td class="py-2 px-2">
-                                        <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span>
-                                    </td>
-                                    <td class="py-2 px-2">
-                                        <span class="@(item.Vip == "Yes" ? "text-amber-600 font-medium" : "text-gray-400")">@item.Vip</span>
-                                    </td>
+                                    <td class="py-2 px-2"><span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span></td>
+                                    <td class="py-2 px-2"><span class="@(item.Vip == "Yes" ? "text-amber-600 font-medium" : "text-gray-400")">@item.Vip</span></td>
                                     <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.DateCreated</td>
                                 </tr>
                             }
@@ -272,7 +473,9 @@
                 </div>
                 <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
                     <span class="text-xs text-gray-500">Showing @CorpFrom to @CorpTo of @_corpTotalCount entries</span>
-                    <Pagination CurrentPage="_corpPage" TotalPages="CorpTotalPages" SetPageAction="p => _corpPage = p" />
+                    <div class="flex items-center gap-1">
+                        <Pagination CurrentPage="_corpPage" TotalPages="CorpTotalPages" SetPageAction="p => _corpPage = p" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -283,6 +486,46 @@
     private string _activeTab = "user";
     private string? _uploadedFileName;
 
+    // ── Popup state ────────────────────────────────────────────
+    private bool _showFilter = false;
+    private bool _showBulkEmail = false;
+
+    // ── Filter state ───────────────────────────────────────────
+    private string _filterCompany = "";
+    private string _filterGender = "";
+    private string _filterPosition = "";
+    private string _filterVip = "";
+    private string _filterStatus = "";
+
+    // ── Bulk Email state ───────────────────────────────────────
+    private string _bulkEmailCompany = "";
+    private HashSet<string> _selectedBulkUsers = new();
+
+    private IEnumerable<RegistrationItem> BulkEmailUsers => _activeTab == "user" ? _userItems
+        : _activeTab == "oyster" ? _oysterItems : _corpItems;
+
+    private void ToggleBulkUser(string name)
+    {
+        if (_selectedBulkUsers.Contains(name)) _selectedBulkUsers.Remove(name);
+        else _selectedBulkUsers.Add(name);
+    }
+
+    private void ToggleSelectAll()
+    {
+        if (_selectedBulkUsers.Count == BulkEmailUsers.Count())
+            _selectedBulkUsers.Clear();
+        else
+            _selectedBulkUsers = BulkEmailUsers.Select(x => x.FullName).ToHashSet();
+    }
+
+    private void ApplyFilter() { _userPage = 1; _oysterPage = 1; _corpPage = 1; _showFilter = false; }
+    private void ClearFilter() { _filterCompany = ""; _filterGender = ""; _filterPosition = ""; _filterVip = ""; _filterStatus = ""; _userPage = 1; _oysterPage = 1; _corpPage = 1; }
+
+    private IEnumerable<string> AllCompanies => _userItems.Concat(_oysterItems).Concat(_corpItems)
+        .Select(x => x.CompanyName).Distinct().OrderBy(x => x);
+    private IEnumerable<string> AllPositions => _userItems.Concat(_oysterItems).Concat(_corpItems)
+        .Select(x => x.Position).Distinct().OrderBy(x => x);
+
     // ── Per-tab state ──────────────────────────────────────────
     private string _userSearch = ""; private int _userPageSize = 10; private int _userPage = 1; private int _userTotalCount = 0; private string _userSortCol = "FullName"; private bool _userSortAsc = true;
     private string _oysterSearch = ""; private int _oysterPageSize = 10; private int _oysterPage = 1; private int _oysterTotalCount = 0; private string _oysterSortCol = "FullName"; private bool _oysterSortAsc = true;
@@ -291,11 +534,25 @@
     private async Task HandleFileUpload(InputFileChangeEventArgs e) { _uploadedFileName = e.File.Name; await Task.CompletedTask; }
 
     // ── Shared render fragments ────────────────────────────────
-    private RenderFragment ControlsRow1() =>
+    private RenderFragment ControlsRow1(bool showFilter, bool showBulkEmail) =>
     @<div class="flex items-center justify-between mb-3 px-1">
         <div class="flex items-center gap-2">
-            <button class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium" style="background:#C9A84C;">☰ Filter</button>
-            <button class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium" style="background:#C9A84C;">✉ Bulk Email</button>
+            @if (showFilter)
+            {
+                <button @onclick="() => _showFilter = true"
+                        class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium"
+                        style="background:#C9A84C;">
+                    <MudIcon Icon="@Icons.Material.Filled.FilterList" Style="font-size:13px;" Color="Color.Inherit" /> Filter
+                </button>
+            }
+            @if (showBulkEmail)
+            {
+                <button @onclick="() => { _showBulkEmail = true; _selectedBulkUsers.Clear(); }"
+                        class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium"
+                        style="background:#C9A84C;">
+                    <MudIcon Icon="@Icons.Material.Filled.Email" Style="font-size:13px;" Color="Color.Inherit" /> Bulk Email
+                </button>
+            }
         </div>
         <div class="flex items-center gap-2">
             <span class="text-xs text-gray-600 font-medium">Import Excel File:</span>
@@ -351,27 +608,27 @@
     // ── Data ───────────────────────────────────────────────────
     private List<RegistrationItem> _userItems = new()
     {
-        new("USR-001", "Kholoud Oweidat",   "kholoud.oweidat",  "kholodowedat@gmail.com",       "Female", "Embassy of the Netherlands", "Senior Consular Officer", "Active",   "Yes", "09/29/2025"),
-        new("USR-002", "Marwan Bishara",    "Marwan.Bishara",    "marwanbishara@yahoo.com",       "Male",   "Fadaat Media",               "Senior Consultant",       "Active",   "No",  "09/29/2025"),
-        new("USR-003", "Sara Bishara",      "sara.bishara",      "s.bishara@tarsheed.com",        "Female", "Fadaat Media",               "Managing Director",       "Active",   "Yes", "09/29/2025"),
-        new("USR-004", "Ahmed Al-Mansoori", "ahmed.mansoori",    "ahmed.mansoori@qatargas.com",   "Male",   "Qatar Gas",                  "Operations Manager",      "Active",   "No",  "09/29/2025"),
-        new("USR-005", "Layla Hassan",      "layla.hassan",      "layla.hassan@ooredoo.com.qa",   "Female", "Ooredoo",                    "Marketing Director",      "Active",   "No",  "09/28/2025"),
+        new("USR-001", "/images/user1.jpg", "Kholoud Oweidat",   "kholoud.oweidat",  "kholodowedat@gmail.com",       "Female", "Embassy of the Netherlands", "Senior Consular Officer", "Active",   "Yes", "09/29/2025"),
+        new("USR-002", "/images/user2.jpg", "Marwan Bishara",    "Marwan.Bishara",    "marwanbishara@yahoo.com",       "Male",   "Fadaat Media",               "Senior Consultant",       "Active",   "No",  "09/29/2025"),
+        new("USR-003", "/images/user3.jpg", "Sara Bishara",      "sara.bishara",      "s.bishara@tarsheed.com",        "Female", "Fadaat Media",               "Managing Director",       "Active",   "Yes", "09/29/2025"),
+        new("USR-004", "/images/user4.jpg", "Ahmed Al-Mansoori", "ahmed.mansoori",    "ahmed.mansoori@qatargas.com",   "Male",   "Qatar Gas",                  "Operations Manager",      "Active",   "No",  "09/28/2025"),
+        new("USR-005", "/images/user5.jpg", "Layla Hassan",      "layla.hassan",      "layla.hassan@ooredoo.com.qa",   "Female", "Ooredoo",                    "Marketing Director",      "Active",   "No",  "09/28/2025"),
     };
 
     private List<RegistrationItem> _oysterItems = new()
     {
-        new("OYS-001", "Khalid Al-Thani",   "khalid.althani",   "k.althani@qatarinvestment.com", "Male",   "Qatar Investment Authority", "Senior Analyst",          "Inactive", "-",   "09/27/2025"),
-        new("OYS-002", "Nora Al-Subaie",    "nora.subaie",      "nora.s@alfardan.com.qa",        "Female", "Alfardan Group",             "HR Manager",              "Active",   "-",   "09/26/2025"),
-        new("OYS-003", "Omar Farouk",       "omar.farouk",      "omar.farouk@petroserv.com",     "Male",   "Petro Services",             "President",               "Active",   "-",   "09/25/2025"),
+        new("OYS-001", "/images/user6.jpg", "Khalid Al-Thani",   "khalid.althani",   "k.althani@qatarinvestment.com", "Male",   "Qatar Investment Authority", "Senior Analyst",          "Inactive", "-",   "09/27/2025"),
+        new("OYS-002", "/images/user7.jpg", "Nora Al-Subaie",    "nora.subaie",      "nora.s@alfardan.com.qa",        "Female", "Alfardan Group",             "HR Manager",              "Active",   "-",   "09/26/2025"),
+        new("OYS-003", "/images/user8.jpg", "Omar Farouk",       "omar.farouk",      "omar.farouk@petroserv.com",     "Male",   "Petro Services",             "President",               "Active",   "-",   "09/25/2025"),
     };
 
     private List<RegistrationItem> _corpItems = new()
     {
-        new("CRP-001", "Fatima Al-Kuwari",  "fatima.kuwari",    "f.kuwari@barwa.com.qa",         "Female", "Barwa Real Estate",          "Legal Counsel",           "Active",   "No",  "09/24/2025"),
-        new("CRP-002", "Tariq Mahmoud",     "tariq.mahmoud",    "tariq.m@qatarcool.com",         "Male",   "Qatar Cool",                 "Chief Engineer",          "Active",   "No",  "09/23/2025"),
-        new("CRP-003", "Hessa Al-Jaber",    "hessa.jaber",      "hessa.jaber@qnb.com.qa",        "Female", "Qatar National Bank",        "Branch Manager",          "Inactive", "No",  "09/22/2025"),
-        new("CRP-004", "Samir Qaddoura",    "samir.qaddoura",   "s.qaddoura@milaha.com",         "Male",   "Milaha",                     "Fleet Director",          "Active",   "No",  "09/21/2025"),
-        new("CRP-005", "Reem Al-Ansari",    "reem.ansari",      "r.ansari@ashghal.gov.qa",       "Female", "Ashghal",                    "Project Manager",         "Active",   "Yes", "09/20/2025"),
+        new("CRP-001", "/images/user9.jpg", "Fatima Al-Kuwari",  "fatima.kuwari",    "f.kuwari@barwa.com.qa",         "Female", "Barwa Real Estate",          "Legal Counsel",           "Active",   "No",  "09/24/2025"),
+        new("CRP-002", "/images/user10.jpg", "Tariq Mahmoud",     "tariq.mahmoud",    "tariq.m@qatarcool.com",         "Male",   "Qatar Cool",                 "Chief Engineer",          "Active",   "No",  "09/23/2025"),
+        new("CRP-003", "/images/user11.jpg", "Hessa Al-Jaber",    "hessa.jaber",      "hessa.jaber@qnb.com.qa",        "Female", "Qatar National Bank",        "Branch Manager",          "Inactive", "No",  "09/22/2025"),
+        new("CRP-004", "/images/user12.jpg", "Samir Qaddoura",    "samir.qaddoura",   "s.qaddoura@milaha.com",         "Male",   "Milaha",                     "Fleet Director",          "Active",   "No",  "09/21/2025"),
+        new("CRP-005", "/images/user13.jpg", "Reem Al-Ansari",    "reem.ansari",      "r.ansari@ashghal.gov.qa",       "Female", "Ashghal",                    "Project Manager",         "Active",   "Yes", "09/20/2025"),
     };
 
     // ── Filtered + sorted + paged ──────────────────────────────
@@ -387,6 +644,17 @@
             x.Email.Contains(search, StringComparison.OrdinalIgnoreCase) ||
             x.CompanyName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
             x.Position.Contains(search, StringComparison.OrdinalIgnoreCase));
+
+        if (!string.IsNullOrEmpty(_filterCompany))
+            q = q.Where(x => x.CompanyName == _filterCompany);
+        if (!string.IsNullOrEmpty(_filterGender))
+            q = q.Where(x => x.Gender == _filterGender);
+        if (!string.IsNullOrEmpty(_filterPosition))
+            q = q.Where(x => x.Position == _filterPosition);
+        if (!string.IsNullOrEmpty(_filterVip))
+            q = q.Where(x => x.Vip == _filterVip);
+        if (!string.IsNullOrEmpty(_filterStatus))
+            q = q.Where(x => x.Status == _filterStatus);
 
         q = (sortCol, sortAsc) switch
         {
@@ -425,6 +693,6 @@
     private int CorpTo => Math.Min(_corpPage * _corpPageSize, _corpTotalCount);
 
     public record RegistrationItem(
-        string Code, string FullName, string Username, string Email, string Gender,
+        string Code, string ImageUrl, string FullName, string Username, string Email, string Gender,
         string CompanyName, string Position, string Status, string Vip, string DateCreated);
 }

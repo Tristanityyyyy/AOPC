@@ -1,6 +1,341 @@
 ﻿@page "/maintenance/vendor"
-<h3>Vendor</h3>
+@rendermode InteractiveServer
+
+<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Vendor Maintenance</h3>
+
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12">
+        <MaintenanceCard Title="Vendor Maintenance">
+            <ToolbarLeft>
+                <div class="flex flex-col gap-2 w-full">
+                    <!-- Row 1: entries per page (left) | View Inactive + Import + Search (right) -->
+                    <div class="flex items-center gap-2 w-full">
+                        <!-- LEFT -->
+                        <div class="flex items-center gap-2 text-xs text-gray-600">
+                            <select value="@_vendorPageSize" @onchange="e => { _vendorPageSize = int.Parse(e.Value.ToString()); _vendorPage = 1; }"
+                                    class="border border-gray-300 rounded px-2 py-1 text-xs">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>entries per page</span>
+                        </div>
+
+                        <!-- RIGHT -->
+                        <div class="flex items-center gap-2 ml-auto">
+                            <button @onclick="ToggleViewMode"
+                                    class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-700 hover:bg-gray-50 transition font-medium">
+                                @(_showInactive ? "View Active Vendor" : "View Inactive Vendor")
+                                <span>›</span>
+                            </button>
+                            <div class="w-px h-4 bg-gray-300 mx-1"></div>
+                            <span class="text-xs text-gray-600 font-medium">Import Excel File:</span>
+                            <InputFile id="vendorFileInput" OnChange="HandleFileUpload" accept=".xlsx,.xls" class="hidden" />
+                            <label for="vendorFileInput"
+                                   class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs text-gray-600 cursor-pointer hover:bg-gray-50 transition">
+                                <MudIcon Icon="@Icons.Material.Filled.AttachFile" Style="font-size:13px;" />
+                                @(_uploadedFileName ?? "Choose File")
+                            </label>
+                            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium transition"
+                                    style="background:#C9A84C;">
+                                <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" />
+                                Upload
+                            </button>
+                            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-600 hover:bg-gray-50 transition">
+                                <MudIcon Icon="@Icons.Material.Filled.Download" Style="font-size:13px;" />
+                                Download Template
+                            </button>
+                            <div class="w-px h-4 bg-gray-300 mx-1"></div>
+                            <span class="text-xs text-gray-600 font-medium">Search:</span>
+                            <input type="text" @bind="_vendorSearch" @bind:event="oninput"
+                                   class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
+                                   placeholder="Type to search..." />
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Add New (left) | Filter By Business Type (right) -->
+                    <div class="flex items-center w-full">
+                        <!-- LEFT -->
+                        <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                                style="background: #C9A84C;">
+                            + Add New
+                        </button>
+
+                        <!-- RIGHT -->
+                        <div class="relative ml-auto">
+                            <button @onclick="ToggleFilter"
+                                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-700 hover:bg-gray-50 transition">
+                                <MudIcon Icon="@Icons.Material.Filled.FilterList" Style="font-size:13px;" />
+                                Filter By Business Type
+                            </button>
+                            @if (_showFilter)
+                            {
+                                <div class="absolute right-0 top-8 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-72">
+                                    <div class="flex flex-col gap-2 mb-3">
+                                        @foreach (var bt in _businessTypes)
+                                        {
+                                            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
+                                                <input type="checkbox"
+                                                       checked="@_selectedBusinessTypes.Contains(bt)"
+                                                       @onchange="e => ToggleBusinessType(bt, (bool)e.Value)" />
+                                                @bt
+                                            </label>
+                                        }
+                                    </div>
+                                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                                        <button @onclick="ClearFilter"
+                                                class="px-3 py-1 text-xs text-gray-600 cursor-pointer border-none bg-transparent hover:text-gray-900">
+                                            Clear
+                                        </button>
+                                        <button @onclick="ToggleFilter"
+                                                class="px-3 py-1 text-xs text-white rounded cursor-pointer border-none"
+                                                style="background:#C9A84C;">
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </ToolbarLeft>
+
+            <!-- ToolbarRight must be empty -->
+            <ToolbarRight>
+                <div></div>
+            </ToolbarRight>
+            <Body>
+                <div>
+                    <table class="w-full text-xs">
+                        <thead style="position:sticky; top:0; background:white; z-index:1;">
+                            <tr class="border-b-2 border-gray-200">
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap" style="width: 5%;"></th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 18%;"
+                                    @onclick='() => SortVendor("Name")'>
+                                    Name <span class="text-gray-400">@VendorSortIcon("Name")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 20%;"
+                                    @onclick='() => SortVendor("Email")'>
+                                    Email <span class="text-gray-400">@VendorSortIcon("Email")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 35%;"
+                                    @onclick='() => SortVendor("BusinessAddress")'>
+                                    Business Address <span class="text-gray-400">@VendorSortIcon("BusinessAddress")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 8%;"
+                                    @onclick='() => SortVendor("Status")'>
+                                    Status <span class="text-gray-400">@VendorSortIcon("Status")</span>
+                                </th>
+                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 14%;"
+                                    @onclick='() => SortVendor("DateCreated")'>
+                                    Date Created <span class="text-gray-400">@VendorSortIcon("DateCreated")</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (item, index) in FilteredVendorItems.Select((x, i) => (x, i)))
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
+                                    <td class="py-2 px-2" style="width: 5%;">
+                                        <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 flex items-center justify-center pointer-events-none"
+                                             style="background:#f3f4f6;">
+                                            @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
+                                            {
+                                                <img src="@item.ThumbnailUrl" alt="@item.Name" class="w-full h-full object-cover" />
+                                            }
+                                            else
+                                            {
+                                                <MudIcon Icon="@Icons.Material.Filled.Store" Style="font-size:16px; color:#9ca3af;" />
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2" style="height: 64px; width: 18%;">
+                                        <div class="relative w-full" style="height: 64px;">
+                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 8px;">
+                                                @item.Code
+                                            </div>
+                                            <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 16px;">
+                                                @item.Name
+                                            </div>
+                                            <div class="absolute left-0 flex gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 36px;">
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                    Edit
+                                                </button>
+                                                @if (_showInactive)
+                                                {
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-500">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Refresh" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                        Activate
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-500">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Block" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                        Deactivate
+                                                    </button>
+                                                }
+                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="font-size: 14px;" Color="Color.Inherit" />
+                                                    Duplicate
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600" style="width: 20%;">@item.Email</td>
+                                    <td class="py-2 px-2 text-gray-600" style="width: 35%;">@item.BusinessAddress</td>
+                                    <td class="py-2 px-2" style="width: 8%;">
+                                        <span class="@(item.Status == "ACTIVE" ? "text-green-600 font-medium" : "text-gray-500")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap" style="width: 14%;">@item.DateCreated.ToString("M/d/yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </Body>
+            <Footer>
+                <span class="text-xs text-gray-500">
+                    Showing @VendorFrom to @VendorTo of @_totalVendorCount entries
+                </span>
+                <div class="flex items-center gap-1">
+                    <Pagination CurrentPage="_vendorPage" TotalPages="VendorTotalPages" SetPageAction="p => _vendorPage = p" />
+                </div>
+            </Footer>
+        </MaintenanceCard>
+    </div>
+</div>
 
 @code {
+    private string? _uploadedFileName;
+    private bool _showInactive = false;
 
+    private void ToggleViewMode()
+    {
+        _showInactive = !_showInactive;
+        _vendorPage = 1;
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        _uploadedFileName = e.File.Name;
+        await Task.CompletedTask;
+    }
+
+    private string _vendorSearch = "";
+    private int _vendorPage = 1;
+    private int _vendorPageSize = 10;
+    private string _vendorSortCol = "DateCreated";
+    private bool _vendorSortAsc = false;
+    private int _totalVendorCount = 0;
+
+    private void SortVendor(string col)
+    {
+        if (_vendorSortCol == col) _vendorSortAsc = !_vendorSortAsc;
+        else { _vendorSortCol = col; _vendorSortAsc = true; }
+        _vendorPage = 1;
+    }
+    private string VendorSortIcon(string col) => _vendorSortCol == col ? (_vendorSortAsc ? "↑" : "↓") : "⇅";
+
+    private List<VendorItem> _vendorItems = new()
+{
+    new("Vendor-001", null, "Kahve Lounge",                                 "",                                      "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,9,3)),
+    new("Vendor-001",null, "Toro Latin Gastro Bar",                        "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
+    new("Vendor-001",null, "SAX Türkiye",                                  "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
+    new("Vendor-001",null, "Scalini Istanbul",                             "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
+    new("Vendor-001",null, "1860 Lounge",                                  "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
+    new("Vendor-001",null, "Kocatas Patisserie",                           "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
+    new("Vendor-001",null, "Chef Erdal Kocatas Mansions",                  "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
+    new("Vendor-001",null, "The St. Regis Doha",                           "Reservations.Doha@stregis.com",         "Westbay - STR",              "Rooms & Suites",   "ACTIVE",   new DateTime(2025,6,15)),
+    new("Vendor-001",null, "The St. Regis Marsa Arabia Island, The Pearl", "Reservations.Doha@stregis.com",         "The Pearl Island - STR MAI", "Rooms & Suites",   "ACTIVE",   new DateTime(2025,6,15)),
+    new("Vendor-001",null, "Marsa Malaz Kempinski, The Pearl - Doha",      "reservations.marsamalaz@kempinski.com", "The Pearl Island - MMK",     "Rooms & Suites",   "ACTIVE",   new DateTime(2025,6,15)),
+    new("Vendor-001",null, "Test",                                         "",                                      "Muscat",                     "Wellness",         "INACTIVE", new DateTime(2025,5,20)),
+    new("Vendor-001",null, "Huqqa",                                        "dining.reservations@stregis.com",       "Westbay - STR",              "Food & Beverages", "INACTIVE", new DateTime(2025,2,16)),
+    new("Vendor-001",null, "The Lounge",                                   "",                                      "Muscat",                     "Food & Beverages", "INACTIVE", new DateTime(2025,2,16)),
+    new("Vendor-001",null, "Murano Lobby Lounge",                          "",                                      "The Pearl Island - MMK",     "Food & Beverages", "INACTIVE", new DateTime(2024,9,22)),
+    new("Vendor-001",null, "Hakkasan Doha",                                "",                                      "Westbay - STR",              "Food & Beverages", "INACTIVE", new DateTime(2024,9,19)),
+    new("Vendor-001",null, "Oyster Bay Restaurant",                        "dining.reservations@stregis.com",        "Westbay - STR",              "Food & Beverages", "INACTIVE", new DateTime(2024,4,3)),
+    new("Vendor-001",null, "AMNM",                                         "",                                      "Westbay - STR",              "Shops",            "INACTIVE", new DateTime(2024,2,27)),
+    new("Vendor-001",null, "El Faro",                                      "restaurants.marsamalaz@kempinski.com",  "Muscat",                     "Food & Beverages", "INACTIVE", new DateTime(2024,2,21)),
+    new("Vendor-001",null, "Guerlain Spa, Alfardan",                       "spa@alfardan.com.qa",                   "The Pearl Island - MMK",     "Wellness",         "INACTIVE", new DateTime(2024,2,21)),
+};
+
+    private IEnumerable<VendorItem> FilteredVendorItems
+    {
+        get
+        {
+            var statusFilter = _showInactive ? "INACTIVE" : "ACTIVE";
+            var filtered = _vendorItems.Where(x =>
+                x.Status == statusFilter &&
+                (_selectedBusinessTypes.Count == 0 || _selectedBusinessTypes.Contains(x.BusinessType)) &&  
+                (string.IsNullOrEmpty(_vendorSearch) ||
+                 x.Name.Contains(_vendorSearch, StringComparison.OrdinalIgnoreCase) ||
+                 x.Email.Contains(_vendorSearch, StringComparison.OrdinalIgnoreCase) ||
+                 x.BusinessAddress.Contains(_vendorSearch, StringComparison.OrdinalIgnoreCase)));
+
+            var sorted = SortVendorItems(filtered);
+            _totalVendorCount = sorted.Count();
+            return sorted.Skip((_vendorPage - 1) * _vendorPageSize).Take(_vendorPageSize);
+        }
+    }
+
+    private IEnumerable<VendorItem> SortVendorItems(IEnumerable<VendorItem> items) =>
+        (_vendorSortCol, _vendorSortAsc) switch
+        {
+            ("Name", true) => items.OrderBy(x => x.Name),
+            ("Name", false) => items.OrderByDescending(x => x.Name),
+            ("Email", true) => items.OrderBy(x => x.Email),
+            ("Email", false) => items.OrderByDescending(x => x.Email),
+            ("BusinessAddress", true) => items.OrderBy(x => x.BusinessAddress),
+            ("BusinessAddress", false) => items.OrderByDescending(x => x.BusinessAddress),
+            ("Status", true) => items.OrderBy(x => x.Status),
+            ("Status", false) => items.OrderByDescending(x => x.Status),
+            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
+            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
+            _ => items
+        };
+
+    private int VendorTotalPages => (int)Math.Ceiling(_totalVendorCount / (double)_vendorPageSize);
+    private int VendorFrom => _totalVendorCount == 0 ? 0 : (_vendorPage - 1) * _vendorPageSize + 1;
+    private int VendorTo => Math.Min(_vendorPage * _vendorPageSize, _totalVendorCount);
+
+    public record VendorItem(
+        string Code,
+        string? ThumbnailUrl,
+        string Name,
+        string Email,
+        string BusinessAddress,
+        string BusinessType,  
+        string Status,
+        DateTime DateCreated);
+
+
+    private bool _showFilter = false;
+    private void ToggleFilter() => _showFilter = !_showFilter;
+
+    private List<string> _businessTypes = new()
+    {
+        "Rooms & Suites Oman", "Food & Beverages Oman", "Wellness Oman",
+        "International Privileges Oman", "Alfardan Jewellery Oman",
+        "International Privileges", "Alfardan Jewellery", "Rooms & Suites",
+        "Shops", "Wellness", "Access to co-working spaces", "Food & Beverages", "Health"
+    };
+
+    private HashSet<string> _selectedBusinessTypes = new();
+
+    private void ToggleBusinessType(string bt, bool selected)
+    {
+        if (selected) _selectedBusinessTypes.Add(bt);
+        else _selectedBusinessTypes.Remove(bt);
+        _vendorPage = 1;
+    }
+
+    private void ClearFilter()
+    {
+        _selectedBusinessTypes.Clear();
+        _vendorPage = 1;
+    }
 }

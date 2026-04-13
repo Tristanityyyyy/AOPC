@@ -5,6 +5,7 @@ C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\Proje
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\ProjectBlazor.AssemblyInfo.cs
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\ProjectBlazor.csproj.CoreCompileInputs.cache
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\ProjectBlazor.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\ProjectBlazor.sourcelink.json
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\appsettings.json
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\package-lock.json
@@ -12,10 +13,6 @@ C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\packa
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.staticwebassets.runtime.json
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.staticwebassets.endpoints.json
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.exe
-C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.deps.json
-C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.runtimeconfig.json
-C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.dll
-C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.pdb
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\Azure.Core.dll
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\Azure.Identity.dll
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\Humanizer.dll
@@ -148,6 +145,10 @@ C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\Proje
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\ProjectBlazor.dll
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\refint\ProjectBlazor.dll
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\ProjectBlazor.pdb
+C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.deps.json
+C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.runtimeconfig.json
+C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.dll
+C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\bin\Debug\net8.0\ProjectBlazor.pdb
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\ProjectBlazor.genruntimeconfig.cache
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\ref\ProjectBlazor.dll
 C:\Users\tristan\source\repos\ProjectBlazor\ProjectBlazor\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
