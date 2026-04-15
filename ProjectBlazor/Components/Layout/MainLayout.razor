@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
+@using ProjectBlazor.Components
 
 <MudThemeProvider Theme="_theme" />
 <MudPopoverProvider />
@@ -7,7 +8,7 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Style="background: linear-gradient(135deg, #0D1B2A, #1B2B3A);">
+    <MudAppBar Elevation="1" Style="@($"background: linear-gradient(135deg, {ThemeConfig.Colors.Header.Start}, {ThemeConfig.Colors.Header.DarkVariant});")">
         <img src="/images/AOPCWHITEPNG.png"
              alt="Alfardan Oyster Logo"
              style="max-height: 50px; width: auto;" />
@@ -25,7 +26,7 @@
                     <MudText Style="color: white; font-size: 14px; font-weight: 500; line-height: 1.2;">
                         @context.User.Identity?.Name
                     </MudText>
-                    <MudText Style="color: #C9A84C; font-size: 11px; line-height: 1.2;">
+                    <MudText Style="@($"color: {ThemeConfig.Colors.Primary}; font-size: 11px; line-height: 1.2;")">
                         @context.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
                     </MudText>
                 </div>
@@ -37,7 +38,7 @@
                Elevation="2"
                Variant="DrawerVariant.Responsive"
                ClipMode="DrawerClipMode.Always"
-               Style="background: linear-gradient(180deg, #0D1B2A, #1B2B3A);">
+               Style="@($"background: linear-gradient(180deg, {ThemeConfig.Colors.Header.Start}, {ThemeConfig.Colors.Header.DarkVariant});")">
         <NavMenu />
     </MudDrawer>
 
@@ -67,9 +68,9 @@
     {
         PaletteLight = new PaletteLight
         {
-            Primary = "#C9A84C",
-            PrimaryDarken = "#0D1B2A",
-            AppbarBackground = "#0D1B2A",
+            Primary = ThemeConfig.Colors.Primary,
+            PrimaryDarken = ThemeConfig.Colors.Header.Start,
+            AppbarBackground = ThemeConfig.Colors.Header.Start,
         }
     };
 }

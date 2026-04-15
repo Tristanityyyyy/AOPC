@@ -1,0 +1,26 @@
+@namespace ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components
+
+<select value="@Value" @onchange="e => OnValueChanged.InvokeAsync(e.Value)" class="@Class" style="background:@BgColor; @Style">
+    @ChildContent
+</select>
+
+@code {
+    [Parameter]
+    public object? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<object?> OnValueChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string BgColor { get; set; } = ThemeConfig.Colors.Background.Card;
+
+    [Parameter]
+    public string Class { get; set; } = $"border border-gray-300 rounded-lg px-3 py-2 text-xs focus:border-[{ThemeConfig.Colors.Border.Focus}] focus:ring-1 focus:ring-[{ThemeConfig.Colors.Border.Focus}]";
+
+    [Parameter]
+    public string Style { get; set; } = "";
+}

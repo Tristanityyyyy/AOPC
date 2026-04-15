@@ -1,4 +1,5 @@
 @namespace ProjectBlazor.Components
+@using ProjectBlazor.Components
 
 <button disabled="@(CurrentPage == 1)" @onclick="@(() => OnSetPage(1))"
         class="px-2 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
@@ -21,7 +22,7 @@
         var pg = p.Value;
         <button @onclick="@(() => OnSetPage(pg))"
                 class="@($"px-2 py-0.5 text-xs border rounded {(pg == CurrentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
-                style="@(pg == CurrentPage ? "background:#C9A84C;" : "")">
+                style="@(pg == CurrentPage ? $"background:{ThemeConfig.Colors.Primary};" : "")">
             @pg
         </button>
     }

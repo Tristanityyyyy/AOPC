@@ -1,19 +1,20 @@
 ﻿@page "/maintenance/membershipprivilege"
 @rendermode InteractiveServer
 @inject IJSRuntime JS
+@using ProjectBlazor.Components
 
-<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Membership & Privilege</h3>
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Membership & Privilege</h3>
 
 @* Tab bar *@
 <div class="flex border-b border-gray-200 mb-4">
     <button @onclick='() => _activeTab = "privileges"'
             class="px-5 py-2 text-xs font-medium border-b-2 transition"
-            style="@(_activeTab == "privileges" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+            style="@(_activeTab == "privileges" ? "border-color:@ThemeConfig.Colors.Primary; color:@ThemeConfig.Colors.Primary;" : "border-color:transparent; color:@ThemeConfig.Colors.Text.Secondary;")">
         Privileges Maintenance
     </button>
     <button @onclick='() => _activeTab = "tier"'
             class="px-5 py-2 text-xs font-medium border-b-2 transition"
-            style="@(_activeTab == "tier" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+            style="@(_activeTab == "tier" ? "border-color:@ThemeConfig.Colors.Primary; color:@ThemeConfig.Colors.Primary;" : "border-color:transparent; color:@ThemeConfig.Colors.Text.Secondary;")">
         Membership Tier Maintenance
     </button>
 </div>
@@ -28,7 +29,7 @@
 
                 @* Dark header *@
                 <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
-                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                     style="@ThemeConfig.Styles.HeaderGradient">
                     <h4 class="text-sm font-medium text-white">Privileges Maintenance</h4>
                 </div>
 
@@ -55,7 +56,7 @@
                 <div class="mb-3 px-1">
                     <button @onclick="OpenAddPrivilege"
                             class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background: #C9A84C;">
+                            style="background: @ThemeConfig.Colors.Primary;">
                         + Add New
                     </button>
                 </div>
@@ -101,11 +102,11 @@
                                             <div>
                                                 <div class="font-medium text-gray-800">@item.Name</div>
                                                 <div class="flex gap-2 mt-1">
-                                                    <button @onclick="() => OpenEditPrivilege(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                    <button @onclick="() => OpenEditPrivilege(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: @ThemeConfig.Colors.Primary;">
                                                         <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
                                                         Edit
                                                     </button>
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: @ThemeConfig.Colors.Primary;">
                                                         <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="font-size: 14px;" Color="Color.Inherit" />
                                                         Duplicate
                                                     </button>
@@ -113,7 +114,7 @@
                                                         <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
                                                         Delete
                                                     </button>
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #0D1B2A;">
+                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: @ThemeConfig.Colors.Text.Primary;">
                                                         <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size: 14px;" Color="Color.Inherit" />
                                                         Select Vendor
                                                     </button>
@@ -155,7 +156,7 @@
 
                 @* Dark header *@
                 <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
-                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                     style="@ThemeConfig.Styles.HeaderGradient">
                     <h4 class="text-sm font-medium text-white">Membership Tier Maintenance</h4>
                 </div>
 
@@ -181,7 +182,7 @@
                 @* Add New *@
                 <div class="mb-3 px-1">
                     <button @onclick="OpenAddTier" class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background: #C9A84C;">
+                            style="background: @ThemeConfig.Colors.Primary;">
                         + Add New
                     </button>
                 </div>
@@ -228,7 +229,7 @@
                                     <td class="py-2 px-2">
                                         <div class="font-medium text-gray-800">@item.Name</div>
                                         <div class="flex gap-2 mt-1">
-                                            <button @onclick="() => OpenEditTier(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                            <button @onclick="() => OpenEditTier(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: @ThemeConfig.Colors.Primary;">
                                                 <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
                                                 Edit
                                             </button>
@@ -269,63 +270,67 @@
 
 </div>
 
-@* ── Add Privilege Dialog ── *@
-@if (_showAddPrivilegeDialog)
+@* ── Add/Edit Privilege Dialog ── *@
+@if (_showAddPrivilegeDialog || _showEditPrivilegeDialog)
 {
+    var isEdit = _showEditPrivilegeDialog;
     <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: calc(100vh - 90px);">
 
             @* Header *@
-            <div class="flex items-center justify-between px-6 py-3 rounded-t-xl"
-                 style="background:linear-gradient(135deg,#0D1B2A 0%,#134E4A 80%,#0F766E 100%); border-bottom:2px solid rgba(201,168,76,0.35);">
-                <span class="text-sm font-semibold text-white">Add Privilege</span>
-                <button @onclick="() => _showAddPrivilegeDialog = false"
-                        class="w-7 h-7 flex items-center justify-center rounded text-white text-xs font-bold cursor-pointer border-none"
-                        style="background:rgba(255,255,255,0.1);">
-                    ✕
+            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
+                 style="@ThemeConfig.Styles.HeaderGradient">
+                <div class="flex items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.CardGiftcard" Style="font-size:18px; color:white;" />
+                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Privilege" : "Add Privilege")</span>
+                </div>
+                <button @onclick="ClosePrivilegeDialog"
+                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
+                        style="background: rgba(255,255,255,0.15);">
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
                 </button>
             </div>
 
             @* Body *@
             <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
+
+                @* Image Upload *@
                 <div class="flex items-center gap-6 mb-2">
-                    <div class="relative">
-                        <img src="@(string.IsNullOrEmpty(_addPrivImageUrl) ? "/images/default.jpg" : _addPrivImageUrl)"
-                             class="w-24 h-24 rounded-full object-cover border-2 border-gray-200 bg-gray-100" />
-                    </div>
+                    <img src="@(string.IsNullOrEmpty(_privImageUrl) ? "/images/default.jpg" : _privImageUrl)"
+                         class="w-24 h-24 rounded-full object-cover border-2 border-gray-200 bg-gray-100" />
                     <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer"
-                           style="background:#C9A84C;">
+                           style="background:@ThemeConfig.Colors.Primary;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                             <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
                             <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
                             <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" stroke-linejoin="round" />
                         </svg>
                         Upload Image
-                        <InputFile OnChange="OnAddImageSelected" accept="image/*" class="hidden" />
+                        <InputFile OnChange="OnPrivImageSelected" accept="image/*" class="hidden" />
                     </label>
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
-                    <input type="text" @bind="_addPrivName"
+                    <input type="text" @bind="_privName"
                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
-                    <textarea @bind="_addPrivDescription" rows="4"
+                    <textarea @bind="_privDescription" rows="4"
                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Validity</label>
-                    <input type="date" @bind="_addPrivValidityDate"
+                    <input type="date" @bind="_privValidityDate"
                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type Name <span class="text-red-500">*</span></label>
-                    <select @bind="_addPrivBusinessTypeName"
+                    <select @bind="_privBusinessTypeName"
                             class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
                         <option value="">-Select Business Type-</option>
                         <option value="Health">Health</option>
@@ -339,10 +344,10 @@
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Terms and Conditions <span class="text-red-500">*</span></label>
                     <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
-                        <div id="addTermsToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+                        <div id="privTermsToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
                             @RichToolbarButtons()
                         </div>
-                        <div id="addPrivTermsEditor"
+                        <div id="privTermsEditor"
                              class="min-h-[100px] max-h-[200px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
                              contenteditable="true">
                         </div>
@@ -353,10 +358,10 @@
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Mechanics <span class="text-red-500">*</span></label>
                     <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
-                        <div id="addMechToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+                        <div id="privMechToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
                             @RichToolbarButtons()
                         </div>
-                        <div id="addPrivMechEditor"
+                        <div id="privMechEditor"
                              class="min-h-[140px] max-h-[240px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
                              contenteditable="true">
                         </div>
@@ -367,125 +372,13 @@
 
             @* Footer *@
             <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-                <button @onclick="() => _showAddPrivilegeDialog = false"
+                <button @onclick="ClosePrivilegeDialog"
                         class="text-xs text-gray-500 underline cursor-pointer bg-transparent border-none hover:text-gray-700">
                     Cancel
                 </button>
-                <button @onclick="SaveAddPrivilege"
+                <button @onclick="SavePrivilegeDialog"
                         class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
-                        style="background:#C9A84C;">
-                    Submit
-                </button>
-            </div>
-
-        </div>
-    </div>
-}
-
-@* ── Edit Privilege Dialog ── *@
-@if (_showEditPrivilegeDialog)
-{
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: calc(100vh - 90px);">
-
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-3 rounded-t-xl"
-                 style="background:linear-gradient(135deg,#0D1B2A 0%,#134E4A 80%,#0F766E 100%); border-bottom:2px solid rgba(201,168,76,0.35);">
-                <span class="text-sm font-semibold text-white">Edit Privilege</span>
-                <button @onclick="CancelEditPrivilege"
-                        class="w-7 h-7 flex items-center justify-center rounded text-white text-xs font-bold cursor-pointer border-none"
-                        style="background:rgba(255,255,255,0.1);">
-                    ✕
-                </button>
-            </div>
-
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
-                <div class="flex items-center gap-6 mb-2">
-                    <div class="relative">
-                        <img src="@(string.IsNullOrEmpty(_addPrivImageUrl) ? "/images/default.jpg" : _addPrivImageUrl)"
-                             class="w-24 h-24 rounded-full object-cover border-2 border-gray-200 bg-gray-100" />
-                    </div>
-                    <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer"
-                           style="background:#C9A84C;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                            <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
-                            <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
-                            <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" stroke-linejoin="round" />
-                        </svg>
-                        Upload Image
-                        <InputFile OnChange="OnAddImageSelected" accept="image/*" class="hidden" />
-                    </label>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
-                    <input type="text" @bind="_editPrivName"
-                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
-                    <textarea @bind="_editPrivDescription" rows="4"
-                              class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Validity</label>
-                    <input type="date" @bind="_editPrivValidityDate"
-                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type Name <span class="text-red-500">*</span></label>
-                    <select @bind="_editPrivBusinessTypeName"
-                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
-                        <option value="">-Select Business Type-</option>
-                        <option value="Health">Health</option>
-                        <option value="Rooms & Suites">Rooms & Suites</option>
-                        <option value="Food & Beverages">Food & Beverages</option>
-                        <option value="Access to co-working spaces">Access to co-working spaces</option>
-                    </select>
-                </div>
-
-                @* Terms and Conditions *@
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Terms and Conditions <span class="text-red-500">*</span></label>
-                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
-                        <div id="editTermsToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
-                            @RichToolbarButtons()
-                        </div>
-                        <div id="editPrivTermsEditor"
-                             class="min-h-[100px] max-h-[200px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
-                             contenteditable="true">
-                        </div>
-                    </div>
-                </div>
-
-                @* Mechanics *@
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Mechanics <span class="text-red-500">*</span></label>
-                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
-                        <div id="editMechToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
-                            @RichToolbarButtons()
-                        </div>
-                        <div id="editPrivMechEditor"
-                             class="min-h-[140px] max-h-[240px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
-                             contenteditable="true">
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            @* Footer *@
-            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-                <button @onclick="CancelEditPrivilege"
-                        class="text-xs text-gray-500 underline cursor-pointer bg-transparent border-none hover:text-gray-700">
-                    Cancel
-                </button>
-                <button @onclick="SaveEditPrivilege"
-                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
-                        style="background:#C9A84C;">
+                        style="@ThemeConfig.Styles.ButtonPrimary">
                     Submit
                 </button>
             </div>
@@ -501,13 +394,16 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col" style="max-height: calc(100vh - 90px);">
 
             @* Header *@
-            <div class="flex items-center justify-between px-6 py-3 rounded-t-xl"
-                 style="background:linear-gradient(135deg,#0D1B2A 0%,#134E4A 80%,#0F766E 100%); border-bottom:2px solid rgba(201,168,76,0.35);">
-                <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Membership Tier" : "Membership Tier Form")</span>
+            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
+                 style="@ThemeConfig.Styles.HeaderGradient">
+                <div class="flex items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.Star" Style="font-size:18px; color:white;" />
+                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Membership Tier" : "Add Membership Tier")</span>
+                </div>
                 <button @onclick="CloseTierDialog"
-                        class="w-7 h-7 flex items-center justify-center rounded text-white text-xs font-bold cursor-pointer border-none"
-                        style="background:rgba(255,255,255,0.1);">
-                    ✕
+                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
+                        style="background: rgba(255,255,255,0.15);">
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
                 </button>
             </div>
 
@@ -529,9 +425,9 @@
                                 else
                                 {
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-gray-300">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d1d5db" stroke-width="1.5" fill="none" />
-                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="#d1d5db" stroke-width="1.5" fill="none" />
-                                        <circle cx="8" cy="8" r="1.5" fill="#d1d5db" />
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                        <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
                                     </svg>
                                 }
                             </div>
@@ -552,9 +448,9 @@
                                 else
                                 {
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d1d5db" stroke-width="1.5" fill="none" />
-                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="#d1d5db" stroke-width="1.5" fill="none" />
-                                        <circle cx="8" cy="8" r="1.5" fill="#d1d5db" />
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                        <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
                                     </svg>
                                 }
                             </div>
@@ -575,9 +471,9 @@
                                 else
                                 {
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d1d5db" stroke-width="1.5" fill="none" />
-                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="#d1d5db" stroke-width="1.5" fill="none" />
-                                        <circle cx="8" cy="8" r="1.5" fill="#d1d5db" />
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                        <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
                                     </svg>
                                 }
                             </div>
@@ -598,9 +494,9 @@
                                 else
                                 {
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#d1d5db" stroke-width="1.5" fill="none" />
-                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="#d1d5db" stroke-width="1.5" fill="none" />
-                                        <circle cx="8" cy="8" r="1.5" fill="#d1d5db" />
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                        <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
                                     </svg>
                                 }
                             </div>
@@ -681,12 +577,12 @@
             <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
                 <button @onclick="CloseTierDialog"
                         class="text-xs cursor-pointer bg-transparent border-none hover:text-gray-700 underline"
-                        style="color:#C9A84C;">
+                        style="color:@ThemeConfig.Colors.Primary;">
                     Cancel
                 </button>
                 <button @onclick="SaveTierDialog"
-                        class="px-6 py-2 text-xs rounded text-white font-medium border-none cursor-pointer"
-                        style="background:#C9A84C;">
+                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
+                        style="@ThemeConfig.Styles.ButtonPrimary">
                     Submit
                 </button>
             </div>
@@ -789,7 +685,7 @@
                 var pg = p.Value;
                 <button @onclick="@(() => setPage(pg))"
                         class="@($"px-2 py-0.5 text-xs border rounded {(pg == currentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
-                        style="@(pg == currentPage ? "background:#C9A84C;" : "")">
+                        style="@(pg == currentPage ? "background:@ThemeConfig.Colors.Primary;" : "")">
                     @pg
                 </button>
             }
@@ -863,122 +759,109 @@
         string Validity, string NoExpiry, string BusinessTypeName, string DateCreated,
         string TermsHtml = "", string MechanicsHtml = "");
 
-    // ── ADD PRIVILEGE ──
+    // ── UNIFIED PRIVILEGE DIALOG STATE ──
     private bool _showAddPrivilegeDialog = false;
-    private bool _addDialogJustOpened = false;
-    private string _addPrivName = "";
-    private string _addPrivDescription = "";
-    private DateTime _addPrivValidityDate = DateTime.Today;
-    private string _addPrivBusinessTypeName = "";
-    private string _addPrivTermsHtml = "";
-    private string _addPrivMechanicsHtml = "";
+    private bool _showEditPrivilegeDialog = false;
+    private bool _privDialogJustOpened = false;
+    private PrivilegeItem? _editingPrivilege;
+
+    // Unified fields
+    private string _privImageUrl = "";
+    private string _privName = "";
+    private string _privDescription = "";
+    private DateTime _privValidityDate = DateTime.Today;
+    private string _privBusinessTypeName = "";
+    private string _privTermsHtml = "";
+    private string _privMechanicsHtml = "";
 
     private void OpenAddPrivilege()
     {
-        _addPrivName = "";
-        _addPrivDescription = "";
-        _addPrivValidityDate = DateTime.Today;
-        _addPrivBusinessTypeName = "";
-        _addPrivTermsHtml = "";
-        _addPrivMechanicsHtml = "";
+        _privImageUrl = ""; _privName = ""; _privDescription = "";
+        _privValidityDate = DateTime.Today; _privBusinessTypeName = "";
+        _privTermsHtml = ""; _privMechanicsHtml = "";
+        _editingPrivilege = null;
         _showAddPrivilegeDialog = true;
-        _addDialogJustOpened = true;
+        _privDialogJustOpened = true;
     }
-
-    private async Task SaveAddPrivilege()
-    {
-        _addPrivTermsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "addPrivTermsEditor");
-        _addPrivMechanicsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "addPrivMechEditor");
-
-        _privItems.Insert(0, new PrivilegeItem(
-            _addPrivName,
-            "/images/default.jpg",
-            _addPrivDescription,
-            _addPrivValidityDate.ToString("yyyy-MM-ddTHH:mm:ss"),
-            "NO",
-            _addPrivBusinessTypeName,
-            DateTime.Now.ToString("MMM d yyyy h:mmtt"),
-            _addPrivTermsHtml,
-            _addPrivMechanicsHtml
-        ));
-        _showAddPrivilegeDialog = false;
-    }
-
-    // ── EDIT PRIVILEGE ──
-    private bool _showEditPrivilegeDialog = false;
-    private bool _editDialogJustOpened = false;
-    private PrivilegeItem? _editingPrivilege;
-    private string _editPrivName = "";
-    private string _editPrivDescription = "";
-    private DateTime _editPrivValidityDate = DateTime.Today;
-    private string _editPrivBusinessTypeName = "";
-    private string _editPrivTermsHtml = "";
-    private string _editPrivMechanicsHtml = "";
 
     private void OpenEditPrivilege(PrivilegeItem item)
     {
         _editingPrivilege = item;
-        _editPrivName = item.Name;
-        _editPrivDescription = item.Description;
+        _privImageUrl = item.ImageUrl ?? "";
+        _privName = item.Name;
+        _privDescription = item.Description;
         DateTime.TryParse(item.Validity, out var v);
-        _editPrivValidityDate = v == default ? DateTime.Today : v;
-        _editPrivBusinessTypeName = item.BusinessTypeName;
-        _editPrivTermsHtml = item.TermsHtml ?? "";
-        _editPrivMechanicsHtml = item.MechanicsHtml ?? "";
+        _privValidityDate = v == default ? DateTime.Today : v;
+        _privBusinessTypeName = item.BusinessTypeName;
+        _privTermsHtml = item.TermsHtml ?? "";
+        _privMechanicsHtml = item.MechanicsHtml ?? "";
         _showEditPrivilegeDialog = true;
-        _editDialogJustOpened = true;
+        _privDialogJustOpened = true;
     }
 
-    private void CancelEditPrivilege()
+    private void ClosePrivilegeDialog()
     {
+        _showAddPrivilegeDialog = false;
         _showEditPrivilegeDialog = false;
         _editingPrivilege = null;
     }
 
-    private async Task SaveEditPrivilege()
+    private async Task SavePrivilegeDialog()
     {
-        if (_editingPrivilege == null) return;
+        _privTermsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "privTermsEditor");
+        _privMechanicsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "privMechEditor");
 
-        _editPrivTermsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "editPrivTermsEditor");
-        _editPrivMechanicsHtml = await JS.InvokeAsync<string>("richEditor.getHtml", "editPrivMechEditor");
-
-        var index = _privItems.IndexOf(_editingPrivilege);
-        if (index >= 0)
+        if (_showEditPrivilegeDialog && _editingPrivilege != null)
         {
-            _privItems[index] = _editingPrivilege with
+            var index = _privItems.IndexOf(_editingPrivilege);
+            if (index >= 0)
             {
-                Name = _editPrivName,
-                Description = _editPrivDescription,
-                Validity = _editPrivValidityDate.ToString("yyyy-MM-ddTHH:mm:ss"),
-                BusinessTypeName = _editPrivBusinessTypeName,
-                TermsHtml = _editPrivTermsHtml,
-                MechanicsHtml = _editPrivMechanicsHtml
-            };
+                _privItems[index] = _editingPrivilege with
+                {
+                    ImageUrl = _privImageUrl,
+                    Name = _privName,
+                    Description = _privDescription,
+                    Validity = _privValidityDate.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    BusinessTypeName = _privBusinessTypeName,
+                    TermsHtml = _privTermsHtml,
+                    MechanicsHtml = _privMechanicsHtml
+                };
+            }
         }
-        _showEditPrivilegeDialog = false;
-        _editingPrivilege = null;
+        else
+        {
+            _privItems.Insert(0, new PrivilegeItem(
+                _privName,
+                string.IsNullOrEmpty(_privImageUrl) ? "/images/default.jpg" : _privImageUrl,
+                _privDescription,
+                _privValidityDate.ToString("yyyy-MM-ddTHH:mm:ss"),
+                "NO", _privBusinessTypeName,
+                DateTime.Now.ToString("MMM d yyyy h:mmtt"),
+                _privTermsHtml, _privMechanicsHtml
+            ));
+        }
+        ClosePrivilegeDialog();
     }
 
-    // ── LIFECYCLE: bind toolbars after dialog renders ──
+    private async Task OnPrivImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(5 * 1024 * 1024).ReadAsync(buffer);
+        _privImageUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_showAddPrivilegeDialog && _addDialogJustOpened)
+        if ((_showAddPrivilegeDialog || _showEditPrivilegeDialog) && _privDialogJustOpened)
         {
-            _addDialogJustOpened = false;
-            await JS.InvokeVoidAsync("richEditor.bindToolbar", "addTermsToolbar", "addPrivTermsEditor");
-            await JS.InvokeVoidAsync("richEditor.bindToolbar", "addMechToolbar", "addPrivMechEditor");
-        }
-
-        if (_showEditPrivilegeDialog && _editDialogJustOpened)
-        {
-            _editDialogJustOpened = false;
-            await JS.InvokeVoidAsync("richEditor.setHtml", "editPrivTermsEditor", _editPrivTermsHtml);
-            await JS.InvokeVoidAsync("richEditor.setHtml", "editPrivMechEditor", _editPrivMechanicsHtml);
-            await JS.InvokeVoidAsync("richEditor.bindToolbar", "editTermsToolbar", "editPrivTermsEditor");
-            await JS.InvokeVoidAsync("richEditor.bindToolbar", "editMechToolbar", "editPrivMechEditor");
+            _privDialogJustOpened = false;
+            await JS.InvokeVoidAsync("richEditor.setHtml", "privTermsEditor", _privTermsHtml);
+            await JS.InvokeVoidAsync("richEditor.setHtml", "privMechEditor", _privMechanicsHtml);
+            await JS.InvokeVoidAsync("richEditor.bindToolbar", "privTermsToolbar", "privTermsEditor");
+            await JS.InvokeVoidAsync("richEditor.bindToolbar", "privMechToolbar", "privMechEditor");
         }
     }
-
     // ── MEMBERSHIP TIER ──
     private string _tierSearch = "";
     private int _tierPageSize = 10;

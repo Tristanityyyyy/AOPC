@@ -1,13 +1,15 @@
-﻿<div class="flex flex-row @(string.IsNullOrEmpty(Title) ? "justify-center" : "justify-between") items-center gap-4 w-full">
+﻿@using ProjectBlazor.Components
+
+<div class="flex flex-row @(string.IsNullOrEmpty(Title) ? "justify-center" : "justify-between") items-center gap-4 w-full">
     @if (!string.IsNullOrEmpty(Title))
     {
-        <p class="text-base font-medium m-0" style="color: #C9A84C;">@Title</p>
+        <p class="text-base font-medium m-0" style="color: @ThemeConfig.Colors.Primary;">@Title</p>
     }
     <div class="flex gap-1 items-center flex-shrink-0">
         @if (ShowClearFilter)
         {
             <button class="px-2 py-1 text-xs cursor-pointer"
-                    style="background: transparent; border: 1px solid #C9A84C; color: #C9A84C; border-radius: 20px; white-space: nowrap;"
+                    style="background: transparent; border: 1px solid @ThemeConfig.Colors.Primary; color: @ThemeConfig.Colors.Primary; border-radius: 20px; white-space: nowrap;"
                     @onclick="OnClearFilter">
                 Clear Filter
             </button>
@@ -17,7 +19,7 @@
             <div class="relative inline-block">
                 <button @onclick="OnToggleCategoryDropdown"
                         class="flex items-center justify-between gap-0.5 px-2 py-1 rounded-full text-white text-xs cursor-pointer border-none"
-                        style="background: #C9A84C; white-space: nowrap; min-width: 110px;">
+                        style="background: @ThemeConfig.Colors.Primary; white-space: nowrap; min-width: 110px;">
                     @SelectedCategory
                     <svg class="w-2 h-2 flex-shrink-0" viewBox="0 0 24 24" fill="white">
                         <path d="M7 10l5 5 5-5z" />
@@ -43,7 +45,7 @@
         @if (ShowSelectDate)
         {
             <button class="flex items-center gap-0.5 px-2 py-1 rounded-full text-white text-xs cursor-pointer border-none"
-                    style="background: #C9A84C; white-space: nowrap;"
+                    style="background: @ThemeConfig.Colors.Primary; white-space: nowrap;"
                     @onclick="OnSelectDate">
                 <MudIcon Icon="@Icons.Material.Filled.DateRange" Style="font-size: 12px; color: white;" />
                 Select Date
@@ -54,7 +56,7 @@
             <div class="relative inline-block">
                 <button @onclick="OnToggleDropdown"
                         class="flex items-center justify-between gap-0.5 px-2 py-1 rounded-full text-white text-xs cursor-pointer border-none"
-                        style="background: #C9A84C; white-space: nowrap; min-width: 80px;">
+                        style="background: @ThemeConfig.Colors.Primary; white-space: nowrap; min-width: 80px;">
                     @SelectedDays
                     <svg class="w-2 h-2 flex-shrink-0" viewBox="0 0 24 24" fill="white">
                         <path d="M7 10l5 5 5-5z" />
@@ -65,7 +67,7 @@
         @if (ShowViewDetails)
         {
             <button class="flex items-center gap-0.5 px-2 py-1 rounded-full text-white text-xs cursor-pointer border-none"
-                    style="background: #0D1B3A; white-space: nowrap;"
+                    style="background: @ThemeConfig.Colors.Header.Start; white-space: nowrap;"
                     @onclick="OnViewDetails">
                 View Details
             </button>

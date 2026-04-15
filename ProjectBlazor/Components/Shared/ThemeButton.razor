@@ -1,0 +1,32 @@
+@namespace ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components
+
+<button type="button"
+        class="@Class"
+        style="@GetStyle() @Style">
+    @ChildContent
+</button>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Color { get; set; } = ThemeConfig.Colors.Primary;
+
+    [Parameter]
+    public string? GradientEnd { get; set; } = ThemeConfig.Colors.PrimaryDark;
+
+    [Parameter]
+    public bool IsGradient { get; set; } = false;
+
+    [Parameter]
+    public string Class { get; set; } = "px-4 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer";
+
+    [Parameter]
+    public string Style { get; set; } = "";
+
+    private string GetStyle() => IsGradient 
+        ? $"background:linear-gradient(135deg,{Color},{GradientEnd});" 
+        : $"background:{Color};";
+}

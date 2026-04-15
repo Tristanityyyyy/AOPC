@@ -1,7 +1,8 @@
 ﻿@page "/maintenance/position"
 @rendermode InteractiveServer
+@using ProjectBlazor.Components
 
-<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Position Maintenance</h3>
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Position Maintenance</h3>
 
 <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12">
@@ -9,7 +10,7 @@
 
             @* Dark header *@
             <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-4"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
+                 style="@ThemeConfig.Styles.HeaderGradient">
                 <h4 class="text-sm font-medium text-white">Position Maintenance</h4>
             </div>
 
@@ -34,8 +35,8 @@
 
             @* Add New *@
             <div class="mb-3 px-1">
-                <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                        style="background: #C9A84C;">
+                <button @onclick="OpenAddPosition" class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                        style="@ThemeConfig.Styles.ButtonPrimarySolid">
                     + Add New
                 </button>
             </div>
@@ -72,7 +73,7 @@
                                             @item.Name
                                         </div>
                                         <div class="absolute left-0 flex gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 36px;">
-                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                            <button @onclick="() => OpenEditPosition(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="@ThemeConfig.Styles.TextAccent;">
                                                 <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
                                                 Edit
                                             </button>
@@ -104,7 +105,63 @@
         </div>
     </div>
 </div>
+@* ── Add/Edit Position Dialog ── *@
+@if (_showAddPositionDialog || _showEditPositionDialog)
+{
+    var isEdit = _showEditPositionDialog;
+    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col" style="max-height: calc(100vh - 90px);">
 
+            @* Header *@
+            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
+                 style="@ThemeConfig.Styles.HeaderGradient">
+                <div class="flex items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.Work" Style="font-size:18px; color:white;" />
+                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Position" : "Add Position")</span>
+                </div>
+                <button @onclick="ClosePositionDialog"
+                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
+                        style="background: rgba(255,255,255,0.15);">
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
+                </button>
+            </div>
+
+            @* Body *@
+            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-700">
+                        Position Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" @bind="_positionName"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none @ThemeConfig.Styles.BorderFocus" />
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-700">Position Description</label>
+                    <input type="text" @bind="_positionDescription"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none @ThemeConfig.Styles.BorderFocus" />
+                </div>
+
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button @onclick="ClosePositionDialog"
+                        class="text-xs cursor-pointer bg-transparent border-none hover:text-gray-700 underline"
+                        style="@ThemeConfig.Styles.TextAccent">
+                    Cancel
+                </button>
+                <button @onclick="SavePositionDialog"
+                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
+                        style="@ThemeConfig.Styles.ButtonPrimary">
+                    Submit
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
 @code {
     private string _search = "";
     private int _pageSize = 10;
@@ -172,4 +229,61 @@
     private int To => Math.Min(_page * _pageSize, _totalCount);
 
     public record PositionItem(string Code, string Name, string Description, DateTime DateCreated);
+
+    // ── POSITION DIALOG STATE ──
+    private bool _showAddPositionDialog = false;
+    private bool _showEditPositionDialog = false;
+    private PositionItem? _editingPosition;
+
+    private string _positionName = "";
+    private string _positionDescription = "";
+
+    private void OpenAddPosition()
+    {
+        _positionName = "";
+        _positionDescription = "";
+        _editingPosition = null;
+        _showAddPositionDialog = true;
+    }
+
+    private void OpenEditPosition(PositionItem item)
+    {
+        _editingPosition = item;
+        _positionName = item.Name;
+        _positionDescription = item.Description;
+        _showEditPositionDialog = true;
+    }
+
+    private void ClosePositionDialog()
+    {
+        _showAddPositionDialog = false;
+        _showEditPositionDialog = false;
+        _editingPosition = null;
+    }
+
+    private void SavePositionDialog()
+    {
+        if (_showEditPositionDialog && _editingPosition != null)
+        {
+            var index = _items.IndexOf(_editingPosition);
+            if (index >= 0)
+            {
+                _items[index] = _editingPosition with
+                {
+                    Name = _positionName,
+                    Description = _positionDescription
+                };
+            }
+        }
+        else
+        {
+            _items.Insert(0, new PositionItem(
+                $"POS-{(_items.Count + 1):D3}",
+                _positionName,
+                _positionDescription,
+                DateTime.Now
+            ));
+        }
+        ClosePositionDialog();
+    }
 }

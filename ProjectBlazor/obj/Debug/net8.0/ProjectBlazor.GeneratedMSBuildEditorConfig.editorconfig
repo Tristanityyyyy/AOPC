@@ -115,6 +115,26 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/tristan/source/repos/ProjectBlazor/ProjectBlazor/Components/Shared/DataTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRGF0YVRhYmxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tristan/source/repos/ProjectBlazor/ProjectBlazor/Components/Shared/DialogFooter.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRGlhbG9nRm9vdGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tristan/source/repos/ProjectBlazor/ProjectBlazor/Components/Shared/DialogModal.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRGlhbG9nTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tristan/source/repos/ProjectBlazor/ProjectBlazor/Components/Shared/ThemeButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcVGhlbWVCdXR0b24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tristan/source/repos/ProjectBlazor/ProjectBlazor/Components/Shared/ThemeSelect.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcVGhlbWVTZWxlY3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/tristan/source/repos/ProjectBlazor/ProjectBlazor/Components/Templates/MaintenanceCard.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xUZW1wbGF0ZXNcTWFpbnRlbmFuY2VDYXJkLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 

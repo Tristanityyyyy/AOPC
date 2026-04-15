@@ -1,0 +1,18 @@
+﻿@* Components/Shared/DialogFooter.razor *@
+
+<button @onclick="OnCancel"
+        class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
+    Cancel
+</button>
+<button @onclick="OnConfirm"
+        class="px-4 py-2 text-xs rounded-lg text-white font-medium"
+        style="@ButtonStyle">
+    @ConfirmText
+</button>
+
+@code {
+    [Parameter] public string ConfirmText { get; set; } = "Save Changes";
+    [Parameter] public string ButtonStyle { get; set; } = "";
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback OnConfirm { get; set; }
+}

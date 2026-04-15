@@ -1,7 +1,8 @@
 ﻿@page "/maintenance/offering"
 @rendermode InteractiveServer
+@using ProjectBlazor.Components
 
-<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Offering Maintenance</h3>
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Offering Maintenance</h3>
 
 <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12">
@@ -27,7 +28,7 @@
                         @(_uploadedFileName ?? "Choose File")
                     </label>
                     <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium transition"
-                            style="background:#C9A84C;">
+                            style="background:@ThemeConfig.Colors.Primary;">
                         <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" />
                         Upload
                     </button>
@@ -44,8 +45,8 @@
             </ToolbarRight>
             <Body>
                 <div class="mb-4 px-1">
-                    <button class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background: #C9A84C;">
+                    <button @onclick="OpenAddOffer" class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                            style="background: @ThemeConfig.Colors.Primary;">
                         + Add New
                     </button>
                 </div>
@@ -90,14 +91,14 @@
                                 <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
                                     <td class="py-2 px-2" style="width: 5%;">
                                         <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 flex items-center justify-center pointer-events-none"
-                                             style="background:#1a2e3b;">
+                                             style="background:@ThemeConfig.Colors.Header.DarkerVariant;">
                                             @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
                                             {
                                                 <img src="@item.ThumbnailUrl" alt="@item.PromoName" class="w-full h-full object-cover" />
                                             }
                                             else
                                             {
-                                                <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="font-size:16px; color:#C9A84C;" />
+                                                <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="@($"font-size:16px; color:{ThemeConfig.Colors.Primary};")" />
                                             }
                                         </div>
                                     </td>
@@ -110,7 +111,7 @@
                                                 @item.PromoName
                                             </div>
                                             <div class="absolute left-0 flex gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 36px;">
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
+                                                <button @onclick="() => OpenEditOffer(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: @ThemeConfig.Colors.Primary;">
                                                     <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
                                                     Edit
                                                 </button>
@@ -150,7 +151,183 @@
         </MaintenanceCard>
     </div>
 </div>
+@* ── Add/Edit Offering Dialog ── *@
+@if (_showAddOfferDialog || _showEditOfferDialog)
+{
+    var isEdit = _showEditOfferDialog;
+    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col" style="max-height: calc(100vh - 90px);">
 
+            @* Header *@
+            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
+                 style="@ThemeConfig.Styles.HeaderGradient">
+                <div class="flex items-center gap-2">
+                    <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="font-size:18px; color:white;" />
+                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Offering" : "Add Offering")</span>
+                </div>
+                <button @onclick="CloseOfferDialog"
+                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
+                        style="background: rgba(255,255,255,0.15);">
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
+                </button>
+            </div>
+
+            @* Body *@
+            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
+
+                @* Image Upload Row *@
+                <div class="flex items-center gap-6">
+                    <div class="relative flex-shrink-0">
+                        @if (!string.IsNullOrEmpty(_offerImageUrl))
+                        {
+                            <img src="@_offerImageUrl"
+                                 class="w-24 h-24 rounded-full object-cover border-2 border-gray-200" />
+                        }
+                        else
+                        {
+                            <div class="w-24 h-24 rounded-full border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
+                                <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="@($"font-size:32px; color:{ThemeConfig.Colors.Text.LightGray};")" />
+                            </div>
+                        }
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer w-fit"
+                               style="background:@ThemeConfig.Colors.Primary;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
+                                <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" fill="none" />
+                                <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
+                            </svg>
+                            Upload Image
+                            <InputFile OnChange="OnOfferImageSelected" accept="image/jpeg,image/png,image/webp" class="hidden" />
+                        </label>
+                        <span class="text-xs text-gray-400">Valid image type are JPEG, PNG, WEBP.</span>
+                    </div>
+                </div>
+
+                @* Offering Name + Promo Description *@
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Offering Name</label>
+                        <input type="text" @bind="_offerName"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Promo Description</label>
+                        <textarea @bind="_offerPromoDescription" rows="3"
+                                  class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
+                    </div>
+                </div>
+
+                @* Vendor Name + Business Type *@
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Vendor Name</label>
+                        <select @bind="_offerVendorName"
+                                class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                            <option value="">-Select Vendor-</option>
+                            <option value="Vine Terrace">Vine Terrace</option>
+                            <option value="Sky Lounge">Sky Lounge</option>
+                            <option value="The Lounge">The Lounge</option>
+                            <option value="Club Social">Club Social</option>
+                            <option value="Alfardan Club">Alfardan Club</option>
+                            <option value="Rift Bar">Rift Bar</option>
+                            <option value="Executive Dining">Executive Dining</option>
+                            <option value="FAUCHON">FAUCHON</option>
+                            <option value="Serenity Spa">Serenity Spa</option>
+                            <option value="Royal Golf Club">Royal Golf Club</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type</label>
+                        <select @bind="_offerBusinessType"
+                                class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                            <option value="">-Select Business Type-</option>
+                            <option value="Food & Beverages">Food & Beverages</option>
+                            <option value="Health">Health</option>
+                            <option value="Rooms & Suites">Rooms & Suites</option>
+                            <option value="Wellness">Wellness</option>
+                            <option value="Sports & Leisure">Sports & Leisure</option>
+                            <option value="Access to co-working spaces">Access to co-working spaces</option>
+                        </select>
+                    </div>
+                </div>
+
+                @* Membership Tier + Offering URL *@
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Tier</label>
+                        <select @bind="_offerMembershipTier"
+                                class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                            <option value="">-ALL TIERS-</option>
+                            <option value="EXCLUSIVE - VIP">EXCLUSIVE - VIP</option>
+                            <option value="PLATINUM">PLATINUM</option>
+                            <option value="EXCLUSIVE">EXCLUSIVE</option>
+                            <option value="EXCLUSIVE OMAN">EXCLUSIVE OMAN</option>
+                            <option value="BRONZE">BRONZE</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Offering URL</label>
+                        <input type="text" @bind="_offerUrl"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none"
+                               placeholder="https://" />
+                    </div>
+                </div>
+
+                @* Start Date + End Date *@
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Start Date</label>
+                        <input type="date" @bind="_offerStartDate"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">End Date</label>
+                        <input type="date" @bind="_offerEndDate"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                </div>
+
+                @* From Time + To Time + Offer Days *@
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">From Time</label>
+                        <input type="time" @bind="_offerFromTime"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">To Time</label>
+                        <input type="time" @bind="_offerToTime"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Offer Days</label>
+                        <input type="text" @bind="_offerDays"
+                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none"
+                               placeholder="e.g. Sunday to Wednesday" />
+                    </div>
+                </div>
+
+            </div>
+
+            @* Footer *@
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button @onclick="CloseOfferDialog"
+                        class="text-xs cursor-pointer bg-transparent border-none hover:text-gray-700 underline"
+                        style="color:@ThemeConfig.Colors.Primary;">
+                    Cancel
+                </button>
+                <button @onclick="SaveOfferDialog"
+                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
+                        style="@ThemeConfig.Styles.ButtonPrimary">
+                    Submit
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
 @code {
     private string? _uploadedFileName;
 
@@ -246,4 +423,102 @@
         string MembershipTier,
         DateTime DateCreated,
         string Status);
+
+    // ── OFFERING DIALOG STATE ──
+    private bool _showAddOfferDialog = false;
+    private bool _showEditOfferDialog = false;
+    private OfferingItem? _editingOffer;
+
+    // Offer form fields
+    private string _offerImageUrl = "";
+    private string _offerName = "";
+    private string _offerPromoDescription = "";
+    private string _offerVendorName = "";
+    private string _offerBusinessType = "";
+    private string _offerMembershipTier = "";
+    private string _offerUrl = "";
+    private DateTime _offerStartDate = DateTime.Today;
+    private DateTime _offerEndDate = DateTime.Today; 
+    private TimeOnly _offerFromTime = new TimeOnly(18, 0);
+    private TimeOnly _offerToTime = new TimeOnly(21, 0);
+    private string _offerDays = "";
+
+    private void OpenAddOffer()
+    {
+        _offerImageUrl = ""; _offerName = ""; _offerPromoDescription = "";
+        _offerVendorName = ""; _offerBusinessType = ""; _offerMembershipTier = "";
+        _offerUrl = ""; _offerStartDate = DateTime.Today; _offerEndDate = DateTime.Today;
+        _offerFromTime = new TimeOnly(18, 0);
+        _offerToTime = new TimeOnly(21, 0);
+        _offerDays = "";
+        _showAddOfferDialog = true;
+    }
+
+    private void OpenEditOffer(OfferingItem item)
+    {
+        _editingOffer = item;
+        _offerImageUrl = item.ThumbnailUrl ?? "";
+        _offerName = item.PromoName;
+        _offerPromoDescription = item.PromoDescription;
+        _offerVendorName = item.VendorName;
+        _offerBusinessType = item.BusinessTypeName;
+        _offerMembershipTier = item.MembershipTier;
+        _offerUrl = "";
+        _offerStartDate = item.DateCreated;
+        _offerEndDate = item.DateCreated;
+        _offerFromTime = new TimeOnly(18, 0);
+        _offerToTime = new TimeOnly(21, 0);
+        _offerDays = "";
+        _showEditOfferDialog = true;
+    }
+
+    private void CloseOfferDialog()
+    {
+        _showAddOfferDialog = false;
+        _showEditOfferDialog = false;
+        _editingOffer = null;
+    }
+
+    private void SaveOfferDialog()
+    {
+        if (_showEditOfferDialog && _editingOffer != null)
+        {
+            var index = _offerItems.IndexOf(_editingOffer);
+            if (index >= 0)
+            {
+                _offerItems[index] = _editingOffer with
+                {
+                    ThumbnailUrl = _offerImageUrl,
+                    PromoName = _offerName,
+                    PromoDescription = _offerPromoDescription,
+                    VendorName = _offerVendorName,
+                    BusinessTypeName = _offerBusinessType,
+                    MembershipTier = _offerMembershipTier
+                };
+            }
+        }
+        else
+        {
+            _offerItems.Insert(0, new OfferingItem(
+                $"Offering-{(_offerItems.Count + 1):D3}",
+                string.IsNullOrEmpty(_offerImageUrl) ? null : _offerImageUrl,
+                _offerName,
+                _offerPromoDescription,
+                _offerVendorName,
+                _offerBusinessType,
+                _offerMembershipTier,
+                _offerStartDate,
+                "Active"
+            ));
+        }
+        CloseOfferDialog();
+    }
+
+    private async Task OnOfferImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(5 * 1024 * 1024).ReadAsync(buffer);
+        _offerImageUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    }
 }

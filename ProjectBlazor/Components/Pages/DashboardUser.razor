@@ -1,6 +1,8 @@
 ﻿@page "/dashboarduser"
 @rendermode InteractiveServer
-<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Dashboard User</h3>
+@using ProjectBlazor.Components
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Dashboard User</h3>
 
 <div class="grid grid-cols-12 gap-4">
 
@@ -43,37 +45,37 @@
     <MudCarouselItem>
         <div class="flex gap-4 p-4 w-full h-full">
             <div class="flex-1 bg-white rounded-xl border border-gray-200 p-4 flex flex-col">
-                <p class="text-base font-medium mb-4" style="color: #C9A84C;">Top 3 Restaurant</p>
+                <p class="text-base font-medium mb-4" style="color: @ThemeConfig.Colors.Primary;">Top 3 Restaurant</p>
                 <div class="flex items-center justify-center gap-8 flex-1">
                     <svg width="200" height="200" viewBox="0 0 200 200">
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="30" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#134E4A" stroke-width="30"
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Border.Default" stroke-width="30" />
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Header.Middle" stroke-width="30"
                                 stroke-dasharray="293 146" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#C9A84C" stroke-width="30"
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Primary" stroke-width="30"
                                 stroke-dasharray="146 293" stroke-dashoffset="-293" transform="rotate(-90 100 100)" />
-                        <text x="100" y="105" text-anchor="middle" font-size="16" fill="#0D1B2A" font-weight="500">66.67%</text>
+                        <text x="100" y="105" text-anchor="middle" font-size="16" fill="@ThemeConfig.Colors.Text.Primary" font-weight="500">66.67%</text>
                     </svg>
                     <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:#134E4A"></div><span class="text-sm text-gray-600">Bebabel 66.67%</span></div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:#C9A84C"></div><span class="text-sm text-gray-600">Scalini 33.33%</span></div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:@ThemeConfig.Colors.Header.Middle"></div><span class="text-sm text-gray-600">Bebabel 66.67%</span></div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:@ThemeConfig.Colors.Primary"></div><span class="text-sm text-gray-600">Scalini 33.33%</span></div>
                     </div>
                 </div>
             </div>
 
             <div class="flex-1 bg-white rounded-xl border border-gray-200 p-4 flex flex-col">
-                <p class="text-base font-medium mb-4" style="color: #C9A84C;">Top 3 Hotels</p>
+                <p class="text-base font-medium mb-4" style="color: @ThemeConfig.Colors.Primary;">Top 3 Hotels</p>
                 <div class="flex items-center justify-center gap-8 flex-1">
                     <svg width="200" height="200" viewBox="0 0 200 200">
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="30" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#134E4A" stroke-width="30"
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Border.Default" stroke-width="30" />
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Header.Middle" stroke-width="30"
                                 stroke-dasharray="220 220" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#C9A84C" stroke-width="30"
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Primary" stroke-width="30"
                                 stroke-dasharray="220 220" stroke-dashoffset="-220" transform="rotate(-90 100 100)" />
-                        <text x="100" y="105" text-anchor="middle" font-size="16" fill="#0D1B2A" font-weight="500">50%</text>
+                        <text x="100" y="105" text-anchor="middle" font-size="16" fill="@ThemeConfig.Colors.Text.Primary" font-weight="500">50%</text>
                     </svg>
                     <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:#134E4A"></div><span class="text-sm text-gray-600">St. Regis 50%</span></div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:#C9A84C"></div><span class="text-sm text-gray-600">Four Seasons 50%</span></div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:@ThemeConfig.Colors.Header.Middle"></div><span class="text-sm text-gray-600">St. Regis 50%</span></div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:@ThemeConfig.Colors.Primary"></div><span class="text-sm text-gray-600">Four Seasons 50%</span></div>
                     </div>
                 </div>
             </div>
@@ -83,37 +85,37 @@
     <MudCarouselItem>
         <div class="flex gap-4 p-4 w-full h-full">
             <div class="flex-1 bg-white rounded-xl border border-gray-200 p-4 flex flex-col">
-                <p class="text-base font-medium mb-4" style="color: #C9A84C;">Top 3 Store</p>
+                <p class="text-base font-medium mb-4" style="color: @ThemeConfig.Colors.Primary;">Top 3 Store</p>
                 <div class="flex items-center justify-center gap-8 flex-1">
                     <svg width="200" height="200" viewBox="0 0 200 200">
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="30" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#134E4A" stroke-width="30"
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Border.Default" stroke-width="30" />
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Header.Middle" stroke-width="30"
                                 stroke-dasharray="264 176" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#C9A84C" stroke-width="30"
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Primary" stroke-width="30"
                                 stroke-dasharray="176 264" stroke-dashoffset="-264" transform="rotate(-90 100 100)" />
-                        <text x="100" y="105" text-anchor="middle" font-size="16" fill="#0D1B2A" font-weight="500">60%</text>
+                        <text x="100" y="105" text-anchor="middle" font-size="16" fill="@ThemeConfig.Colors.Text.Primary" font-weight="500">60%</text>
                     </svg>
                     <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:#134E4A"></div><span class="text-sm text-gray-600">Store A 60%</span></div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:#C9A84C"></div><span class="text-sm text-gray-600">Store B 40%</span></div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:@ThemeConfig.Colors.Header.Middle"></div><span class="text-sm text-gray-600">Store A 60%</span></div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:@ThemeConfig.Colors.Primary"></div><span class="text-sm text-gray-600">Store B 40%</span></div>
                     </div>
                 </div>
             </div>
 
             <div class="flex-1 bg-white rounded-xl border border-gray-200 p-4 flex flex-col">
-                <p class="text-base font-medium mb-4" style="color: #C9A84C;">Top 3 Spa</p>
+                <p class="text-base font-medium mb-4" style="color: @ThemeConfig.Colors.Primary;">Top 3 Spa</p>
                 <div class="flex items-center justify-center gap-8 flex-1">
                     <svg width="200" height="200" viewBox="0 0 200 200">
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#e5e7eb" stroke-width="30" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#134E4A" stroke-width="30"
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Border.Default" stroke-width="30" />
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Header.Middle" stroke-width="30"
                                 stroke-dasharray="308 132" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
-                        <circle cx="100" cy="100" r="70" fill="none" stroke="#C9A84C" stroke-width="30"
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="@ThemeConfig.Colors.Primary" stroke-width="30"
                                 stroke-dasharray="132 308" stroke-dashoffset="-308" transform="rotate(-90 100 100)" />
-                        <text x="100" y="105" text-anchor="middle" font-size="16" fill="#0D1B2A" font-weight="500">70%</text>
+                        <text x="100" y="105" text-anchor="middle" font-size="16" fill="@ThemeConfig.Colors.Text.Primary" font-weight="500">70%</text>
                     </svg>
                     <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:#134E4A"></div><span class="text-sm text-gray-600">Spa A 70%</span></div>
-                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:#C9A84C"></div><span class="text-sm text-gray-600">Spa B 30%</span></div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:@ThemeConfig.Colors.Header.Middle"></div><span class="text-sm text-gray-600">Spa A 70%</span></div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm" style="background:@ThemeConfig.Colors.Primary"></div><span class="text-sm text-gray-600">Spa B 30%</span></div>
                     </div>
                 </div>
             </div>

@@ -1,23 +1,25 @@
 @page "/maintenance/business"
 @rendermode InteractiveServer
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
 
-<h3 class="text-2xl font-medium mb-4" style="color: #0D1B2A;">Business</h3>
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Business</h3>
 
 @* Tab bar *@
 <div class="flex border-b border-gray-200 mb-4">
     <button @onclick='() => _activeTab = "locations"'
             class="px-5 py-2 text-xs font-medium border-b-2 transition"
-            style="@(_activeTab == "locations" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+            style="@(_activeTab == "locations" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
         Business Locations
     </button>
     <button @onclick='() => _activeTab = "types"'
             class="px-5 py-2 text-xs font-medium border-b-2 transition"
-            style="@(_activeTab == "types" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+            style="@(_activeTab == "types" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
         Business Types
     </button>
     <button @onclick='() => _activeTab = "hotels"'
             class="px-5 py-2 text-xs font-medium border-b-2 transition"
-            style="@(_activeTab == "hotels" ? "border-color:#C9A84C; color:#C9A84C;" : "border-color:transparent; color:#6b7280;")">
+            style="@(_activeTab == "hotels" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
         Hotels
     </button>
 </div>
@@ -28,88 +30,13 @@
     @if (_activeTab == "locations")
     {
         <div class="col-span-12">
-            <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="height:750px;">
-                <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-3"
-                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                    <h4 class="text-sm font-medium text-white">Business Locations</h4>
-                </div>
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        <select value="@_locPageSize" @onchange="e => { _locPageSize = int.Parse(e.Value.ToString()); _locPage = 1; }" class="border border-gray-300 rounded px-2 py-1 text-xs">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                        entries per page
-                    </div>
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        Search:
-                        <input type="text" @bind="_locSearch" @bind:event="oninput"
-                               class="border border-gray-300 rounded px-2 py-1 text-xs w-36" />
-                    </div>
-                </div>
-                <div class="mb-3 px-1">
-                    <button @onclick="OpenAddLocation"
-                            class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background: #C9A84C;">
-                        + Add New
-                    </button>
-                </div>
-                <div class="overflow-y-auto" style="max-height:560px;">
-                    <table class="text-xs table-fixed" style="width: 100%;">
-                        <thead style="position:sticky;top:0;background:white;z-index:1;">
-                            <tr class="border-b-2 border-gray-200">
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" style="width: 45%;" @onclick='() => SortLoc("Name")'>
-                                    Name <span class="text-gray-400">@LocSortIcon("Name")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" style="width: 20%;" @onclick='() => SortLoc("PostalCode")'>
-                                    Postal Code <span class="text-gray-400">@LocSortIcon("PostalCode")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" style="width: 20%;" @onclick='() => SortLoc("Country")'>
-                                    Country <span class="text-gray-400">@LocSortIcon("Country")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" style="width: 15%;" @onclick='() => SortLoc("DateCreated")'>
-                                    Date Created <span class="text-gray-400">@LocSortIcon("DateCreated")</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var (item, index) in FilteredLocItems.Select((x, i) => (x, i)))
-                            {
-                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
-                                    <td class="px-2" style="height: 64px; overflow: hidden;">
-                                        <div class="relative w-full" style="height: 64px;">
-                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 8px;">
-                                                @item.Code
-                                            </div>
-                                            <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 16px;">
-                                                @item.Name
-                                            </div>
-                                            <div class="absolute left-0 flex gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 36px;">
-                                                <button @onclick="() => OpenEditLocation(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                    Edit
-                                                </button>
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-2 text-gray-600" style="height: 64px; vertical-align: middle;">@item.PostalCode</td>
-                                    <td class="px-2 text-gray-600" style="height: 64px; vertical-align: middle;">@item.Country</td>
-                                    <td class="px-2 text-gray-600" style="height: 64px; vertical-align: middle;">@item.DateCreated</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                    <span class="text-xs text-gray-500">Showing @LocFrom to @LocTo of @_locItems.Count entries</span>
-                    <div class="flex items-center gap-1">@RenderPagination(_locPage, LocTotalPages, (p) => _locPage = p)</div>
-                </div>
-            </div>
+            <DataTable T="LocationItem"
+                       Title="Business Locations"
+                       Items="_locItems"
+                       Columns="_locColumns"
+                       ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+                       HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient"
+                       OnAddClick="OpenAddLocation" />
         </div>
     }
 
@@ -117,91 +44,13 @@
     @if (_activeTab == "types")
     {
         <div class="col-span-12">
-            <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="height:750px;">
-                <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-3"
-                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                    <h4 class="text-sm font-medium text-white">Business Types</h4>
-                </div>
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        <select value="@_typePageSize" @onchange="e => { _typePageSize = int.Parse(e.Value.ToString()); _typePage = 1; }" class="border border-gray-300 rounded px-2 py-1 text-xs">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                        entries per page
-                    </div>
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        Search:
-                        <input type="text" @bind="_typeSearch" @bind:event="oninput"
-                               class="border border-gray-300 rounded px-2 py-1 text-xs w-36" />
-                    </div>
-                </div>
-                <div class="mb-3 px-1">
-                    <button @onclick="OpenAddType"
-                            class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background: #C9A84C;">
-                        + Add New
-                    </button>
-                </div>
-                <div class="overflow-y-auto" style="max-height:560px;">
-                    <table class="w-full text-xs">
-                        <thead style="position:sticky;top:0;background:white;z-index:1;">
-                            <tr class="border-b-2 border-gray-200">
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" style="width: 40%;" @onclick='() => SortType("Name")'>
-                                    Name <span class="text-gray-400">@TypeSortIcon("Name")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" style="width: 40%;" @onclick='() => SortType("Promo")'>
-                                    Promo <span class="text-gray-400">@TypeSortIcon("Promo")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" style="width: 20%;" @onclick='() => SortType("DateCreated")'>
-                                    Date Created <span class="text-gray-400">@TypeSortIcon("DateCreated")</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var (item, index) in FilteredTypeItems.Select((x, i) => (x, i)))
-                            {
-                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
-                                    <td class="py-2 px-2">
-                                        <div class="flex items-center gap-2">
-                                            <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
-                                            <div class="relative">
-                                                <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">
-                                                    @item.Code
-                                                </div>
-                                                <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-2">
-                                                    @item.Name
-                                                </div>
-                                                <div class="flex gap-2 mt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-2">
-                                                    <button @onclick="() => OpenEditType(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
-                                                        <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                        Edit
-                                                    </button>
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-500">
-                                                        <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                        Duplicate
-                                                    </button>
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                                        <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-2 text-gray-600">@item.Promo</td>
-                                    <td class="py-2 px-2 text-gray-600">@item.DateCreated</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                    <span class="text-xs text-gray-500">Showing @TypeFrom to @TypeTo of @_typeItems.Count entries</span>
-                    <div class="flex items-center gap-1">@RenderPagination(_typePage, TypeTotalPages, (p) => _typePage = p)</div>
-                </div>
-            </div>
+            <DataTable T="BusinessTypeItem"
+                       Title="Business Types"
+                       Items="_typeItems"
+                       Columns="_typeColumns"
+                       ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+                       HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient"
+                       OnAddClick="OpenAddType" />
         </div>
     }
 
@@ -209,1157 +58,845 @@
     @if (_activeTab == "hotels")
     {
         <div class="col-span-12">
-            <div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="height:750px;">
-                <div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-3"
-                     style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                    <h4 class="text-sm font-medium text-white">Hotels</h4>
-                </div>
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        <select value="@_hotelPageSize" @onchange="e => { _hotelPageSize = int.Parse(e.Value.ToString()); _hotelPage = 1; }" class="border border-gray-300 rounded px-2 py-1 text-xs">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                        </select>
-                        entries per page
-                    </div>
-                    <div class="flex items-center gap-2 text-xs text-gray-600">
-                        Search:
-                        <input type="text" @bind="_hotelSearch" @bind:event="oninput"
-                               class="border border-gray-300 rounded px-2 py-1 text-xs w-48" />
-                    </div>
-                </div>
-                <div class="mb-3 px-1">
-                    <button @onclick="OpenAddHotel"
-                            class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background: #C9A84C;">
-                        + Add New
-                    </button>
-                </div>
-                <div class="overflow-y-auto" style="max-height:560px;">
-                    <table class="w-full text-xs">
-                        <thead style="position:sticky;top:0;background:white;z-index:1;">
-                            <tr class="border-b-2 border-gray-200">
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortHotel("Name")'>
-                                    Name <span class="text-gray-400">@HotelSortIcon("Name")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortHotel("Location")'>
-                                    Location <span class="text-gray-400">@HotelSortIcon("Location")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortHotel("Address")'>
-                                    Address <span class="text-gray-400">@HotelSortIcon("Address")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortHotel("ContactNo")'>
-                                    Contact No. <span class="text-gray-400">@HotelSortIcon("ContactNo")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortHotel("Email")'>
-                                    Email <span class="text-gray-400">@HotelSortIcon("Email")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortHotel("Url")'>
-                                    Url <span class="text-gray-400">@HotelSortIcon("Url")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => SortHotel("DateCreated")'>
-                                    Date Created <span class="text-gray-400">@HotelSortIcon("DateCreated")</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var (item, index) in FilteredHotelItems.Select((x, i) => (x, i)))
-                            {
-                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
-                                    <td class="py-2 px-2">
-                                        <div class="flex items-center gap-2">
-                                            <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
-                                            <div class="relative">
-                                                <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">
-                                                    @item.Code
-                                                </div>
-                                                <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-2">
-                                                    @item.Name
-                                                </div>
-                                                <div class="flex gap-2 mt-1 transition-transform duration-200 translate-y-0 group-hover:translate-y-2">
-                                                    <button @onclick="() => OpenEditHotel(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: #C9A84C;">
-                                                        <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                        Edit
-                                                    </button>
-                                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                                        <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.Location</td>
-                                    <td class="py-2 px-2 text-gray-600">@item.Address</td>
-                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap">@item.ContactNo</td>
-                                    <td class="py-2 px-2 text-gray-600">@item.Email</td>
-                                    <td class="py-2 px-2 text-gray-600 max-w-xs truncate">@item.Url</td>
-                                    <td class="py-2 px-2 text-gray-600">@item.DateCreated</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                    <span class="text-xs text-gray-500">Showing @HotelFrom to @HotelTo of @_hotelItems.Count entries</span>
-                    <div class="flex items-center gap-1">@RenderPagination(_hotelPage, HotelTotalPages, (p) => _hotelPage = p)</div>
-                </div>
-            </div>
+            <DataTable T="HotelItem"
+                       Title="Hotels"
+                       Items="_hotelItems"
+                       Columns="_hotelColumns"
+                       ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+                   HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient"
+                       OnAddClick="OpenAddHotel" />
         </div>
     }
 
 </div>
 
-@* Edit Location Dialog *@
+@* ── Edit Location Dialog ── *@
 @if (_showEditLocationDialog)
 {
-    <div class="fixed inset-0 flex items-center justify-center z-[100]" style="background: rgba(0,0,0,0.4);">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col">
-
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">Edit Business Location</span>
-                </div>
-                <button @onclick="CancelEditLocation"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
+    @* ── Edit Location Dialog ── *@
+    <DialogModal IsVisible="_showEditLocationDialog"
+                 Title="Edit Business Location"
+                 Icon="@Icons.Material.Filled.LocationOn"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 CenterVertically="true"
+                 OnClose="CancelEditLocation">
+        <ChildContent>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Name</label>
+                <input type="text" @bind="_editName"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none" />
             </div>
-
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Name</label>
-                    <input type="text" @bind="_editName" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" />
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Postal Code</label>
-                    <input type="text" @bind="_editPostalCode" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" />
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Country</label>
-                    <input type="text" @bind="_editCountry" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" />
-                </div>
-                
-                <div class="flex justify-end gap-2 pt-2">
-                    <button @onclick="CancelEditLocation" class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">Cancel</button>
-                    <button @onclick="SaveEditLocation" class="px-4 py-2 text-xs rounded-lg text-white font-medium" style="background: #C9A84C;">Save Changes</button>
-                </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Postal Code</label>
+                <input type="text" @bind="_editPostalCode"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none" />
             </div>
-        </div>
-    </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Country</label>
+                <input type="text" @bind="_editCountry"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none" />
+            </div>
+        </ChildContent>
+        <FooterContent>
+            <button @onclick="CancelEditLocation"
+                    class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
+                Cancel
+            </button>
+            <button @onclick="SaveEditLocation"
+                    class="px-4 py-2 text-xs rounded-lg text-white font-medium"
+                    style="@ThemeConfig.Styles.ButtonPrimary">
+                Save Changes
+            </button>
+        </FooterContent>
+    </DialogModal>
 }
 
-@* Add Location Dialog *@
+@* ── Add Location Dialog ── *@
 @if (_showAddLocationDialog)
 {
-    <div class="fixed inset-0 flex items-center justify-center z-[100]" style="background: rgba(0,0,0,0.4);">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col">
+    <DialogModal IsVisible="_showAddLocationDialog"
+                 Title="Add Business Location"
+                 Icon="@Icons.Material.Filled.AddLocation"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 CenterVertically="true"
+                 OnClose="() => _showAddLocationDialog = false">
 
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.AddLocation" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">Add Business Location</span>
-                </div>
-                <button @onclick="() => _showAddLocationDialog = false"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
-            </div>
-
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
-                
+        <ChildContent>
+            <div class="flex flex-col gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-2">Name</label>
-                    <input type="text" @bind="_addName" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" placeholder="Enter location name" />
+                    <input type="text" @bind="_addName"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs"
+                           placeholder="Enter location name" />
                 </div>
-                
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-2">Postal Code</label>
-                    <input type="text" @bind="_addPostalCode" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" placeholder="Enter postal code" />
+                    <input type="text" @bind="_addPostalCode"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs"
+                           placeholder="Enter postal code" />
                 </div>
-                
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-2">Country</label>
-                    <input type="text" @bind="_addCountry" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" placeholder="Enter country" />
-                </div>
-                
-                <div class="flex justify-end gap-2 pt-2">
-                    <button @onclick="() => _showAddLocationDialog = false" class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">Cancel</button>
-                    <button @onclick="AddLocation" class="px-4 py-2 text-xs rounded-lg text-white font-medium" style="background: #C9A84C;">Add Location</button>
+                    <input type="text" @bind="_addCountry"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs"
+                           placeholder="Enter country" />
                 </div>
             </div>
-        </div>
-    </div>
+        </ChildContent>
+
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Location"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => _showAddLocationDialog = false"
+                          OnConfirm="AddLocation" />
+        </FooterContent>
+
+    </DialogModal>
 }
 
-@* Edit Business Type Dialog *@
+@* ── Edit Business Type Dialog ── *@
 @if (_showEditTypeDialog)
 {
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col">
+    <DialogModal IsVisible="_showEditTypeDialog"
+                 Title="Edit Business Type"
+                 Icon="@Icons.Material.Filled.Category"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="CancelEditType">
 
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.Category" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">Edit Business Type</span>
-                </div>
-                <button @onclick="CancelEditType"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
-            </div>
-
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Profile Picture</label>
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
-                            @if (!string.IsNullOrEmpty(_editImageUrl) && !_editImageUrl.StartsWith("/images"))
-                            {
-                                <img src="@_editImageUrl" class="w-full h-full object-cover" alt="Profile" />
-                            }
-                            else
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Business" Style="font-size:28px; color:#9ca3af;" />
-                            }
-                        </div>
-                        <div>
-                            <InputFile id="typeImageInput" OnChange="HandleTypeImageUpload" accept="image/*" class="hidden" />
-                            <label for="typeImageInput"
-                                   class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition text-gray-600">
-                                <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload New Photo
-                            </label>
-                            <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
-                        </div>
+        <ChildContent>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Profile Picture</label>
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
+                        @if (!string.IsNullOrEmpty(_editImageUrl) && !_editImageUrl.StartsWith("/images"))
+                        {
+                            <img src="@_editImageUrl" class="w-full h-full object-cover" alt="Profile" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Business"
+                                     Style="@($"font-size:28px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                        }
+                    </div>
+                    <div>
+                        <InputFile id="typeImageInput" OnChange="HandleTypeImageUpload" accept="image/*" class="hidden" />
+                        <label for="typeImageInput" class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition text-gray-600">
+                            <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload New Photo
+                        </label>
+                        <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
                     </div>
                 </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Business Type Name</label>
-                    <input type="text" @bind="_editTypeName" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" />
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Description</label>
-                    <textarea @bind="_editTypeDescription" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" rows="3"></textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Promo</label>
-                    <input type="text" @bind="_editTypePromo" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" />
-                </div>
-                
-                <div class="flex justify-end gap-2 pt-2">
-                    <button @onclick="CancelEditType" class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">Cancel</button>
-                    <button @onclick="SaveEditType" class="px-4 py-2 text-xs rounded-lg text-white font-medium" style="background: #C9A84C;">Save Changes</button>
-                </div>
             </div>
-        </div>
-    </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Business Type Name</label>
+                <input type="text" @bind="_editTypeName"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none" />
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Description</label>
+                <textarea @bind="_editTypeDescription"
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none"
+                          rows="3"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Promo</label>
+                <input type="text" @bind="_editTypePromo"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none" />
+            </div>
+        </ChildContent>
+
+        <FooterContent>
+            <button @onclick="CancelEditType"
+                    class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
+                Cancel
+            </button>
+            <button @onclick="SaveEditType"
+                    class="px-4 py-2 text-xs rounded-lg text-white font-medium"
+                    style="@ThemeConfig.Styles.ButtonPrimary">
+                Save Changes
+            </button>
+        </FooterContent>
+
+    </DialogModal>
 }
 
-@* Add Business Type Dialog *@
+@* ── Add Business Type Dialog ── *@
 @if (_showAddTypeDialog)
 {
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col">
-
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.AddBusiness" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">Add Business Type</span>
-                </div>
-                <button @onclick="() => _showAddTypeDialog = false"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
-            </div>
-
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Profile Picture</label>
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
-                            @if (!string.IsNullOrEmpty(_addImageUrl) && !_addImageUrl.StartsWith("/images"))
-                            {
-                                <img src="@_addImageUrl" class="w-full h-full object-cover" alt="Profile" />
-                            }
-                            else
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Business" Style="font-size:28px; color:#9ca3af;" />
-                            }
-                        </div>
-                        <div>
-                            <InputFile id="addTypeImageInput" OnChange="HandleAddTypeImageUpload" accept="image/*" class="hidden" />
-                            <label for="addTypeImageInput"
-                                   class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition text-gray-600">
-                                <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload Photo
-                            </label>
-                            <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Business Type Name</label>
-                    <input type="text" @bind="_addTypeName" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" placeholder="Enter business type name" />
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Description</label>
-                    <textarea @bind="_addTypeDescription" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" rows="3" placeholder="Enter description"></textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Promo</label>
-                    <input type="text" @bind="_addTypePromo" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-[#C9A84C] focus:ring-1 focus:ring-[#C9A84C]" placeholder="e.g. Up to 20% preferred rates" />
-                </div>
-                
-                <div class="flex justify-end gap-2 pt-2">
-                    <button @onclick="() => _showAddTypeDialog = false" class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">Cancel</button>
-                    <button @onclick="AddType" class="px-4 py-2 text-xs rounded-lg text-white font-medium" style="background: #C9A84C;">Add Type</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-@* Edit Hotel Dialog *@
-@if (_showEditHotelDialog)
-{
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: 90vh;">
-
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.Hotel" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">Edit Hotel</span>
-                </div>
-                <button @onclick="CancelEditHotel"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
-            </div>
-
-            @* Scrollable Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
-
-                @* Profile Picture *@
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Profile Picture</label>
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
-                            @if (!string.IsNullOrEmpty(_editHotelImageUrl) && !_editHotelImageUrl.StartsWith("/images"))
-                            {
-                                <img src="@_editHotelImageUrl" class="w-full h-full object-cover" alt="Profile" />
-                            }
-                            else
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Hotel" Style="font-size:28px; color:#9ca3af;" />
-                            }
-                        </div>
-                        <div>
-                            <InputFile id="hotelImageInput" OnChange="HandleHotelImageUpload" accept="image/*" class="hidden" />
-                            <label for="hotelImageInput"
-                                   class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition text-gray-600">
-                                <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload New Photo
-                            </label>
-                            <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
-                        </div>
-                    </div>
-                </div>
-
-                @* Hotel Images *@
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Hotel Images (Multiple)</label>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach (var img in _editHotelImages)
+    @* ── Add Business Type Dialog ── *@
+    <DialogModal IsVisible="_showAddTypeDialog"
+                 Title="Add Business Type"
+                 Icon="@Icons.Material.Filled.AddBusiness"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="() => _showAddTypeDialog = false">
+        <ChildContent>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Profile Picture</label>
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
+                        @if (!string.IsNullOrEmpty(_addImageUrl) && !_addImageUrl.StartsWith("/images"))
                         {
-                            <div class="relative w-16 h-16">
-                                <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                                    @if (!img.StartsWith("/images"))
-                                    {
-                                        <img src="@img" class="w-full h-full object-cover" />
-                                    }
-                                    else
-                                    {
-                                        <div class="w-full h-full flex items-center justify-center">
-                                            <MudIcon Icon="@Icons.Material.Filled.Image" Style="font-size:24px; color:#9ca3af;" />
-                                        </div>
-                                    }
-                                </div>
-                                <button @onclick="() => _editHotelImages.Remove(img)"
-                                        class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center border-none cursor-pointer">
-                                    ×
-                                </button>
-                            </div>
+                            <img src="@_addImageUrl" class="w-full h-full object-cover" alt="Profile" />
                         }
-                        <InputFile id="hotelImagesInput" OnChange="HandleHotelImagesUpload" accept="image/*" multiple class="hidden" />
-                        <label for="hotelImagesInput"
-                               class="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-50 transition text-xs gap-1">
-                            <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:20px;" />
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Business"
+                                     Style="@($"font-size:28px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                        }
+                    </div>
+                    <div>
+                        <InputFile id="addTypeImageInput" OnChange="HandleAddTypeImageUpload" accept="image/*" class="hidden" />
+                        <label for="addTypeImageInput" class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition text-gray-600">
+                            <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload Photo
                         </label>
+                        <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
                     </div>
                 </div>
-
-                @* Two column fields *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Hotel Name</label>
-                        <input type="text" @bind="_editHotelName"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1"
-                               style="focus:ring-color:#C9A84C;" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Business Location</label>
-                        <select @bind="_editHotelLocation"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs">
-                            <option value="">Select Location</option>
-                            @foreach (var loc in _locItems)
-                            {
-                                <option value="@loc.Name">@loc.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Contact Number</label>
-                        <input type="text" @bind="_editHotelContactNo"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
-                        <input type="email" @bind="_editHotelEmail"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Website URL</label>
-                        <input type="text" @bind="_editHotelUrl"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Services</label>
-                        <input type="text" @bind="_editHotelServices"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
-                               placeholder="e.g. WiFi, Pool, Spa" />
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Address</label>
-                    <textarea @bind="_editHotelAddress" rows="2"
-                              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
-                    <textarea @bind="_editHotelDescription" rows="3"
-                              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Map (Embed URL or Address)</label>
-                    <input type="text" @bind="_editHotelMap"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
-                           placeholder="Google Maps embed URL or address" />
-                </div>
-
             </div>
-
-            @* Footer *@
-            <div class="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100">
-                <button @onclick="CancelEditHotel"
-                        class="px-5 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 cursor-pointer hover:bg-gray-50 transition">
-                    Cancel
-                </button>
-                <button @onclick="SaveEditHotel"
-                        class="px-5 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
-                        style="background:#C9A84C;">
-                    Save Changes
-                </button>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Business Type Name</label>
+                <input type="text" @bind="_addTypeName"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none"
+                       placeholder="Enter business type name" />
             </div>
-
-        </div>
-    </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Description</label>
+                <textarea @bind="_addTypeDescription"
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none"
+                          rows="3" placeholder="Enter description"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Promo</label>
+                <input type="text" @bind="_addTypePromo"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none"
+                       placeholder="e.g. Up to 20% preferred rates" />
+            </div>
+        </ChildContent>
+        <FooterContent>
+            <button @onclick="() => _showAddTypeDialog = false"
+                    class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
+                Cancel
+            </button>
+            <button @onclick="AddType"
+                    class="px-4 py-2 text-xs rounded-lg text-white font-medium"
+                    style="@ThemeConfig.Styles.ButtonPrimary">
+                Add Type
+            </button>
+        </FooterContent>
+    </DialogModal>
 }
+<DialogModal IsVisible="_showEditHotelDialog"
+             Title="Edit Hotel"
+             Icon="@Icons.Material.Filled.Hotel"
+             HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+             MaxWidth="2xl"
+             OnClose="CancelEditHotel">
+    <ChildContent>
+        <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-2">Profile Picture</label>
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
+                    @if (!string.IsNullOrEmpty(_editHotelImageUrl) && !_editHotelImageUrl.StartsWith("/images"))
+                    {
+                        <img src="@_editHotelImageUrl" class="w-full h-full object-cover" alt="Profile" />
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Hotel"
+                                 Style="@($"font-size:28px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                    }
+                </div>
+                <div>
+                    <InputFile id="hotelImageInput" OnChange="HandleHotelImageUpload" accept="image/*" class="hidden" />
+                    <label for="hotelImageInput" class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition text-gray-600">
+                        <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload New Photo
+                    </label>
+                    <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
+                </div>
+            </div>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-2">Hotel Images (Multiple)</label>
+            <div class="flex flex-wrap gap-2">
+                @foreach (var img in _editHotelImages)
+                {
+                    var imgCopy = img;
+                    <div class="relative w-16 h-16">
+                        <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                            @if (!img.StartsWith("/images"))
+                            {
+                                <img src="@img" class="w-full h-full object-cover" />
+                            }
+                            else
+                            {
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <MudIcon Icon="@Icons.Material.Filled.Image"
+                                             Style="@($"font-size:24px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                                </div>
+                            }
+                        </div>
+                        <button @onclick="() => _editHotelImages.Remove(imgCopy)"
+                                class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center border-none cursor-pointer">
+                            ×
+                        </button>
+                    </div>
+                }
+                <InputFile id="hotelImagesInput" OnChange="HandleHotelImagesUpload" accept="image/*" multiple class="hidden" />
+                <label for="hotelImagesInput" class="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-50 transition">
+                    <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:20px;" />
+                </label>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Hotel Name</label>
+                <input type="text" @bind="_editHotelName" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Business Location</label>
+                <select @bind="_editHotelLocation" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs">
+                    <option value="">Select Location</option>
+                    @foreach (var loc in _locItems)
+                    {
+                        <option value="@loc.Name">@loc.Name</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Contact Number</label>
+                <input type="text" @bind="_editHotelContactNo" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
+                <input type="email" @bind="_editHotelEmail" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Website URL</label>
+                <input type="text" @bind="_editHotelUrl" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" />
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Services</label>
+                <input type="text" @bind="_editHotelServices" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="e.g. WiFi, Pool, Spa" />
+            </div>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Address</label>
+            <textarea @bind="_editHotelAddress" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none"></textarea>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+            <textarea @bind="_editHotelDescription" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none"></textarea>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Map (Embed URL or Address)</label>
+            <input type="text" @bind="_editHotelMap" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="Google Maps embed URL or address" />
+        </div>
+    </ChildContent>
+    <FooterContent>
+        <button @onclick="CancelEditHotel"
+                class="px-5 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition">
+            Cancel
+        </button>
+        <button @onclick="SaveEditHotel"
+                class="px-5 py-2 text-xs rounded-lg text-white font-medium"
+                style="@ThemeConfig.Styles.ButtonPrimary">
+            Save Changes
+        </button>
+    </FooterContent>
+</DialogModal>
 
-@* Add Hotel Dialog *@
+@* ── Add Hotel Dialog ── *@
 @if (_showAddHotelDialog)
 {
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: 90vh;">
 
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="background: linear-gradient(135deg, #0D1B2A 0%, #134E4A 90%, #0F766E 100%);">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.AddHome" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">Add Hotel</span>
-                </div>
-                <button @onclick="() => _showAddHotelDialog = false"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
-            </div>
-
-            @* Scrollable Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
-
-                @* Profile Picture *@
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Profile Picture</label>
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
-                            @if (!string.IsNullOrEmpty(_addHotelImageUrl) && !_addHotelImageUrl.StartsWith("/images"))
-                            {
-                                <img src="@_addHotelImageUrl" class="w-full h-full object-cover" alt="Profile" />
-                            }
-                            else
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Hotel" Style="font-size:28px; color:#9ca3af;" />
-                            }
-                        </div>
-                        <div>
-                            <InputFile id="addHotelImageInput" OnChange="HandleAddHotelImageUpload" accept="image/*" class="hidden" />
-                            <label for="addHotelImageInput"
-                                   class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition text-gray-600">
-                                <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload New Photo
-                            </label>
-                            <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
-                        </div>
-                    </div>
-                </div>
-
-                @* Hotel Images *@
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">Hotel Images (Multiple)</label>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach (var img in _addHotelImages)
+    @* ── Add Hotel Dialog ── *@
+    <DialogModal IsVisible="_showAddHotelDialog"
+                 Title="Add Hotel"
+                 Icon="@Icons.Material.Filled.AddHome"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 MaxWidth="2xl"
+                 OnClose="() => _showAddHotelDialog = false">
+        <ChildContent>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Profile Picture</label>
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
+                        @if (!string.IsNullOrEmpty(_addHotelImageUrl) && !_addHotelImageUrl.StartsWith("/images"))
                         {
-                            <div class="relative w-16 h-16">
-                                <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
-                                    @if (!img.StartsWith("/images"))
-                                    {
-                                        <img src="@img" class="w-full h-full object-cover" />
-                                    }
-                                    else
-                                    {
-                                        <div class="w-full h-full flex items-center justify-center">
-                                            <MudIcon Icon="@Icons.Material.Filled.Image" Style="font-size:24px; color:#9ca3af;" />
-                                        </div>
-                                    }
-                                </div>
-                                <button @onclick="() => _addHotelImages.Remove(img)"
-                                        class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center border-none cursor-pointer">
-                                    ×
-                                </button>
-                            </div>
+                            <img src="@_addHotelImageUrl" class="w-full h-full object-cover" alt="Profile" />
                         }
-                        <InputFile id="addHotelImagesInput" OnChange="HandleAddHotelImagesUpload" accept="image/*" multiple class="hidden" />
-                        <label for="addHotelImagesInput"
-                               class="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-50 transition text-xs gap-1">
-                            <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:20px;" />
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Hotel"
+                                     Style="@($"font-size:28px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                        }
+                    </div>
+                    <div>
+                        <InputFile id="addHotelImageInput" OnChange="HandleAddHotelImageUpload" accept="image/*" class="hidden" />
+                        <label for="addHotelImageInput" class="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-50 transition text-gray-600">
+                            <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload New Photo
                         </label>
+                        <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB</p>
                     </div>
                 </div>
-
-                @* Two column fields *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Hotel Name</label>
-                        <input type="text" @bind="_addHotelName"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
-                               placeholder="Enter hotel name" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Business Location</label>
-                        <select @bind="_addHotelLocation" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs">
-                            <option value="">Select Location</option>
-                            @foreach (var loc in _locItems)
-                            {
-                                <option value="@loc.Name">@loc.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Contact Number</label>
-                        <input type="text" @bind="_addHotelContactNo"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
-                               placeholder="e.g. +974 4446 0000" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
-                        <input type="email" @bind="_addHotelEmail"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
-                               placeholder="e.g. info@hotel.com" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Website URL</label>
-                        <input type="text" @bind="_addHotelUrl"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
-                               placeholder="https://..." />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Services</label>
-                        <input type="text" @bind="_addHotelServices"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
-                               placeholder="e.g. WiFi, Pool, Spa" />
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Address</label>
-                    <textarea @bind="_addHotelAddress" rows="2"
-                              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none"
-                              placeholder="Enter full address"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
-                    <textarea @bind="_addHotelDescription" rows="3"
-                              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none"
-                              placeholder="Enter hotel description"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Map (Embed URL or Address)</label>
-                    <input type="text" @bind="_addHotelMap"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs"
-                           placeholder="Google Maps embed URL or address" />
-                </div>
-                
-                <div class="flex justify-end gap-2 pt-2">
-                    <button @onclick="() => _showAddHotelDialog = false" class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">Cancel</button>
-                    <button @onclick="AddHotel" class="px-5 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer" style="background:#C9A84C;">Add Hotel</button>
-                </div>
-
             </div>
-        </div>
-    </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-2">Hotel Images (Multiple)</label>
+                <div class="flex flex-wrap gap-2">
+                    @foreach (var img in _addHotelImages)
+                    {
+                        var imgCopy = img;
+                        <div class="relative w-16 h-16">
+                            <div class="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                                @if (!img.StartsWith("/images"))
+                                {
+                                    <img src="@img" class="w-full h-full object-cover" />
+                                }
+                                else
+                                {
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Image"
+                                                 Style="@($"font-size:24px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                                    </div>
+                                }
+                            </div>
+                            <button @onclick="() => _addHotelImages.Remove(imgCopy)"
+                                    class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center border-none cursor-pointer">
+                                ×
+                            </button>
+                        </div>
+                    }
+                    <InputFile id="addHotelImagesInput" OnChange="HandleAddHotelImagesUpload" accept="image/*" multiple class="hidden" />
+                    <label for="addHotelImagesInput" class="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-50 transition">
+                        <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size:20px;" />
+                    </label>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Hotel Name</label>
+                    <input type="text" @bind="_addHotelName" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="Enter hotel name" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Business Location</label>
+                    <select @bind="_addHotelLocation" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs">
+                        <option value="">Select Location</option>
+                        @foreach (var loc in _locItems)
+                        {
+                            <option value="@loc.Name">@loc.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Contact Number</label>
+                    <input type="text" @bind="_addHotelContactNo" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="e.g. +974 4446 0000" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Email</label>
+                    <input type="email" @bind="_addHotelEmail" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="e.g. info@hotel.com" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Website URL</label>
+                    <input type="text" @bind="_addHotelUrl" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="https://..." />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Services</label>
+                    <input type="text" @bind="_addHotelServices" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="e.g. WiFi, Pool, Spa" />
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Address</label>
+                <textarea @bind="_addHotelAddress" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none" placeholder="Enter full address"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                <textarea @bind="_addHotelDescription" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs resize-none" placeholder="Enter hotel description"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Map (Embed URL or Address)</label>
+                <input type="text" @bind="_addHotelMap" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs" placeholder="Google Maps embed URL or address" />
+            </div>
+        </ChildContent>
+        <FooterContent>
+            <button @onclick="() => _showAddHotelDialog = false"
+                    class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
+                Cancel
+            </button>
+            <button @onclick="AddHotel"
+                    class="px-5 py-2 text-xs rounded-lg text-white font-medium"
+                    style="@ThemeConfig.Styles.ButtonPrimary">
+                Add Hotel
+            </button>
+        </FooterContent>
+    </DialogModal>
 }
+
 @code {
     private string _activeTab = "locations";
-    
-    // ── Location Edit State ──
+
+    // ── Column Definitions ──
+    private List<TableColumn<LocationItem>> _locColumns = new();
+    private List<TableColumn<BusinessTypeItem>> _typeColumns = new();
+    private List<TableColumn<HotelItem>> _hotelColumns = new();
+
+    protected override void OnInitialized()
+    {
+        _locColumns = new List<TableColumn<LocationItem>>
+        {
+            new() {
+                Header = "Name", Width = "45%", SortField = "Name",
+                RenderCell = item => __builder =>
+                {
+                    <div class="relative w-full" style="height:64px;">
+                        <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:8px;">@item.Code</div>
+                        <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 group-hover:translate-y-2" style="top:16px;">@item.Name</div>
+                        <div class="absolute left-0 flex gap-2 transition-transform duration-200 group-hover:translate-y-2" style="top:36px;">
+                            <button @onclick="() => OpenEditLocation(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                            </button>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Postal Code", Width = "20%", SortField = "PostalCode",
+                RenderCell = item => __builder => {
+
+                <span class="text-gray-600">@item.PostalCode</span>
+                ; }
+            },
+            new() {
+                Header = "Country", Width = "20%", SortField = "Country",
+                RenderCell = item => __builder => {
+
+                <span class="text-gray-600">@item.Country</span>
+                ; }
+            },
+            new() {
+                Header = "Date Created", Width = "15%", SortField = "DateCreated",
+                RenderCell = item => __builder => {
+
+                <span class="text-gray-600">@item.DateCreated</span>
+                ; }
+            }
+        };
+
+        _typeColumns = new List<TableColumn<BusinessTypeItem>>
+        {
+            new() {
+                Header = "Name", Width = "40%", SortField = "Name",
+                RenderCell = item => __builder =>
+                {
+                <div class="flex items-center gap-2">
+                    <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
+                    <div class="relative">
+                        <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">@item.Code</div>
+                        <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 group-hover:translate-y-2">@item.Name</div>
+                        <div class="flex gap-2 mt-1 transition-transform duration-200 group-hover:translate-y-2">
+                            <button @onclick="() => OpenEditType(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-500">
+                                <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="font-size:14px;" Color="Color.Inherit" /> Duplicate
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                ;
+                }
+            },
+            new() {
+                Header = "Promo", Width = "40%", SortField = "Promo",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.Promo</span>
+; }
+            },
+            new() {
+                Header = "Date Created", Width = "20%", SortField = "DateCreated",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.DateCreated</span>
+; }
+            }
+        };
+
+        _hotelColumns = new List<TableColumn<HotelItem>>
+        {
+            new() {
+                Header = "Name", SortField = "Name",
+                RenderCell = item => __builder =>
+                {
+                    <div class="flex items-center gap-2">
+                        <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
+                        <div class="relative">
+                            <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">@item.Code</div>
+                            <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 group-hover:translate-y-2">@item.Name</div>
+                            <div class="flex gap-2 mt-1 transition-transform duration-200 group-hover:translate-y-2">
+                                <button @onclick="() => OpenEditHotel(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                                </button>
+                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Location", SortField = "Location",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600 whitespace-nowrap">@item.Location</span>
+; }
+            },
+            new() {
+                Header = "Address", SortField = "Address",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.Address</span>
+; }
+            },
+            new() {
+                Header = "Contact No.", SortField = "ContactNo",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600 whitespace-nowrap">@item.ContactNo</span>
+; }
+            },
+            new() {
+                Header = "Email", SortField = "Email",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.Email</span>
+; }
+            },
+            new() {
+                Header = "URL", SortField = "Url",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600 truncate block max-w-xs">@item.Url</span>
+; }
+            },
+            new() {
+                Header = "Date Created", SortField = "DateCreated",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.DateCreated</span>
+; }
+            }
+        };
+    }
+
+    // ── Location State ──
     private bool _showEditLocationDialog = false;
-    private LocationItem? _editingLocation;
-    private string _editName = "";
-    private string _editPostalCode = "";
-    private string _editCountry = "";
-    
-    // ── Location Add State ──
     private bool _showAddLocationDialog = false;
-    private string _addName = "";
-    private string _addPostalCode = "";
-    private string _addCountry = "";
+    private LocationItem? _editingLocation;
+    private string _editName = "", _editPostalCode = "", _editCountry = "";
+    private string _addName = "", _addPostalCode = "", _addCountry = "";
 
-    // ── Business Type Edit State ──
+    // ── Business Type State ──
     private bool _showEditTypeDialog = false;
-    private BusinessTypeItem? _editingType;
-    private string _editImageUrl = "";
-    private string _editTypeName = "";
-    private string _editTypeDescription = "";
-    private string _editTypePromo = "";
-
-    // ── Business Type Add State ──
     private bool _showAddTypeDialog = false;
-    private string _addImageUrl = "";
-    private string _addTypeName = "";
-    private string _addTypeDescription = "";
-    private string _addTypePromo = "";
+    private BusinessTypeItem? _editingType;
+    private string _editImageUrl = "", _editTypeName = "", _editTypeDescription = "", _editTypePromo = "";
+    private string _addImageUrl = "", _addTypeName = "", _addTypeDescription = "", _addTypePromo = "";
 
-    // ── Hotel Edit State ──
+    // ── Hotel State ──
     private bool _showEditHotelDialog = false;
     private bool _showAddHotelDialog = false;
     private HotelItem? _editingHotel;
-    private string _editHotelImageUrl = "";
+    private string _editHotelImageUrl = "", _editHotelName = "", _editHotelLocation = "";
+    private string _editHotelAddress = "", _editHotelContactNo = "", _editHotelEmail = "";
+    private string _editHotelUrl = "", _editHotelDescription = "", _editHotelServices = "", _editHotelMap = "";
     private List<string> _editHotelImages = new();
-    private string _editHotelName = "";
-    private string _editHotelContactNo = "";
-    private string _editHotelAddress = "";
-    private string _editHotelDescription = "";
-    private string _editHotelServices = "";
-    private string _editHotelEmail = "";
-    private string _editHotelUrl = "";
-    private string _editHotelMap = "";
-
-    // ── Hotel Add State ──
-    private string _addHotelImageUrl = "";
+    private string _addHotelImageUrl = "", _addHotelName = "", _addHotelLocation = "";
+    private string _addHotelAddress = "", _addHotelContactNo = "", _addHotelEmail = "";
+    private string _addHotelUrl = "", _addHotelDescription = "", _addHotelServices = "", _addHotelMap = "";
     private List<string> _addHotelImages = new();
-    private string _addHotelName = "";
-    private string _addHotelLocation = "";
-    private string _addHotelAddress = "";
-    private string _addHotelContactNo = "";
-    private string _addHotelDescription = "";
-    private string _addHotelServices = "";
-    private string _addHotelEmail = "";
-    private string _addHotelUrl = "";
-    private string _addHotelMap = "";
-    private string _editHotelLocation = "";
 
-    // ── PAGINATION RENDERER (shared) ──
-    private RenderFragment RenderPagination(int currentPage, int totalPages, Action<int> setPage) => __builder =>
-    {
-        var pages = new List<int?>();
-        for (int i = 1; i <= totalPages; i++)
-        {
-            if (i == 1 || i == totalPages || (i >= currentPage - 1 && i <= currentPage + 1))
-                pages.Add(i);
-            else if (pages.Last() != null)
-                pages.Add(null);
-        }
-
-        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(1))"
-                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            «
-        </button>
-        <button disabled="@(currentPage == 1)" @onclick="@(() => setPage(currentPage - 1))"
-                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            ‹
-        </button>
-
-        @foreach (var p in pages.Distinct())
-        {
-            if (p == null)
-            {
-                <span class="px-1 text-xs text-gray-400">…</span>
-            }
-            else
-            {
-                var pg = p.Value;
-                <button @onclick="@(() => setPage(pg))"
-                        class="@($"px-2 py-0.5 text-xs border rounded {(pg == currentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
-                        style="@(pg == currentPage ? "background:#C9A84C;" : "")">
-                    @pg
-                </button>
-            }
-        }
-
-        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(currentPage + 1))"
-                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            ›
-        </button>
-        <button disabled="@(currentPage == totalPages)" @onclick="@(() => setPage(totalPages))"
-                class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
-            »
-        </button>
-    };
-
-    // ── BUSINESS LOCATIONS ──
-    private string _locSearch = "";
-    private int _locPageSize = 10;
-    private int _locPage = 1;
-    private string _locSortCol = "Name";
-    private bool _locSortAsc = true;
-
-    private void SortLoc(string col) { if (_locSortCol == col) _locSortAsc = !_locSortAsc; else { _locSortCol = col; _locSortAsc = true; } _locPage = 1; }
-    private string LocSortIcon(string col) => _locSortCol == col ? (_locSortAsc ? "↑" : "↓") : "⇅";
-
+    // ── Location Data & Methods ──
     private List<LocationItem> _locItems = new()
     {
-        new("LOC-001","Istanbul",         "0000",  "Turkey", "2025-09-29T15:57:32.45"),
-        new("LOC-002","Lusail",           "26660", "Qatar",  "2025-09-29T15:57:32.45"),
-        new("LOC-003","Grand Hamad Seda Hotel", "26660", "Qatar",  "2025-09-29T15:57:32.45"),
-        new("LOC-004","The Pearl Island Oriental Philippines etc etc","26660","Qatar",  "2025-09-29T15:57:32.45"),
-         new("LOC-005","Istanbul",         "0000",  "Turkey", "2025-09-29T15:57:32.45"),
-        new("LOC-006","Lusail",           "26660", "Qatar",  "2025-09-29T15:57:32.45"),
-        new("LOC-007","Grand Hamad Seda Hotel", "26660", "Qatar",  "2025-09-29T15:57:32.45"),
-        new("LOC-008","The Pearl Island Oriental Philippines etc etc","26660","Qatar",  "2025-09-29T15:57:32.45"),
-         new("LOC-009","Istanbul",         "0000",  "Turkey", "2025-09-29T15:57:32.45"),
-        new("LOC-010","Lusail",           "26660", "Qatar",  "2025-09-29T15:57:32.45"),
-        new("LOC-011","Grand Hamad Seda Hotel", "26660", "Qatar",  "2025-09-29T15:57:32.45"),
-        new("LOC-012","The Pearl Island Oriental Philippines etc etc","26660","Qatar",  "2025-09-29T15:57:32.45")
+        new("LOC-001","Istanbul","0000","Turkey","2025-09-29T15:57:32.45"),
+        new("LOC-002","Lusail","26660","Qatar","2025-09-29T15:57:32.45"),
+        new("LOC-003","Grand Hamad Seda Hotel","26660","Qatar","2025-09-29T15:57:32.45"),
+        new("LOC-004","The Pearl Island Oriental Philippines etc etc","26660","Qatar","2025-09-29T15:57:32.45"),
+        new("LOC-005","Istanbul","0000","Turkey","2025-09-29T15:57:32.45"),
+        new("LOC-006","Lusail","26660","Qatar","2025-09-29T15:57:32.45"),
+        new("LOC-007","Grand Hamad Seda Hotel","26660","Qatar","2025-09-29T15:57:32.45"),
+        new("LOC-008","The Pearl Island Oriental Philippines etc etc","26660","Qatar","2025-09-29T15:57:32.45"),
+        new("LOC-009","Istanbul","0000","Turkey","2025-09-29T15:57:32.45"),
+        new("LOC-010","Lusail","26660","Qatar","2025-09-29T15:57:32.45"),
+        new("LOC-011","Grand Hamad Seda Hotel","26660","Qatar","2025-09-29T15:57:32.45"),
+        new("LOC-012","The Pearl Island Oriental Philippines etc etc","26660","Qatar","2025-09-29T15:57:32.45")
     };
-
-    private IEnumerable<LocationItem> FilteredLocItems =>
-        SortLocItems(_locItems.Where(x => string.IsNullOrEmpty(_locSearch) ||
-            x.Name.Contains(_locSearch, StringComparison.OrdinalIgnoreCase)))
-        .Skip((_locPage - 1) * _locPageSize).Take(_locPageSize);
-
-    private IEnumerable<LocationItem> SortLocItems(IEnumerable<LocationItem> items) =>
-        (_locSortCol, _locSortAsc) switch
-        {
-            ("Name", true) => items.OrderBy(x => x.Name),
-            ("Name", false) => items.OrderByDescending(x => x.Name),
-            ("PostalCode", true) => items.OrderBy(x => x.PostalCode),
-            ("PostalCode", false) => items.OrderByDescending(x => x.PostalCode),
-            ("Country", true) => items.OrderBy(x => x.Country),
-            ("Country", false) => items.OrderByDescending(x => x.Country),
-            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
-            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
-            _ => items
-        };
-
-    private int LocTotalPages => (int)Math.Ceiling(_locItems.Count / (double)_locPageSize);
-    private int LocFrom => (_locPage - 1) * _locPageSize + 1;
-    private int LocTo => Math.Min(_locPage * _locPageSize, _locItems.Count);
 
     public record LocationItem(string Code, string Name, string PostalCode, string Country, string DateCreated);
 
-    private void OpenEditLocation(LocationItem item)
+    private void OpenAddLocation() { _addName = ""; _addPostalCode = ""; _addCountry = ""; _showAddLocationDialog = true; }
+    private void AddLocation()
     {
-        _editingLocation = item;
-        _editName = item.Name;
-        _editPostalCode = item.PostalCode;
-        _editCountry = item.Country;
-        _showEditLocationDialog = true;
+        _locItems.Insert(0, new LocationItem($"LOC-{_locItems.Count + 1:D3}", _addName, _addPostalCode, _addCountry, DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")));
+        _showAddLocationDialog = false;
     }
 
+    private void OpenEditLocation(LocationItem item) { _editingLocation = item; _editName = item.Name; _editPostalCode = item.PostalCode; _editCountry = item.Country; _showEditLocationDialog = true; }
     private void SaveEditLocation()
     {
         if (_editingLocation != null)
         {
-            var index = _locItems.FindIndex(x => x.Code == _editingLocation.Code);
-            if (index >= 0)
-            {
-                _locItems[index] = new LocationItem(_editingLocation.Code, _editName, _editPostalCode, _editCountry, _editingLocation.DateCreated);
-            }
+            var i = _locItems.FindIndex(x => x.Code == _editingLocation.Code);
+            if (i >= 0) _locItems[i] = new LocationItem(_editingLocation.Code, _editName, _editPostalCode, _editCountry, _editingLocation.DateCreated);
         }
         _showEditLocationDialog = false;
     }
+    private void CancelEditLocation() => _showEditLocationDialog = false;
 
-    private void CancelEditLocation()
-    {
-        _showEditLocationDialog = false;
-    }
-
-    private void AddLocation()
-    {
-        var newCode = $"LOC-{_locItems.Count + 1:D3}";
-        var newItem = new LocationItem(newCode, _addName, _addPostalCode, _addCountry, DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"));
-        _locItems.Insert(0, newItem);
-        _showAddLocationDialog = false;
-    }
-
-    private void OpenAddLocation()
-    {
-        _addName = "";
-        _addPostalCode = "";
-        _addCountry = "";
-        _showAddLocationDialog = true;
-    }
-
-    private void OpenAddType()
-    {
-        _addImageUrl = "";
-        _addTypeName = "";
-        _addTypeDescription = "";
-        _addTypePromo = "";
-        _showAddTypeDialog = true;
-    }
-
-    private void AddType()
-    {
-        var newCode = $"BT-{_typeItems.Count + 1:D3}";
-        var newItem = new BusinessTypeItem(newCode, _addTypeName, _addImageUrl, _addTypePromo, _addTypeDescription, DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"));
-        _typeItems.Insert(0, newItem);
-        _showAddTypeDialog = false;
-    }
-
-    private void OpenAddHotel()
-    {
-        _addHotelImageUrl = "";
-        _addHotelImages = new List<string>();
-        _addHotelName = "";
-        _addHotelLocation = "";
-        _addHotelAddress = "";
-        _addHotelContactNo = "";
-        _addHotelEmail = "";
-        _addHotelUrl = "";
-        _addHotelDescription = "";
-        _addHotelServices = "";
-        _addHotelMap = "";
-        _showAddHotelDialog = true;
-    }
-
-    private void AddHotel()
-    {
-        var newCode = $"HTL-{_hotelItems.Count + 1:D3}";
-        var newItem = new HotelItem(newCode, _addHotelName, _addHotelImageUrl, _addHotelLocation, _addHotelAddress, _addHotelContactNo, _addHotelEmail, _addHotelUrl, _addHotelDescription, DateTime.Now.ToString("MM/dd/yyyy"));
-        _hotelItems.Insert(0, newItem);
-        _showAddHotelDialog = false;
-    }
-
-    // ── BUSINESS TYPES ──
-    private string _typeSearch = "";
-    private int _typePageSize = 10;
-    private int _typePage = 1;
-    private string _typeSortCol = "Name";
-    private bool _typeSortAsc = true;
-
-    private void SortType(string col) { if (_typeSortCol == col) _typeSortAsc = !_typeSortAsc; else { _typeSortCol = col; _typeSortAsc = true; } _typePage = 1; }
-    private string TypeSortIcon(string col) => _typeSortCol == col ? (_typeSortAsc ? "↑" : "↓") : "⇅";
-
+    // ── Business Type Data & Methods ──
     private List<BusinessTypeItem> _typeItems = new()
     {
-        new("BT-001","Health",           "/images/health.jpg",   "Up to 20% preferred rates", "Health services description", "2025-07-08T17:17:46.02"),
-        new("BT-002","Food & Beverages", "/images/food.jpg",    "Up to 30% preferred rates", "Food and beverages description", "2025-07-08T17:17:46.02"),
-        new("BT-003","Access to co-workers","/images/cowork.jpg",  "Up to 20% preferred rates", "Co-workers access description", "2025-07-08T17:17:46.02"),
-        new("BT-004","Health",           "/images/health.jpg",   "Up to 20% preferred rates", "Health services description", "2025-07-08T17:17:46.02"),
-        new("BT-005","Food & Beverages", "/images/food.jpg",    "Up to 30% preferred rates", "Food and beverages description", "2025-07-08T17:17:46.02"),
-        new("BT-006","Access to co-workers","/images/cowork.jpg",  "Up to 20% preferred rates", "Co-workers access description", "2025-07-08T17:17:46.02"),
-        new("BT-007","Health",           "/images/health.jpg",   "Up to 20% preferred rates", "Health services description", "2025-07-08T17:17:46.02"),
-        new("BT-008","Food & Beverages", "/images/food.jpg",    "Up to 30% preferred rates", "Food and beverages description", "2025-07-08T17:17:46.02"),
-        new("BT-009","Access to co-workers","/images/cowork.jpg",  "Up to 20% preferred rates", "Co-workers access description", "2025-07-08T17:17:46.02"),
-        new("BT-010","Health",           "/images/health.jpg",   "Up to 20% preferred rates", "Health services description", "2025-07-08T17:17:46.02"),
-        new("BT-011","Food & Beverages", "/images/food.jpg",    "Up to 30% preferred rates", "Food and beverages description", "2025-07-08T17:17:46.02"),
-        new("BT-012","Access to co-workers","/images/cowork.jpg",  "Up to 20% preferred rates", "Co-workers access description", "2025-07-08T17:17:46.02")
+        new("BT-001","Health","/images/health.jpg","Up to 20% preferred rates","Health services description","2025-07-08T17:17:46.02"),
+        new("BT-002","Food & Beverages","/images/food.jpg","Up to 30% preferred rates","Food and beverages description","2025-07-08T17:17:46.02"),
+        new("BT-003","Access to co-workers","/images/cowork.jpg","Up to 20% preferred rates","Co-workers access description","2025-07-08T17:17:46.02"),
+        new("BT-004","Health","/images/health.jpg","Up to 20% preferred rates","Health services description","2025-07-08T17:17:46.02"),
+        new("BT-005","Food & Beverages","/images/food.jpg","Up to 30% preferred rates","Food and beverages description","2025-07-08T17:17:46.02"),
+        new("BT-006","Access to co-workers","/images/cowork.jpg","Up to 20% preferred rates","Co-workers access description","2025-07-08T17:17:46.02"),
+        new("BT-007","Health","/images/health.jpg","Up to 20% preferred rates","Health services description","2025-07-08T17:17:46.02"),
+        new("BT-008","Food & Beverages","/images/food.jpg","Up to 30% preferred rates","Food and beverages description","2025-07-08T17:17:46.02"),
+        new("BT-009","Access to co-workers","/images/cowork.jpg","Up to 20% preferred rates","Co-workers access description","2025-07-08T17:17:46.02"),
+        new("BT-010","Health","/images/health.jpg","Up to 20% preferred rates","Health services description","2025-07-08T17:17:46.02"),
+        new("BT-011","Food & Beverages","/images/food.jpg","Up to 30% preferred rates","Food and beverages description","2025-07-08T17:17:46.02"),
+        new("BT-012","Access to co-workers","/images/cowork.jpg","Up to 20% preferred rates","Co-workers access description","2025-07-08T17:17:46.02")
     };
-
-    private IEnumerable<BusinessTypeItem> FilteredTypeItems =>
-        SortTypeItems(_typeItems.Where(x => string.IsNullOrEmpty(_typeSearch) ||
-            x.Name.Contains(_typeSearch, StringComparison.OrdinalIgnoreCase) ||
-            x.Promo.Contains(_typeSearch, StringComparison.OrdinalIgnoreCase)))
-        .Skip((_typePage - 1) * _typePageSize).Take(_typePageSize);
-
-    private IEnumerable<BusinessTypeItem> SortTypeItems(IEnumerable<BusinessTypeItem> items) =>
-        (_typeSortCol, _typeSortAsc) switch
-        {
-            ("Name", true) => items.OrderBy(x => x.Name),
-            ("Name", false) => items.OrderByDescending(x => x.Name),
-            ("Promo", true) => items.OrderBy(x => x.Promo),
-            ("Promo", false) => items.OrderByDescending(x => x.Promo),
-            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
-            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
-            _ => items
-        };
-
-    private int TypeTotalPages => (int)Math.Ceiling(_typeItems.Count / (double)_typePageSize);
-    private int TypeFrom => (_typePage - 1) * _typePageSize + 1;
-    private int TypeTo => Math.Min(_typePage * _typePageSize, _typeItems.Count);
 
     public record BusinessTypeItem(string Code, string Name, string ImageUrl, string Promo, string Description, string DateCreated);
 
-    private void OpenEditType(BusinessTypeItem item)
+    private void OpenAddType() { _addImageUrl = ""; _addTypeName = ""; _addTypeDescription = ""; _addTypePromo = ""; _showAddTypeDialog = true; }
+    private void AddType()
     {
-        _editingType = item;
-        _editImageUrl = item.ImageUrl;
-        _editTypeName = item.Name;
-        _editTypeDescription = item.Description;
-        _editTypePromo = item.Promo;
-        _showEditTypeDialog = true;
+        _typeItems.Insert(0, new BusinessTypeItem($"BT-{_typeItems.Count + 1:D3}", _addTypeName, _addImageUrl, _addTypePromo, _addTypeDescription, DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")));
+        _showAddTypeDialog = false;
     }
-
-    private async Task HandleTypeImageUpload(InputFileChangeEventArgs e)
-    {
-        var file = e.File;
-        if (file != null)
-        {
-            var buffer = new byte[file.Size];
-            using var stream = file.OpenReadStream();
-            await stream.ReadAsync(buffer);
-            var base64 = Convert.ToBase64String(buffer);
-            _editImageUrl = $"data:image/*;base64,{base64}";
-        }
-    }
-
-    private async Task HandleAddTypeImageUpload(InputFileChangeEventArgs e)
-    {
-        var file = e.File;
-        if (file != null)
-        {
-            var buffer = new byte[file.Size];
-            using var stream = file.OpenReadStream();
-            await stream.ReadAsync(buffer);
-            var base64 = Convert.ToBase64String(buffer);
-            _addImageUrl = $"data:image/*;base64,{base64}";
-        }
-    }
-
+    private void OpenEditType(BusinessTypeItem item) { _editingType = item; _editImageUrl = item.ImageUrl; _editTypeName = item.Name; _editTypeDescription = item.Description; _editTypePromo = item.Promo; _showEditTypeDialog = true; }
     private void SaveEditType()
     {
         if (_editingType != null)
         {
-            var index = _typeItems.FindIndex(x => x.Code == _editingType.Code);
-            if (index >= 0)
-            {
-                _typeItems[index] = new BusinessTypeItem(_editingType.Code, _editTypeName, _editImageUrl, _editTypePromo, _editTypeDescription, _editingType.DateCreated);
-            }
+            var i = _typeItems.FindIndex(x => x.Code == _editingType.Code);
+            if (i >= 0) _typeItems[i] = new BusinessTypeItem(_editingType.Code, _editTypeName, _editImageUrl, _editTypePromo, _editTypeDescription, _editingType.DateCreated);
         }
         _showEditTypeDialog = false;
     }
+    private void CancelEditType() => _showEditTypeDialog = false;
 
-    private void CancelEditType()
-    {
-        _showEditTypeDialog = false;
-    }
-
-    private void OpenEditHotel(HotelItem item)
-    {
-        _editingHotel = item;
-        _editHotelImageUrl = item.ImageUrl;
-        _editHotelImages = new List<string> { item.ImageUrl };
-        _editHotelName = item.Name;
-        _editHotelLocation = item.Location;
-        _editHotelAddress = item.Address;
-        _editHotelContactNo = item.ContactNo;
-        _editHotelEmail = item.Email;
-        _editHotelUrl = item.Url;
-        _editHotelDescription = item.Description;
-        _editHotelServices = "";
-        _editHotelMap = "";
-        _showEditHotelDialog = true;
-    }
-
-    private async Task HandleHotelImageUpload(InputFileChangeEventArgs e)
+    private async Task HandleTypeImageUpload(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        if (file != null)
-        {
-            var buffer = new byte[file.Size];
-            using var stream = file.OpenReadStream();
-            await stream.ReadAsync(buffer);
-            var base64 = Convert.ToBase64String(buffer);
-            _editHotelImageUrl = $"data:image/*;base64,{base64}";
-        }
+        if (file == null) return;
+        var buffer = new byte[file.Size];
+        using var stream = file.OpenReadStream();
+        await stream.ReadAsync(buffer);
+        _editImageUrl = $"data:image/*;base64,{Convert.ToBase64String(buffer)}";
     }
-
-    private async Task HandleHotelImagesUpload(InputFileChangeEventArgs e)
-    {
-        foreach (var file in e.GetMultipleFiles())
-        {
-            if (file != null)
-            {
-                var buffer = new byte[file.Size];
-                using var stream = file.OpenReadStream();
-                await stream.ReadAsync(buffer);
-                var base64 = Convert.ToBase64String(buffer);
-                _editHotelImages.Add($"data:image/*;base64,{base64}");
-            }
-        }
-    }
-
-    private async Task HandleAddHotelImageUpload(InputFileChangeEventArgs e)
+    private async Task HandleAddTypeImageUpload(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        if (file != null)
-        {
-            var buffer = new byte[file.Size];
-            using var stream = file.OpenReadStream();
-            await stream.ReadAsync(buffer);
-            var base64 = Convert.ToBase64String(buffer);
-            _addHotelImageUrl = $"data:image/*;base64,{base64}";
-        }
+        if (file == null) return;
+        var buffer = new byte[file.Size];
+        using var stream = file.OpenReadStream();
+        await stream.ReadAsync(buffer);
+        _addImageUrl = $"data:image/*;base64,{Convert.ToBase64String(buffer)}";
     }
 
-    private async Task HandleAddHotelImagesUpload(InputFileChangeEventArgs e)
+    // ── Hotel Data & Methods ──
+    private List<HotelItem> _hotelItems = new()
     {
-        foreach (var file in e.GetMultipleFiles())
-        {
-            if (file != null)
-            {
-                var buffer = new byte[file.Size];
-                using var stream = file.OpenReadStream();
-                await stream.ReadAsync(buffer);
-                var base64 = Convert.ToBase64String(buffer);
-                _addHotelImages.Add($"data:image/*;base64,{base64}");
-            }
-        }
-    }
+        new("HTL-001","Six Senses Kocatas Mansions, Istanbul","/images/sixsenses.jpg","Istanbul, Turkey","Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye","+90 212 355 55 00","reservations-istanbul@sixsenses.com","https://www.sixsenses.com/en/hotels-resorts/europe/turkey/kocatas-mansions-istanbul/","Luxury spa resort with stunning Bosphorus views","09/29/2025"),
+        new("HTL-002","The St. Regis Doha","/images/stregis.jpg","Westbay - STR, ...","Westbay","+974 4446 0000","Reservations.Doha@stregis.com","https://www.marriott.com/en-us/hotels/dohxr-the-st-regis-doha/overview/","Elegant 5-star hotel in West Bay","09/29/2025"),
+        new("HTL-003","The St. Regis Marsa Arabia Island, The Pearl – Qatar","/images/stregismarsa.jpg","The Pearl Island ...","The Pearl Qatar","+974 4020 4444","reservations.marsamalaz@kempinski.com","https://www.marriott.com/en-us/hotels/dohxp-the-st-regis-marsa-arabia-island-the-pearl-qatar/overview/","Prestigious island resort","09/29/2025"),
+        new("HTL-004","Kempinski Residences & Suites, Doha","/images/kempinski.jpg","Westbay - KRSD...","Al Qassar Street, Aba Almsan-Blumsan St, Doha","+974 4405 3333","info.doha@kempinski.com","https://www.kempinski.com/en/residences-doha/","Premium Residences & Suites","09/29/2025"),
+        new("HTL-005","Marsa Malaz Kempinski, The Pearl –","/images/marsa.jpg","The Pearl Island ...","The Pearl, Doha, Qatar","+974 4035 5555","reservations.marsamalaz@kempinski.com","https://www.kempinski.com/en/marsa-malaz-kempinski-the-pearl-qatar/","Royal luxury resort on The Pearl","09/29/2025"),
+        new("HTL-006","Six Senses Kocatas Mansions, Istanbul","/images/sixsenses.jpg","Istanbul, Turkey","Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye","+90 212 355 55 00","reservations-istanbul@sixsenses.com","https://www.sixsenses.com/","Luxury spa resort","09/29/2025"),
+        new("HTL-007","The St. Regis Doha","/images/stregis.jpg","Westbay - STR, ...","Westbay","+974 4446 0000","Reservations.Doha@stregis.com","https://www.marriott.com/","Elegant 5-star hotel","09/29/2025"),
+        new("HTL-008","The St. Regis Marsa Arabia Island, The Pearl – Qatar","/images/stregismarsa.jpg","The Pearl Island ...","The Pearl Qatar","+974 4020 4444","reservations.marsamalaz@kempinski.com","https://www.marriott.com/","Prestigious island resort","09/29/2025"),
+        new("HTL-009","Kempinski Residences & Suites, Doha","/images/kempinski.jpg","Westbay - KRSD...","Al Qassar Street, Aba Almsan-Blumsan St, Doha","+974 4405 3333","info.doha@kempinski.com","https://www.kempinski.com/","Premium Residences & Suites","09/29/2025"),
+        new("HTL-010","Marsa Malaz Kempinski, The Pearl –","/images/marsa.jpg","The Pearl Island ...","The Pearl, Doha, Qatar","+974 4035 5555","reservations.marsamalaz@kempinski.com","https://www.kempinski.com/","Royal luxury resort","09/29/2025"),
+        new("HTL-011","Six Senses Kocatas Mansions, Istanbul","/images/sixsenses.jpg","Istanbul, Turkey","Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye","+90 212 355 55 00","reservations-istanbul@sixsenses.com","https://www.sixsenses.com/","Luxury spa resort","09/29/2025"),
+        new("HTL-012","The St. Regis Doha","/images/stregis.jpg","Westbay - STR, ...","Westbay","+974 4446 0000","Reservations.Doha@stregis.com","https://www.marriott.com/","Elegant 5-star hotel","09/29/2025"),
+        new("HTL-013","The St. Regis Marsa Arabia Island, The Pearl – Qatar","/images/stregismarsa.jpg","The Pearl Island ...","The Pearl Qatar","+974 4020 4444","reservations.marsamalaz@kempinski.com","https://www.marriott.com/","Prestigious island resort","09/29/2025"),
+        new("HTL-014","Kempinski Residences & Suites, Doha","/images/kempinski.jpg","Westbay - KRSD...","Al Qassar Street, Aba Almsan-Blumsan St, Doha","+974 4405 3333","info.doha@kempinski.com","https://www.kempinski.com/","Premium Residences & Suites","09/29/2025"),
+        new("HTL-015","Marsa Malaz Kempinski, The Pearl –","/images/marsa.jpg","The Pearl Island ...","The Pearl, Doha, Qatar","+974 4035 5555","reservations.marsamalaz@kempinski.com","https://www.kempinski.com/","Royal luxury resort","09/29/2025")
+    };
 
+    public record HotelItem(string Code, string Name, string ImageUrl, string Location, string Address, string ContactNo, string Email, string Url, string Description, string DateCreated);
+
+    private void OpenAddHotel() { _addHotelImageUrl = ""; _addHotelImages = new(); _addHotelName = ""; _addHotelLocation = ""; _addHotelAddress = ""; _addHotelContactNo = ""; _addHotelEmail = ""; _addHotelUrl = ""; _addHotelDescription = ""; _addHotelServices = ""; _addHotelMap = ""; _showAddHotelDialog = true; }
+    private void AddHotel()
+    {
+        _hotelItems.Insert(0, new HotelItem($"HTL-{_hotelItems.Count + 1:D3}", _addHotelName, _addHotelImageUrl, _addHotelLocation, _addHotelAddress, _addHotelContactNo, _addHotelEmail, _addHotelUrl, _addHotelDescription, DateTime.Now.ToString("MM/dd/yyyy")));
+        _showAddHotelDialog = false;
+    }
+    private void OpenEditHotel(HotelItem item) { _editingHotel = item; _editHotelImageUrl = item.ImageUrl; _editHotelImages = new List<string> { item.ImageUrl }; _editHotelName = item.Name; _editHotelLocation = item.Location; _editHotelAddress = item.Address; _editHotelContactNo = item.ContactNo; _editHotelEmail = item.Email; _editHotelUrl = item.Url; _editHotelDescription = item.Description; _editHotelServices = ""; _editHotelMap = ""; _showEditHotelDialog = true; }
     private void SaveEditHotel()
     {
         if (_editingHotel != null)
         {
-            var index = _hotelItems.FindIndex(x => x.Code == _editingHotel.Code);
-            if (index >= 0)
-            {
-                _hotelItems[index] = new HotelItem(_editingHotel.Code, _editHotelName, _editHotelImageUrl, _editHotelLocation, _editHotelAddress, _editHotelContactNo, _editHotelEmail, _editHotelUrl, _editHotelDescription, _editingHotel.DateCreated);
-            }
+            var i = _hotelItems.FindIndex(x => x.Code == _editingHotel.Code);
+            if (i >= 0) _hotelItems[i] = new HotelItem(_editingHotel.Code, _editHotelName, _editHotelImageUrl, _editHotelLocation, _editHotelAddress, _editHotelContactNo, _editHotelEmail, _editHotelUrl, _editHotelDescription, _editingHotel.DateCreated);
         }
         _showEditHotelDialog = false;
     }
+    private void CancelEditHotel() => _showEditHotelDialog = false;
 
-    private void CancelEditHotel()
+    private async Task HandleHotelImageUpload(InputFileChangeEventArgs e)
     {
-        _showEditHotelDialog = false;
+        var file = e.File;
+        if (file == null) return;
+        var buffer = new byte[file.Size];
+        using var stream = file.OpenReadStream();
+        await stream.ReadAsync(buffer);
+        _editHotelImageUrl = $"data:image/*;base64,{Convert.ToBase64String(buffer)}";
     }
-
-    // ── HOTELS ──
-    private string _hotelSearch = "";
-    private int _hotelPageSize = 10;
-    private int _hotelPage = 1;
-    private string _hotelSortCol = "Name";
-    private bool _hotelSortAsc = true;
-
-    private void SortHotel(string col) { if (_hotelSortCol == col) _hotelSortAsc = !_hotelSortAsc; else { _hotelSortCol = col; _hotelSortAsc = true; } _hotelPage = 1; }
-    private string HotelSortIcon(string col) => _hotelSortCol == col ? (_hotelSortAsc ? "↑" : "↓") : "⇅";
-
-    private List<HotelItem> _hotelItems = new()
+    private async Task HandleHotelImagesUpload(InputFileChangeEventArgs e)
     {
-        new("HTL-001", "Six Senses Kocatas Mansions, Istanbul", "/images/sixsenses.jpg", "Istanbul, Turkey",   "Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye", "+90 212 355 55 00", "reservations-istanbul@sixsenses.com", "https://www.sixsenses.com/en/hotels-resorts/europe/turkey/kocatas-mansions-istanbul/", "Luxury spa resort with stunning Bosphorus views and world-class wellness facilities", "09/29/2025"),
-        new("HTL-002", "The St. Regis Doha",                   "/images/stregis.jpg",   "Westbay - STR, ...", "Westbay",                                                           "+974 4446 0000",   "Reservations.Doha@stregis.com",        "https://www.marriott.com/en-us/hotels/dohxr-the-st-regis-doha/overview/",              "Elegant 5-star hotel in West Bay with luxurious suites and fine dining", "09/29/2025"),
-        new("HTL-003", "The St. Regis Marsa Arabia Island, The Pearl – Qatar", "/images/stregismarsa.jpg", "The Pearl Island ...", "The Pearl Qatar", "+974 4020 4444", "reservations.marsamalaz@kempinski.com", "https://www.marriott.com/en-us/hotels/dohxp-the-st-regis-marsa-arabia-island-the-pearl-qatar/overview/", "Prestigious island resort offering unparalleled luxury and exclusivity", "09/29/2025"),
-        new("HTL-004", "Kempinski Residences & Suites, Doha",  "/images/kempinski.jpg", "Westbay - KRSD...",  "Al Qassar Street, Aba Almsan-Blumsan St, Doha",                     "+974 4405 3333",   "info.doha@kempinski.com",              "https://www.kempinski.com/en/residences-doha/",                                        "Premium Residences & Suites with Kempinski's legendary hospitality", "09/29/2025"),
-        new("HTL-005", "Marsa Malaz Kempinski, The Pearl –",   "/images/marsa.jpg",     "The Pearl Island ...", "The Pearl, Doha, Qatar",                                          "+974 4035 5555",   "reservations.marsamalaz@kempinski.com","https://www.kempinski.com/en/marsa-malaz-kempinski-the-pearl-qatar/",                  "Royal luxury resort on The Pearl with private beach and marina", "09/29/2025"),
-        new("HTL-006", "Six Senses Kocatas Mansions, Istanbul", "/images/sixsenses.jpg", "Istanbul, Turkey",   "Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye", "+90 212 355 55 00", "reservations-istanbul@sixsenses.com", "https://www.sixsenses.com/en/hotels-resorts/europe/turkey/kocatas-mansions-istanbul/", "Luxury spa resort with stunning Bosphorus views and world-class wellness facilities", "09/29/2025"),
-        new("HTL-007", "The St. Regis Doha",                   "/images/stregis.jpg",   "Westbay - STR, ...", "Westbay",                                                           "+974 4446 0000",   "Reservations.Doha@stregis.com",        "https://www.marriott.com/en-us/hotels/dohxr-the-st-regis-doha/overview/",              "Elegant 5-star hotel in West Bay with luxurious suites and fine dining", "09/29/2025"),
-        new("HTL-008", "The St. Regis Marsa Arabia Island, The Pearl – Qatar", "/images/stregismarsa.jpg", "The Pearl Island ...", "The Pearl Qatar", "+974 4020 4444", "reservations.marsamalaz@kempinski.com", "https://www.marriott.com/en-us/hotels/dohxp-the-st-regis-marsa-arabia-island-the-pearl-qatar/overview/", "Prestigious island resort offering unparalleled luxury and exclusivity", "09/29/2025"),
-        new("HTL-009", "Kempinski Residences & Suites, Doha",  "/images/kempinski.jpg", "Westbay - KRSD...",  "Al Qassar Street, Aba Almsan-Blumsan St, Doha",                     "+974 4405 3333",   "info.doha@kempinski.com",              "https://www.kempinski.com/en/residences-doha/",                                        "Premium Residences & Suites with Kempinski's legendary hospitality", "09/29/2025"),
-        new("HTL-010", "Marsa Malaz Kempinski, The Pearl –",   "/images/marsa.jpg",     "The Pearl Island ...", "The Pearl, Doha, Qatar",                                          "+974 4035 5555",   "reservations.marsamalaz@kempinski.com","https://www.kempinski.com/en/marsa-malaz-kempinski-the-pearl-qatar/",                  "Royal luxury resort on The Pearl with private beach and marina", "09/29/2025"),
-        new("HTL-011", "Six Senses Kocatas Mansions, Istanbul", "/images/sixsenses.jpg", "Istanbul, Turkey",   "Merkez, Meserburnu Cd. No: 5, 34450 Sariyer/Istanbul, Türkiye", "+90 212 355 55 00", "reservations-istanbul@sixsenses.com", "https://www.sixsenses.com/en/hotels-resorts/europe/turkey/kocatas-mansions-istanbul/", "Luxury spa resort with stunning Bosphorus views and world-class wellness facilities", "09/29/2025"),
-        new("HTL-012", "The St. Regis Doha",                   "/images/stregis.jpg",   "Westbay - STR, ...", "Westbay",                                                           "+974 4446 0000",   "Reservations.Doha@stregis.com",        "https://www.marriott.com/en-us/hotels/dohxr-the-st-regis-doha/overview/",              "Elegant 5-star hotel in West Bay with luxurious suites and fine dining", "09/29/2025"),
-        new("HTL-013", "The St. Regis Marsa Arabia Island, The Pearl – Qatar", "/images/stregismarsa.jpg", "The Pearl Island ...", "The Pearl Qatar", "+974 4020 4444", "reservations.marsamalaz@kempinski.com", "https://www.marriott.com/en-us/hotels/dohxp-the-st-regis-marsa-arabia-island-the-pearl-qatar/overview/", "Prestigious island resort offering unparalleled luxury and exclusivity", "09/29/2025"),
-        new("HTL-014", "Kempinski Residences & Suites, Doha",  "/images/kempinski.jpg", "Westbay - KRSD...",  "Al Qassar Street, Aba Almsan-Blumsan St, Doha",                     "+974 4405 3333",   "info.doha@kempinski.com",              "https://www.kempinski.com/en/residences-doha/",                                        "Premium Residences & Suites with Kempinski's legendary hospitality", "09/29/2025"),
-        new("HTL-015", "Marsa Malaz Kempinski, The Pearl –",   "/images/marsa.jpg",     "The Pearl Island ...", "The Pearl, Doha, Qatar",                                          "+974 4035 5555",   "reservations.marsamalaz@kempinski.com","https://www.kempinski.com/en/marsa-malaz-kempinski-the-pearl-qatar/",                  "Royal luxury resort on The Pearl with private beach and marina", "09/29/2025")
-    };
-
-    private IEnumerable<HotelItem> FilteredHotelItems =>
-        SortHotelItems(_hotelItems.Where(x => string.IsNullOrEmpty(_hotelSearch) ||
-            x.Name.Contains(_hotelSearch, StringComparison.OrdinalIgnoreCase) ||
-            x.Location.Contains(_hotelSearch, StringComparison.OrdinalIgnoreCase) ||
-            x.Email.Contains(_hotelSearch, StringComparison.OrdinalIgnoreCase)))
-        .Skip((_hotelPage - 1) * _hotelPageSize).Take(_hotelPageSize);
-
-    private IEnumerable<HotelItem> SortHotelItems(IEnumerable<HotelItem> items) =>
-        (_hotelSortCol, _hotelSortAsc) switch
+        foreach (var file in e.GetMultipleFiles())
         {
-            ("Name", true) => items.OrderBy(x => x.Name),
-            ("Name", false) => items.OrderByDescending(x => x.Name),
-            ("Location", true) => items.OrderBy(x => x.Location),
-            ("Location", false) => items.OrderByDescending(x => x.Location),
-            ("Address", true) => items.OrderBy(x => x.Address),
-            ("Address", false) => items.OrderByDescending(x => x.Address),
-            ("ContactNo", true) => items.OrderBy(x => x.ContactNo),
-            ("ContactNo", false) => items.OrderByDescending(x => x.ContactNo),
-            ("Email", true) => items.OrderBy(x => x.Email),
-            ("Email", false) => items.OrderByDescending(x => x.Email),
-            ("Url", true) => items.OrderBy(x => x.Url),
-            ("Url", false) => items.OrderByDescending(x => x.Url),
-            ("DateCreated", true) => items.OrderBy(x => x.DateCreated),
-            ("DateCreated", false) => items.OrderByDescending(x => x.DateCreated),
-            _ => items
-        };
-
-    private int HotelTotalPages => (int)Math.Ceiling(_hotelItems.Count / (double)_hotelPageSize);
-    private int HotelFrom => (_hotelPage - 1) * _hotelPageSize + 1;
-    private int HotelTo => Math.Min(_hotelPage * _hotelPageSize, _hotelItems.Count);
-
-    public record HotelItem(string Code, string Name, string ImageUrl, string Location, string Address, string ContactNo, string Email, string Url, string Description, string DateCreated);
-
+            var buffer = new byte[file.Size];
+            using var stream = file.OpenReadStream();
+            await stream.ReadAsync(buffer);
+            _editHotelImages.Add($"data:image/*;base64,{Convert.ToBase64String(buffer)}");
+        }
+    }
+    private async Task HandleAddHotelImageUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file == null) return;
+        var buffer = new byte[file.Size];
+        using var stream = file.OpenReadStream();
+        await stream.ReadAsync(buffer);
+        _addHotelImageUrl = $"data:image/*;base64,{Convert.ToBase64String(buffer)}";
+    }
+    private async Task HandleAddHotelImagesUpload(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            var buffer = new byte[file.Size];
+            using var stream = file.OpenReadStream();
+            await stream.ReadAsync(buffer);
+            _addHotelImages.Add($"data:image/*;base64,{Convert.ToBase64String(buffer)}");
+        }
+    }
 }
