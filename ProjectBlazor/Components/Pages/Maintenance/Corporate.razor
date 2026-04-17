@@ -1,152 +1,24 @@
-﻿@page "/maintenance/corporate"
+@page "/maintenance/corporate"
 @rendermode InteractiveServer
 @using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
 
 <h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Corporate Maintenance</h3>
 
 <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12">
-        <MaintenanceCard Title="Corporate Maintenance" Height="920px">
-            <ToolbarLeft>
-                <div class="flex items-center gap-2 text-xs text-gray-600">
-                    <select value="@_corpPageSize" @onchange="e => { _corpPageSize = int.Parse(e.Value.ToString()); _corpPage = 1; }"
-                            class="border border-gray-300 rounded px-2 py-1 text-xs">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                    </select>
-                    <span>entries per page</span>
-                </div>
-            </ToolbarLeft>
-            <ToolbarRight>
-                <div class="flex items-center gap-2">
-
-                    @* Buttons group *@
-                    <InputFile id="excelFileInput" OnChange="HandleFileUpload" accept=".xlsx,.xls" class="hidden" />
-                    <label for="excelFileInput"
-                           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs text-gray-600 cursor-pointer hover:bg-gray-50 transition">
-                        <MudIcon Icon="@Icons.Material.Filled.AttachFile" Style="font-size:13px;" />
-                        @(_uploadedFileName ?? "Choose File")
-                    </label>
-                    <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium transition"
-                            style="background:@ThemeConfig.Colors.Primary;">
-                        <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" />
-                        Upload
-                    </button>
-                    <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-600 hover:bg-gray-50 transition">
-                        <MudIcon Icon="@Icons.Material.Filled.Download" Style="font-size:13px;" />
-                        Download Template
-                    </button>
-
-                    @* Divider *@
-                    <div class="w-px h-4 bg-gray-300 mx-1"></div>
-
-                    @* Search *@
-                    <span class="text-xs text-gray-600 font-medium">Search:</span>
-                    <input type="text" @bind="_corpSearch" @bind:event="oninput"
-                           class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
-                           placeholder="Type to search..." />
-
-                </div>
-            </ToolbarRight>
-            <Body>
-                <div class="mb-4 px-1">
-                    <button @onclick="OpenAddCorporate" class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background: @ThemeConfig.Colors.Primary;">
-                        + Add New
-                    </button>
-                </div>
-                <table class="w-full text-xs">
-                    <thead style="position:sticky; top:0; background:white; z-index:1;">
-                        <tr class="border-b-2 border-gray-200">
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 20%;"
-                                @onclick='() => SortCorp("Name")'>
-                                Name <span class="text-gray-400">@CorpSortIcon("Name")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 20%;"
-                                @onclick='() => SortCorp("Address")'>
-                                Address <span class="text-gray-400">@CorpSortIcon("Address")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 10%;"
-                                @onclick='() => SortCorp("ContactNumber")'>
-                                Contact Number <span class="text-gray-400">@CorpSortIcon("ContactNumber")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 12%;"
-                                @onclick='() => SortCorp("EmailAddress")'>
-                                Email Address <span class="text-gray-400">@CorpSortIcon("EmailAddress")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 8%;"
-                                @onclick='() => SortCorp("MembershipTier")'>
-                                Membership Tier <span class="text-gray-400">@CorpSortIcon("MembershipTier")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 8%;"
-                                @onclick='() => SortCorp("UserCount")'>
-                                User Count <span class="text-gray-400">@CorpSortIcon("UserCount")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 7%;"
-                                @onclick='() => SortCorp("VipCount")'>
-                                VIP Count <span class="text-gray-400">@CorpSortIcon("VipCount")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 15%;"
-                                @onclick='() => SortCorp("MembershipDescription")'>
-                                Membership Description <span class="text-gray-400">@CorpSortIcon("MembershipDescription")</span>
-                            </th>
-                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 10%;"
-                                @onclick='() => SortCorp("DateCreated")'>
-                                Date Created <span class="text-gray-400">@CorpSortIcon("DateCreated")</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var (item, index) in FilteredCorpItems.Select((x, i) => (x, i)))
-                        {
-                            <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
-                                <td class="py-2 px-2" style="height: 64px;">
-                                    <div class="relative w-full" style="height: 64px;">
-                                        <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 8px;">
-                                            @item.Code
-                                        </div>
-                                        <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 16px;">
-                                            @item.Name
-                                        </div>
-                                        <div class="absolute left-0 flex gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 36px;">
-                                            <button @onclick="() => OpenEditCorporate(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: @ThemeConfig.Colors.Primary;">
-                                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                Edit
-                                            </button>
-                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                Delete
-                                            </button>
-                                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
-                                                <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                View
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-2 px-2 text-gray-600" style="width: 20%;">@item.Address</td>
-                                <td class="py-2 px-2 text-gray-600" style="width: 10%;">@item.ContactNumber</td>
-                                <td class="py-2 px-2 text-gray-600" style="width: 12%;">@item.EmailAddress</td>
-                                <td class="py-2 px-2 text-gray-600" style="width: 8%;">@item.MembershipTier</td>
-                                <td class="py-2 px-2 text-gray-600" style="width: 8%;">@item.UserCount</td>
-                                <td class="py-2 px-2 text-gray-600" style="width: 7%;">@item.VipCount</td>
-                                <td class="py-2 px-2 text-gray-600" style="width: 15%;">@item.MembershipDescription</td>
-                                <td class="py-2 px-2 text-gray-600" style="width: 10%;">@item.DateCreated</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </Body>
-            <Footer>
-                <span class="text-xs text-gray-500">
-                    Showing @CorpFrom to @CorpTo of @_corpItems.Count entries
-                </span>
-                <div class="flex items-center gap-1">
-                    <Pagination CurrentPage="_corpPage" TotalPages="CorpTotalPages" SetPageAction="p => _corpPage = p" />
-                </div>
-            </Footer>
-        </MaintenanceCard>
+        <DataTable T="CorporateItem"
+                   Title="Corporate Maintenance"
+                   Items="_corpItems"
+                   Columns="_corpColumns"
+                   ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+                   HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient"
+                   ShowImportExport="true"
+                   ImportedFileName="@_uploadedFileName"
+                   OnAddClick="OpenAddCorporate"
+                   OnImport="HandleFileUpload"
+                   OnImportButtonClick="HandleImportClick"
+                   OnExportTemplateClick="HandleExportTemplate" />
     </div>
 </div>
 
@@ -321,7 +193,85 @@
 }
 
 @code {
+    private List<TableColumn<CorporateItem>> _corpColumns = new();
+
+    protected override void OnInitialized()
+    {
+        _corpColumns = new List<TableColumn<CorporateItem>>
+        {
+            new() {
+                Header = "Name", Width = "20%", SortField = "Name",
+                RenderCell = item => __builder => {
+                    <div class="relative w-full" style="height:64px;">
+                        <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:8px;">@item.Code</div>
+                        <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 group-hover:translate-y-2" style="top:16px;">@item.Name</div>
+                        <div class="absolute left-0 flex gap-2 transition-transform duration-200 group-hover:translate-y-2" style="top:36px;">
+                            <button @onclick="() => OpenEditCorporate(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
+                                <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size:14px;" Color="Color.Inherit" /> View
+                            </button>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Address", Width = "20%", SortField = "Address",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.Address</span>; }
+            },
+            new() {
+                Header = "Contact Number", Width = "10%", SortField = "ContactNumber",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.ContactNumber</span>; }
+            },
+            new() {
+                Header = "Email Address", Width = "12%", SortField = "EmailAddress",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.EmailAddress</span>; }
+            },
+            new() {
+                Header = "Membership Tier", Width = "8%", SortField = "MembershipTier",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.MembershipTier</span>; }
+            },
+            new() {
+                Header = "User Count", Width = "8%", SortField = "UserCount",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.UserCount</span>; }
+            },
+            new() {
+                Header = "VIP Count", Width = "7%", SortField = "VipCount",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.VipCount</span>; }
+            },
+            new() {
+                Header = "Membership Description", Width = "15%", SortField = "MembershipDescription",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.MembershipDescription</span>; }
+            },
+            new() {
+                Header = "Date Created", Width = "10%", SortField = "DateCreated",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.DateCreated</span>; }
+            }
+        };
+    }
+
     private string? _uploadedFileName;
+
+    private async Task HandleFileUpload(string fileName)
+    {
+        _uploadedFileName = fileName;
+        await Task.CompletedTask;
+    }
+
+    private Task HandleImportClick()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task HandleExportTemplate()
+    {
+        return Task.CompletedTask;
+    }
 
     // ── Add Corporate State ──
     private bool _showAddCorporateDialog = false;

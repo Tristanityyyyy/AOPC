@@ -1,6 +1,110 @@
 ﻿@page "/audittrail"
-<h3>AuditTrail</h3>
+@rendermode InteractiveServer
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Audit Trail</h3>
+
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12">
+        <DataTable T="AuditTrailItem"
+                   Title="Audit Trail"
+                   Items="_auditItems"
+                   Columns="_auditColumns"
+                   ShowAddButton="false"
+                   ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+                   HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient" />
+    </div>
+</div>
 
 @code {
+    private List<TableColumn<AuditTrailItem>> _auditColumns = new();
 
+    protected override void OnInitialized()
+    {
+        _auditColumns = new List<TableColumn<AuditTrailItem>>
+        {
+            new() {
+                Header = "Employee ID", Width = "12%", SortField = "EmployeeID",
+                RenderCell = item => __builder => {
+<span class="text-gray-600">@item.EmployeeID</span>
+; }
+            },
+            new() {
+                Header = "Full Name", Width = "15%", SortField = "FullName",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.FullName</span>
+; }
+            },
+            new() {
+                Header = "Actions", Width = "20%", SortField = "Action",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.Actions</span>
+; }
+            },
+            new() {
+                Header = "Module", Width = "8%", SortField = "Module",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.Module</span>
+; }
+            },
+            new() {
+                Header = "Position Name", Width = "12%", SortField = "PositionName",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.PositionName</span>
+; }
+            },
+            new() {
+                Header = "Corporate Name", Width = "10%", SortField = "CorporateName",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.CorporateName</span>
+; }
+            },
+            new() {
+                Header = "User Type", Width = "10%", SortField = "UserType",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.UserType</span>
+; }
+            },
+            new() {
+                Header = "Date Created", Width = "13%", SortField = "DateCreated",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.DateCreated.ToString("g")</span>
+; }
+            }
+        };
+    }
+
+    private List<AuditTrailItem> _auditItems = new()
+    {
+        new("EMP-001", "Kholoud Oweidat",  "Logged In",            "Registration", "Senior Consular Officer", "Embassy of the Netherlands", "User",          new DateTime(2025, 9, 29, 10, 15, 0)),
+        new("EMP-002", "Marwan Bishara",   "Viewed Vendor",        "Vendor",       "Senior Consultant",       "Fadaat Media",               "User",          new DateTime(2025, 9, 29,  9, 42, 0)),
+        new("EMP-003", "Sara Bishara",     "Updated Profile",      "Registration", "Managing Director",       "Fadaat Media",               "User",          new DateTime(2025, 9, 28, 16, 30, 0)),
+        new("EMP-004", "Ahmed Al-Mansoori","Exported Report",      "Audit Trail",  "Operations Manager",      "Qatar Gas",                  "User",          new DateTime(2025, 9, 28, 14, 10, 0)),
+        new("EMP-005", "Layla Hassan",     "Added Vendor",         "Vendor",       "Marketing Director",      "Ooredoo",                    "User",          new DateTime(2025, 9, 27, 11, 55, 0)),
+        new("OYS-001", "Khalid Al-Thani",  "Logged In",            "Registration", "Senior Analyst",          "Qatar Investment Authority", "Oyster Admin",  new DateTime(2025, 9, 27,  8, 20, 0)),
+        new("OYS-002", "Nora Al-Subaie",   "Deleted Registration", "Registration", "HR Manager",              "Alfardan Group",             "Oyster Admin",  new DateTime(2025, 9, 26, 15, 45, 0)),
+        new("OYS-003", "Omar Farouk",      "Updated Vendor",       "Vendor",       "President",               "Petro Services",             "Oyster Admin",  new DateTime(2025, 9, 26, 13,  0, 0)),
+        new("CRP-001", "Fatima Al-Kuwari", "Viewed Report",        "Audit Trail",  "Legal Counsel",           "Barwa Real Estate",          "Corporate Admin",new DateTime(2025, 9, 25, 17, 30, 0)),
+        new("CRP-002", "Tariq Mahmoud",    "Added Business Type",  "Business",     "Chief Engineer",          "Qatar Cool",                 "Corporate Admin",new DateTime(2025, 9, 25, 10, 10, 0)),
+        new("CRP-003", "Hessa Al-Jaber",   "Logged Out",           "Registration", "Branch Manager",          "Qatar National Bank",        "Corporate Admin",new DateTime(2025, 9, 24, 12,  5, 0)),
+        new("CRP-004", "Samir Qaddoura",   "Viewed Vendor",        "Vendor",       "Fleet Director",          "Milaha",                     "Corporate Admin",new DateTime(2025, 9, 24,  9, 50, 0)),
+    };
+
+    public record AuditTrailItem(
+        string EmployeeID,
+        string FullName,
+        string Actions,
+        string Module,
+        string PositionName,
+        string CorporateName,
+        string UserType,
+        DateTime DateCreated);
 }

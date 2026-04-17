@@ -1,6 +1,205 @@
 ﻿@page "/qrcodelogs"
-<h3>QRCodeLogs</h3>
+@rendermode InteractiveServer
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Corporate Maintenance</h3>
+
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12">
+        <DataTable T="QRCodeItem"
+                   Title="QR Details"
+                   Items="_qrCodeItems"
+                   Columns="_qrCodeColumns"
+                   TableWrapperStyle="overflow-x: auto;"
+                   TableStyle="min-width: 1400px;"
+                   ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+                   HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient" />
+    </div>
+</div>
 
 @code {
+    private List<TableColumn<QRCodeItem>> _qrCodeColumns = new();
 
+    protected override void OnInitialized()
+    {
+        _qrCodeColumns = new List<TableColumn<QRCodeItem>>
+        {
+        new()
+        {
+            Header = "Employee ID",
+            Width = "11%",
+            SortField = "EmployeeID",
+            RenderCell = item => __builder =>
+            {
+                <span class="text-gray-600">@item.EmployeeID</span>
+                ;
+            }
+        },
+            new()
+            {
+                Header = "Full Name",
+                Width = "12%",
+                SortField = "FullName",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.FullName</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "Country",
+                Width = "12%",
+                SortField = "Country    ",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.Country</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "City",
+                Width = "8%",
+                SortField = "City",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.City</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "Region",
+                Width = "8%",
+                SortField = "Region",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.Region</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "Area Code",
+                Width = "7%",
+                SortField = "AreaCode   ",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.AreaCode</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "IP Address",
+                Width = "10%",
+                SortField = "IPAddress",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.IPAddress</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "Longitude",
+                Width = "9%",
+                SortField = "Longitude",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.Longitude</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "Latitude",
+                Width = "9%",
+                SortField = "Latitude",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.Latitude</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "Time Zone",
+                Width = "9%",
+                SortField = "Time Zone",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.TimeZone</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "Zip Code",
+                Width = "10%",
+                SortField = "Zip Code",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.ZipCode</span>
+                    ;
+                }
+            },
+            new()
+            {
+                Header = "Date Created",
+                Width = "13%",
+                SortField = "Date Created",
+                RenderCell = item => __builder =>
+                {
+
+                    <span class="text-gray-600">@item.DateCreated</span>
+    ;
+                }
+            }
+        };
+    }
+    private List<QRCodeItem> _qrCodeItems = new()
+    {
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+        new("LBI00042772", "Andrea Colombo", "Qatar", "Doha", "Baladiyat ad Daw?ah", "DA", "103.225.73.234", "51.5321", "25.2925", "Asia/Qatar", "00000", DateTime.Parse("9/11/2025 7:23:08 AM")),
+
+    };
+    public record QRCodeItem(
+        string EmployeeID,
+        string FullName,
+        string Country,
+        string City,
+        string Region,
+        string AreaCode,
+        string IPAddress,
+        string Longitude,
+        string Latitude,
+        string TimeZone,
+        string ZipCode,
+        DateTime DateCreated
+    );
 }

@@ -1,6 +1,106 @@
 ﻿@page "/supportlogs"
-<h3>SupportLogs</h3>
+@rendermode InteractiveServer
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Audit Trail</h3>
+
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12">
+        <DataTable T="SupportLogItem"
+                   Title="Support Details"
+                   Items="_supportLogItems"
+                   Columns="_supportLogColumns"
+                   ShowAddButton="false"
+                   ExternalFilter="_statusFilter"
+                   ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+                   HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient">
+            <ToolbarButtons>
+                <select @onchange="OnStatusFilterChanged"
+                        class="border border-gray-300 rounded px-2 py-1 text-xs text-gray-600 bg-white">
+                    <option value="All">All</option>
+                    <option value="Complete">Complete</option>
+                    <option value="On Progress">On Progress</option>
+                    <option value="Pending">Pending</option>
+                </select>
+            </ToolbarButtons>
+        </DataTable>
+
+    </div>
+</div>
+
 
 @code {
+    private string _selectedStatus = "All";
+    private Func<SupportLogItem, bool> _statusFilter => item =>
+        _selectedStatus == "All" || item.Status == _selectedStatus;
 
+    private void OnStatusFilterChanged(ChangeEventArgs e)
+    {
+        _selectedStatus = e.Value?.ToString() ?? "All";
+    }
+    private List<TableColumn<SupportLogItem>> _supportLogColumns = new();
+
+    protected override void OnInitialized()
+    {
+        _supportLogColumns = new List<TableColumn<SupportLogItem>>
+        {
+             new() {
+                Header = "User Details", Width = "15%", SortField = "UserName",
+                RenderCell = item => __builder => {
+            <div class="relative w-full group" style="height:72px;">
+                <div class="absolute left-0 text-gray-400 text-xs opacity-0 mt-2 group-hover:opacity-100 transition-opacity duration-200" style="top:5px;">@item.UserId</div>
+                <div class="absolute left-0 font-medium text-gray-700 mt-4 transition-transform duration-200 group-hover:translate-y-1" style="top:12px;">@item.UserName</div>
+                <div class="absolute left-0 flex gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:40px;">
+                    <button class="flex items-center gap-0.5 text-xs cursor-pointer border-none bg-transparent text-gray-600">
+                        <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size: 12px;" Color="Color.Inherit" /> View
+                    </button>
+                </div>
+            </div>
+                    ;
+                }
+            },
+             new() {
+                Header = "Message", Width = "12%", SortField = "Message",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.Message</span>
+; }
+             },
+             new() {
+                Header = "Status", Width = "12%", SortField = "Status",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.Status</span>
+; }
+             },
+             new() {
+                Header = "Date Created", Width = "12%", SortField = "DateCreated",
+                RenderCell = item => __builder => {
+
+<span class="text-gray-600">@item.DateCreated</span>
+; }
+             }
+        };
+    }
+    
+    private List<SupportLogItem> _supportLogItems = new()
+    {
+       new("USSR-001", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Complete", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-002", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "On Progress", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-003", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Pending", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-004", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Complete", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-005", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "On Progress", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-006", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Pending", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-007", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Pending", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-008", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "On Progress", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-009", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Complete", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-010", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Pending", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-011", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Complete", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-012", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Complete", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-013", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Complete", new DateTime(2025, 9, 29, 10, 15, 0)),
+       new("USSR-014", "Tristan Labjata", "Im trying to book a hotel, it asks me for codes for me to use my discount", "Complete", new DateTime(2025, 9, 29, 10, 15, 0)),
+    };
+
+    public record SupportLogItem(string UserId, string UserName, string Message, string Status, DateTime DateCreated);
 }

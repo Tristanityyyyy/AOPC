@@ -1,154 +1,24 @@
-﻿@page "/maintenance/offering"
+@page "/maintenance/offering"
 @rendermode InteractiveServer
 @using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
 
 <h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Offering Maintenance</h3>
 
 <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12">
-        <MaintenanceCard Title="Offering Maintenance">
-            <ToolbarLeft>
-                <div class="flex items-center gap-2 text-xs text-gray-600">
-                    <select value="@_offerPageSize" @onchange="e => { _offerPageSize = int.Parse(e.Value.ToString()); _offerPage = 1; }"
-                            class="border border-gray-300 rounded px-2 py-1 text-xs">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
-                        <option value="50">50</option>
-                    </select>
-                    <span>entries per page</span>
-                </div>
-            </ToolbarLeft>
-            <ToolbarRight>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-600 font-medium">Import Excel File:</span>
-                    <InputFile id="offerFileInput" OnChange="HandleFileUpload" accept=".xlsx,.xls" class="hidden" />
-                    <label for="offerFileInput"
-                           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs text-gray-600 cursor-pointer hover:bg-gray-50 transition">
-                        <MudIcon Icon="@Icons.Material.Filled.AttachFile" Style="font-size:13px;" />
-                        @(_uploadedFileName ?? "Choose File")
-                    </label>
-                    <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium transition"
-                            style="background:@ThemeConfig.Colors.Primary;">
-                        <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" />
-                        Upload
-                    </button>
-                    <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-600 hover:bg-gray-50 transition">
-                        <MudIcon Icon="@Icons.Material.Filled.Download" Style="font-size:13px;" />
-                        Download Template
-                    </button>
-                    <div class="w-px h-4 bg-gray-300 mx-1"></div>
-                    <span class="text-xs text-gray-600 font-medium">Search:</span>
-                    <input type="text" @bind="_offerSearch" @bind:event="oninput"
-                           class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44"
-                           placeholder="Type to search..." />
-                </div>
-            </ToolbarRight>
-            <Body>
-                <div class="mb-4 px-1">
-                    <button @onclick="OpenAddOffer" class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
-                            style="background: @ThemeConfig.Colors.Primary;">
-                        + Add New
-                    </button>
-                </div>
-                <div class="overflow-y-auto flex-1" style="min-height:0;">
-                    <table class="w-full text-xs">
-                        <thead style="position:sticky; top:0; background:white; z-index:1;">
-                            <tr class="border-b-2 border-gray-200">
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 whitespace-nowrap" style="width: 5%;"></th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 15%;"
-                                    @onclick='() => SortOffer("PromoName")'>
-                                    Promo Name <span class="text-gray-400">@OfferSortIcon("PromoName")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 20%;"
-                                    @onclick='() => SortOffer("PromoDescription")'>
-                                    Promo Description <span class="text-gray-400">@OfferSortIcon("PromoDescription")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 12%;"
-                                    @onclick='() => SortOffer("VendorName")'>
-                                    Vendor Name <span class="text-gray-400">@OfferSortIcon("VendorName")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 13%;"
-                                    @onclick='() => SortOffer("BusinessTypeName")'>
-                                    Business Type Name <span class="text-gray-400">@OfferSortIcon("BusinessTypeName")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 10%;"
-                                    @onclick='() => SortOffer("MembershipTier")'>
-                                    Membership Tier <span class="text-gray-400">@OfferSortIcon("MembershipTier")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 10%;"
-                                    @onclick='() => SortOffer("DateCreated")'>
-                                    DateCreated <span class="text-gray-400">@OfferSortIcon("DateCreated")</span>
-                                </th>
-                                <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none whitespace-nowrap" style="width: 8%;"
-                                    @onclick='() => SortOffer("Status")'>
-                                    Status <span class="text-gray-400">@OfferSortIcon("Status")</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var (item, index) in FilteredOfferItems.Select((x, i) => (x, i)))
-                            {
-                                <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
-                                    <td class="py-2 px-2" style="width: 5%;">
-                                        <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 flex items-center justify-center pointer-events-none"
-                                             style="background:@ThemeConfig.Colors.Header.DarkerVariant;">
-                                            @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
-                                            {
-                                                <img src="@item.ThumbnailUrl" alt="@item.PromoName" class="w-full h-full object-cover" />
-                                            }
-                                            else
-                                            {
-                                                <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="@($"font-size:16px; color:{ThemeConfig.Colors.Primary};")" />
-                                            }
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-2" style="height: 64px; width: 15%;">
-                                        <div class="relative w-full" style="height: 64px;">
-                                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top: 8px;">
-                                                @item.Code
-                                            </div>
-                                            <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 16px;">
-                                                @item.PromoName
-                                            </div>
-                                            <div class="absolute left-0 flex gap-2 transition-transform duration-200 translate-y-0 group-hover:translate-y-2" style="top: 36px;">
-                                                <button @onclick="() => OpenEditOffer(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color: @ThemeConfig.Colors.Primary;">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                    Edit
-                                                </button>
-                                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
-                                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size: 14px;" Color="Color.Inherit" />
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-2 text-gray-600" style="width: 20%;">
-                                        <div class="line-clamp-3">@item.PromoDescription</div>
-                                    </td>
-                                    <td class="py-2 px-2 text-gray-600" style="width: 12%;">@item.VendorName</td>
-                                    <td class="py-2 px-2 text-gray-600" style="width: 13%;">@item.BusinessTypeName</td>
-                                    <td class="py-2 px-2 text-gray-600" style="width: 10%;">@item.MembershipTier</td>
-                                    <td class="py-2 px-2 text-gray-600 whitespace-nowrap" style="width: 10%;">@item.DateCreated.ToString("M/d/yyyy")</td>
-                                    <td class="py-2 px-2" style="width: 8%;">
-                                        <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">
-                                            @item.Status
-                                        </span>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </Body>
-            <Footer>
-                <span class="text-xs text-gray-500">
-                    Showing @OfferFrom to @OfferTo of @_totalFilteredCount entries
-                </span>
-                <div class="flex items-center gap-1">
-                    <Pagination CurrentPage="_offerPage" TotalPages="OfferTotalPages" SetPageAction="p => _offerPage = p" />
-                </div>
-            </Footer>
-        </MaintenanceCard>
+        <DataTable T="OfferingItem"
+                   Title="Offering Maintenance"
+                   Items="_offerItems"
+                   Columns="_offerColumns"
+                   ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+                   HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient"
+                   ShowImportExport="true"
+                   ImportedFileName="@_uploadedFileName"
+                   OnAddClick="OpenAddOffer"
+                   OnImport="HandleFileUpload"
+                   OnImportButtonClick="HandleImportClick"
+                   OnExportTemplateClick="HandleExportTemplate" />
     </div>
 </div>
 @* ── Add/Edit Offering Dialog ── *@
@@ -329,12 +199,92 @@
     </div>
 }
 @code {
+    private List<TableColumn<OfferingItem>> _offerColumns = new();
+
+    protected override void OnInitialized()
+    {
+        _offerColumns = new List<TableColumn<OfferingItem>>
+        {
+            new() {
+                Header = "", Width = "5%",
+                RenderCell = item => __builder => {
+                    <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 flex items-center justify-center pointer-events-none"
+                         style="background:@ThemeConfig.Colors.Header.DarkerVariant;">
+                        @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
+                        {
+                            <img src="@item.ThumbnailUrl" alt="@item.PromoName" class="w-full h-full object-cover" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="@($"font-size:16px; color:{ThemeConfig.Colors.Primary};")" />
+                        }
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Promo Name", Width = "15%", SortField = "PromoName",
+                RenderCell = item => __builder => {
+                    <div class="relative w-full" style="height:64px;">
+                        <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:8px;">@item.Code</div>
+                        <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 group-hover:translate-y-2" style="top:16px;">@item.PromoName</div>
+                        <div class="absolute left-0 flex gap-2 transition-transform duration-200 group-hover:translate-y-2" style="top:36px;">
+                            <button @onclick="() => OpenEditOffer(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                            </button>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Promo Description", Width = "20%", SortField = "PromoDescription",
+                RenderCell = item => __builder => { <span class="text-gray-600 line-clamp-3">@item.PromoDescription</span>; }
+            },
+            new() {
+                Header = "Vendor Name", Width = "12%", SortField = "VendorName",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.VendorName</span>; }
+            },
+            new() {
+                Header = "Business Type Name", Width = "13%", SortField = "BusinessTypeName",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.BusinessTypeName</span>; }
+            },
+            new() {
+                Header = "Membership Tier", Width = "10%", SortField = "MembershipTier",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.MembershipTier</span>; }
+            },
+            new() {
+                Header = "DateCreated", Width = "10%", SortField = "DateCreated",
+                RenderCell = item => __builder => { <span class="text-gray-600 whitespace-nowrap">@item.DateCreated.ToString("M/d/yyyy")</span>; }
+            },
+            new() {
+                Header = "Status", Width = "8%", SortField = "Status",
+                RenderCell = item => __builder => {
+                    <span class="@(item.Status == "Active" ? "text-green-600 font-medium" : "text-red-500")">@item.Status</span>;
+                }
+            }
+        };
+    }
+
     private string? _uploadedFileName;
 
-    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    private async Task HandleFileUpload(string fileName)
     {
-        _uploadedFileName = e.File.Name;
+        _uploadedFileName = fileName;
         await Task.CompletedTask;
+    }
+
+    private Task HandleImportClick()
+    {
+        return Task.CompletedTask;
+    }
+
+    private Task HandleExportTemplate()
+    {
+        return Task.CompletedTask;
     }
 
     private string _offerSearch = "";
