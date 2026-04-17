@@ -69,6 +69,12 @@
             </button>
         </div>
     }
+    @if (AboveTableContent != null)
+    {
+        <div class="mb-3 px-1">
+            @AboveTableContent
+        </div>
+    }
 
     <!-- Table -->
     <div class="overflow-y-auto" style="max-height: @TableHeight; @TableWrapperStyle">
@@ -154,6 +160,7 @@
     [Parameter] public List<T> Items { get; set; } = new();
     [Parameter] public List<TableColumn<T>> Columns { get; set; } = new();
     [Parameter] public Func<T, bool>? ExternalFilter { get; set; }
+
     [Parameter] public bool ShowAddButton { get; set; } = true;
     [Parameter] public string ButtonColor { get; set; } = "#3b82f6";
     [Parameter] public string TableHeight { get; set; } = "560px";
@@ -166,6 +173,8 @@
     //TABLE STYLE
     [Parameter] public string TableWrapperStyle { get; set; } = "";
     [Parameter] public string TableStyle { get; set; } = "width: 100%;";
+    [Parameter] public RenderFragment? AboveTableContent { get; set; }
+
 
     [Parameter] public bool ShowImportExport { get; set; } = false;
     [Parameter] public string? ImportedFileName { get; set; }

@@ -53,321 +53,256 @@
 @if (_showAddPrivilegeDialog || _showEditPrivilegeDialog)
 {
     var isEdit = _showEditPrivilegeDialog;
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style="max-height: calc(100vh - 90px);">
-
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="@ThemeConfig.Styles.HeaderGradient">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.CardGiftcard" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Privilege" : "Add Privilege")</span>
-                </div>
-                <button @onclick="ClosePrivilegeDialog"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
+    <DialogModal IsVisible="_showAddPrivilegeDialog || _showEditPrivilegeDialog"
+                 Title="@(isEdit ? "Edit Privilege" : "Add Privilege")"
+                 Icon="@Icons.Material.Filled.CardGiftcard"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="ClosePrivilegeDialog">
+        <ChildContent>
+            <div class="flex items-center gap-6 mb-2">
+                <img src="@(string.IsNullOrEmpty(_privImageUrl) ? "/images/default.jpg" : _privImageUrl)"
+                     class="w-24 h-24 rounded-full object-cover border-2 border-gray-200 bg-gray-100" />
+                <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer"
+                       style="background:@ThemeConfig.Colors.Primary;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
+                        <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
+                        <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" stroke-linejoin="round" />
+                    </svg>
+                    Upload Image
+                    <InputFile OnChange="OnPrivImageSelected" accept="image/*" class="hidden" />
+                </label>
             </div>
 
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
+                <input type="text" @bind="_privName"
+                       class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+            </div>
 
-                @* Image Upload *@
-                <div class="flex items-center gap-6 mb-2">
-                    <img src="@(string.IsNullOrEmpty(_privImageUrl) ? "/images/default.jpg" : _privImageUrl)"
-                         class="w-24 h-24 rounded-full object-cover border-2 border-gray-200 bg-gray-100" />
-                    <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer"
-                           style="background:@ThemeConfig.Colors.Primary;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                            <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
-                            <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
-                            <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" stroke-linejoin="round" />
-                        </svg>
-                        Upload Image
-                        <InputFile OnChange="OnPrivImageSelected" accept="image/*" class="hidden" />
-                    </label>
-                </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                <textarea @bind="_privDescription" rows="4"
+                          class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
+            </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
-                    <input type="text" @bind="_privName"
-                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Validity</label>
+                <input type="date" @bind="_privValidityDate"
+                       class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+            </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
-                    <textarea @bind="_privDescription" rows="4"
-                              class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
-                </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type Name <span class="text-red-500">*</span></label>
+                <select @bind="_privBusinessTypeName"
+                        class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                    <option value="">-Select Business Type-</option>
+                    <option value="Health">Health</option>
+                    <option value="Rooms & Suites">Rooms & Suites</option>
+                    <option value="Food & Beverages">Food & Beverages</option>
+                    <option value="Access to co-working spaces">Access to co-working spaces</option>
+                </select>
+            </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Validity</label>
-                    <input type="date" @bind="_privValidityDate"
-                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type Name <span class="text-red-500">*</span></label>
-                    <select @bind="_privBusinessTypeName"
-                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
-                        <option value="">-Select Business Type-</option>
-                        <option value="Health">Health</option>
-                        <option value="Rooms & Suites">Rooms & Suites</option>
-                        <option value="Food & Beverages">Food & Beverages</option>
-                        <option value="Access to co-working spaces">Access to co-working spaces</option>
-                    </select>
-                </div>
-
-                @* Terms and Conditions *@
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Terms and Conditions <span class="text-red-500">*</span></label>
-                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
-                        <div id="privTermsToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
-                            @RichToolbarButtons()
-                        </div>
-                        <div id="privTermsEditor"
-                             class="min-h-[100px] max-h-[200px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
-                             contenteditable="true">
-                        </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Terms and Conditions <span class="text-red-500">*</span></label>
+                <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
+                    <div id="privTermsToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+                        @RichToolbarButtons()
+                    </div>
+                    <div id="privTermsEditor"
+                         class="min-h-[100px] max-h-[200px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
+                         contenteditable="true">
                     </div>
                 </div>
+            </div>
 
-                @* Mechanics *@
-                <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-1">Mechanics <span class="text-red-500">*</span></label>
-                    <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
-                        <div id="privMechToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
-                            @RichToolbarButtons()
-                        </div>
-                        <div id="privMechEditor"
-                             class="min-h-[140px] max-h-[240px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
-                             contenteditable="true">
-                        </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Mechanics <span class="text-red-500">*</span></label>
+                <div class="border border-gray-300 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-100">
+                    <div id="privMechToolbar" class="flex items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200 flex-wrap">
+                        @RichToolbarButtons()
+                    </div>
+                    <div id="privMechEditor"
+                         class="min-h-[140px] max-h-[240px] overflow-y-auto px-3 py-2 text-xs text-gray-700 outline-none leading-relaxed"
+                         contenteditable="true">
                     </div>
                 </div>
-
             </div>
-
-            @* Footer *@
-            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-                <button @onclick="ClosePrivilegeDialog"
-                        class="text-xs text-gray-500 underline cursor-pointer bg-transparent border-none hover:text-gray-700">
-                    Cancel
-                </button>
-                <button @onclick="SavePrivilegeDialog"
-                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
-                        style="@ThemeConfig.Styles.ButtonPrimary">
-                    Submit
-                </button>
-            </div>
-
-        </div>
-    </div>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Submit"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="ClosePrivilegeDialog"
+                          OnConfirm="SavePrivilegeDialog" />
+        </FooterContent>
+    </DialogModal>
 }
 @* ── Add/Edit Membership Tier Dialog ── *@
 @if (_showAddTierDialog || _showEditTierDialog)
 {
     var isEdit = _showEditTierDialog;
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col" style="max-height: calc(100vh - 90px);">
-
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="@ThemeConfig.Styles.HeaderGradient">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.Star" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Membership Tier" : "Add Membership Tier")</span>
-                </div>
-                <button @onclick="CloseTierDialog"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
-            </div>
-
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
-
-                @* 4 Upload Areas *@
-                <div class="grid grid-cols-4 gap-4">
-                    @* Membership Card *@
-                    <div class="flex flex-col items-center gap-1">
-                        <span class="text-xs text-gray-600 text-center">Upload Membership Card Here</span>
-                        <label class="w-full cursor-pointer">
-                            <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden"
-                                 style="height:100px;">
-                                @if (!string.IsNullOrEmpty(_tierMembershipCardUrl))
-                                {
-                                    <img src="@_tierMembershipCardUrl" class="w-full h-full object-cover" />
-                                }
-                                else
-                                {
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-gray-300">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
-                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
-                                        <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
-                                    </svg>
-                                }
-                            </div>
-                            <InputFile OnChange="e => OnTierImageSelected(e, 0)" accept="image/*" class="hidden" />
-                        </label>
-                    </div>
-
-                    @* VIP Card *@
-                    <div class="flex flex-col items-center gap-1">
-                        <span class="text-xs text-gray-600 text-center">Upload VIP Card Here</span>
-                        <label class="w-full cursor-pointer">
-                            <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden"
-                                 style="height:100px;">
-                                @if (!string.IsNullOrEmpty(_tierVipCardUrl))
-                                {
-                                    <img src="@_tierVipCardUrl" class="w-full h-full object-cover" />
-                                }
-                                else
-                                {
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
-                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
-                                        <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
-                                    </svg>
-                                }
-                            </div>
-                            <InputFile OnChange="e => OnTierImageSelected(e, 1)" accept="image/*" class="hidden" />
-                        </label>
-                    </div>
-
-                    @* QR Code Frame *@
-                    <div class="flex flex-col items-center gap-1">
-                        <span class="text-xs text-gray-600 text-center">Upload QR Code Frame Here</span>
-                        <label class="w-full cursor-pointer">
-                            <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden"
-                                 style="height:100px;">
-                                @if (!string.IsNullOrEmpty(_tierQrFrameUrl))
-                                {
-                                    <img src="@_tierQrFrameUrl" class="w-full h-full object-cover" />
-                                }
-                                else
-                                {
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
-                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
-                                        <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
-                                    </svg>
-                                }
-                            </div>
-                            <InputFile OnChange="e => OnTierImageSelected(e, 2)" accept="image/*" class="hidden" />
-                        </label>
-                    </div>
-
-                    @* VIP Badge *@
-                    <div class="flex flex-col items-center gap-1">
-                        <span class="text-xs text-gray-600 text-center">Upload VIP Badge Here</span>
-                        <label class="w-full cursor-pointer">
-                            <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden"
-                                 style="height:100px;">
-                                @if (!string.IsNullOrEmpty(_tierVipBadgeUrl))
-                                {
-                                    <img src="@_tierVipBadgeUrl" class="w-full h-full object-cover" />
-                                }
-                                else
-                                {
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
-                                        <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
-                                        <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
-                                    </svg>
-                                }
-                            </div>
-                            <InputFile OnChange="e => OnTierImageSelected(e, 3)" accept="image/*" class="hidden" />
-                        </label>
-                    </div>
-                </div>
-
-                @* Text Card Color + Membership Country *@
-                <div class="grid grid-cols-2 gap-4 items-start">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Text Card Color:</label>
-                        <div class="flex items-center gap-2">
-                            <input type="color" @bind="_tierTextCardColor"
-                                   class="w-12 h-10 rounded border border-gray-300 cursor-pointer p-0.5" />
+    <DialogModal IsVisible="_showAddTierDialog || _showEditTierDialog"
+                 Title="@(isEdit ? "Edit Membership Tier" : "Add Membership Tier")"
+                 Icon="@Icons.Material.Filled.Star"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="CloseTierDialog">
+        <ChildContent>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="flex flex-col items-center gap-1">
+                    <span class="text-xs text-gray-600 text-center">Upload Membership Card Here</span>
+                    <label class="w-full cursor-pointer">
+                        <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden" style="height:100px;">
+                            @if (!string.IsNullOrEmpty(_tierMembershipCardUrl))
+                            {
+                                <img src="@_tierMembershipCardUrl" class="w-full h-full object-cover" />
+                            }
+                            else
+                            {
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-gray-300">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                    <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                    <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
+                                </svg>
+                            }
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Country</label>
-                        <select @bind="_tierCountry"
-                                class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
-                            <option value="">-Select Country-</option>
-                            <option value="Qatar">Qatar</option>
-                            <option value="Oman">Oman</option>
-                            <option value="UAE">UAE</option>
-                            <option value="Saudi Arabia">Saudi Arabia</option>
-                            <option value="Kuwait">Kuwait</option>
-                            <option value="Bahrain">Bahrain</option>
-                        </select>
-                    </div>
+                        <InputFile OnChange="e => OnTierImageSelected(e, 0)" accept="image/*" class="hidden" />
+                    </label>
                 </div>
 
-                @* Membership Name + Description *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Name <span class="text-red-500">*</span></label>
-                        <input type="text" @bind="_tierName"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
-                        <input type="text" @bind="_tierDescription"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
+                <div class="flex flex-col items-center gap-1">
+                    <span class="text-xs text-gray-600 text-center">Upload VIP Card Here</span>
+                    <label class="w-full cursor-pointer">
+                        <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden" style="height:100px;">
+                            @if (!string.IsNullOrEmpty(_tierVipCardUrl))
+                            {
+                                <img src="@_tierVipCardUrl" class="w-full h-full object-cover" />
+                            }
+                            else
+                            {
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                    <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                    <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
+                                </svg>
+                            }
+                        </div>
+                        <InputFile OnChange="e => OnTierImageSelected(e, 1)" accept="image/*" class="hidden" />
+                    </label>
                 </div>
 
-                @* Date Used + Date Ended *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Date Used</label>
-                        <input type="date" @bind="_tierDateStarted"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Date Ended</label>
-                        <input type="date" @bind="_tierDateEnded"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
+                <div class="flex flex-col items-center gap-1">
+                    <span class="text-xs text-gray-600 text-center">Upload QR Code Frame Here</span>
+                    <label class="w-full cursor-pointer">
+                        <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden" style="height:100px;">
+                            @if (!string.IsNullOrEmpty(_tierQrFrameUrl))
+                            {
+                                <img src="@_tierQrFrameUrl" class="w-full h-full object-cover" />
+                            }
+                            else
+                            {
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                    <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                    <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
+                                </svg>
+                            }
+                        </div>
+                        <InputFile OnChange="e => OnTierImageSelected(e, 2)" accept="image/*" class="hidden" />
+                    </label>
                 </div>
 
-                @* User Count + VIP Count *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">User Count</label>
-                        <input type="number" @bind="_tierUserCount"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">VIP Count</label>
-                        <input type="number" @bind="_tierVipCount"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
+                <div class="flex flex-col items-center gap-1">
+                    <span class="text-xs text-gray-600 text-center">Upload VIP Badge Here</span>
+                    <label class="w-full cursor-pointer">
+                        <div class="border border-gray-300 rounded bg-gray-50 flex items-center justify-center overflow-hidden" style="height:100px;">
+                            @if (!string.IsNullOrEmpty(_tierVipBadgeUrl))
+                            {
+                                <img src="@_tierVipBadgeUrl" class="w-full h-full object-cover" />
+                            }
+                            else
+                            {
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                    <polyline points="3,17 8,12 12,16 16,11 21,17" stroke="@ThemeConfig.Colors.Text.LightGray" stroke-width="1.5" fill="none" />
+                                    <circle cx="8" cy="8" r="1.5" fill="@ThemeConfig.Colors.Text.LightGray" />
+                                </svg>
+                            }
+                        </div>
+                        <InputFile OnChange="e => OnTierImageSelected(e, 3)" accept="image/*" class="hidden" />
+                    </label>
                 </div>
-
             </div>
 
-            @* Footer *@
-            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-                <button @onclick="CloseTierDialog"
-                        class="text-xs cursor-pointer bg-transparent border-none hover:text-gray-700 underline"
-                        style="color:@ThemeConfig.Colors.Primary;">
-                    Cancel
-                </button>
-                <button @onclick="SaveTierDialog"
-                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
-                        style="@ThemeConfig.Styles.ButtonPrimary">
-                    Submit
-                </button>
+            <div class="grid grid-cols-2 gap-4 items-start">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Text Card Color:</label>
+                    <div class="flex items-center gap-2">
+                        <input type="color" @bind="_tierTextCardColor"
+                               class="w-12 h-10 rounded border border-gray-300 cursor-pointer p-0.5" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Country</label>
+                    <select @bind="_tierCountry"
+                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                        <option value="">-Select Country-</option>
+                        <option value="Qatar">Qatar</option>
+                        <option value="Oman">Oman</option>
+                        <option value="UAE">UAE</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Kuwait">Kuwait</option>
+                        <option value="Bahrain">Bahrain</option>
+                    </select>
+                </div>
             </div>
 
-        </div>
-    </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Name <span class="text-red-500">*</span></label>
+                    <input type="text" @bind="_tierName"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                    <input type="text" @bind="_tierDescription"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Date Used</label>
+                    <input type="date" @bind="_tierDateStarted"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Date Ended</label>
+                    <input type="date" @bind="_tierDateEnded"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">User Count</label>
+                    <input type="number" @bind="_tierUserCount"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">VIP Count</label>
+                    <input type="number" @bind="_tierVipCount"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+            </div>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Submit"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CloseTierDialog"
+                          OnConfirm="SaveTierDialog" />
+        </FooterContent>
+    </DialogModal>
 }
 @code {
 

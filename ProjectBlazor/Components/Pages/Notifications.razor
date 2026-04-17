@@ -1,6 +1,246 @@
-﻿@page "/notifications"
-<h3>Notifications</h3>
+@page "/notifications"
+@rendermode InteractiveServer
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Notifications</h3>
+
+<DataTable T="NotificationsItem"
+           Title="Notification"
+           Items="_notificationItems"
+           Columns="_notificationColumns"
+           ShowAddButton="false"
+           ButtonColor="@ProjectBlazor.Components.ThemeConfig.Colors.Primary"
+           HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient">
+    <AboveTableContent>
+        <button @onclick="OpenComposeModal"
+                class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium"
+                style="background: @ProjectBlazor.Components.ThemeConfig.Colors.Primary;">
+            <MudIcon Icon="@Icons.Material.Filled.Mail" Style="font-size:13px;" Color="Color.Inherit" />
+            Compose Notifications
+        </button>
+    </AboveTableContent>
+</DataTable>
+
+<DialogModal IsVisible="_showComposeModal"
+             Title="New Message"
+             Icon="@Icons.Material.Filled.Mail"
+             MaxWidth="md"
+             HeaderGradient="@ProjectBlazor.Components.ThemeConfig.Styles.HeaderGradient"
+             OnClose="CloseComposeModal">
+    <ChildContent>
+        <!-- Notification Checkboxes -->
+        <div class="flex flex-col gap-2 mb-4">
+            @foreach (var notif in _availableNotifications)
+            {
+                <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
+                    <input type="checkbox"
+                           checked="@_selectedNotifications.Contains(notif)"
+                           @onchange="e => ToggleNotification(notif, e)" />
+                    @notif
+                </label>
+            }
+        </div>
+
+        <hr class="border-gray-200 mb-4" />
+
+        <!-- Subject Row -->
+        <div class="flex items-center gap-3">
+            <span class="text-xs text-gray-600 font-medium w-16">Subject:</span>
+            <div class="flex items-center gap-2 flex-1">
+                <span class="text-xs text-gray-700">@_selectedSubject</span>
+                <div class="relative flex-1">
+                    <select @bind="_selectedSubject"
+                            class="w-full border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-600 appearance-none pr-8">
+                        <option value="">Select...</option>
+                        <option value="Corporate">Corporate</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Vendor">Vendor</option>
+                    </select>
+                    <MudIcon Icon="@Icons.Material.Filled.Search"
+                             Style="font-size:14px; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:#9ca3af;" />
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <span class="text-xs text-gray-600 font-medium">Message:</span>
+            <textarea @bind="_messageText"
+                      rows="5"
+                      placeholder="Type your message here..."
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs text-gray-700 resize-none focus:outline-none focus:ring-1"
+                      style="focus-ring-color: @ProjectBlazor.Components.ThemeConfig.Colors.Primary;">
+        </textarea>
+        </div>
+    </ChildContent>
+
+    <FooterContent>
+        <label class="flex items-center gap-2 text-xs text-gray-600 cursor-pointer mr-auto">
+            <input type="checkbox" @bind="_sendToAll" />
+            Send to All Corporation
+        </label>
+        <DialogFooter ConfirmText="Send"
+                      ButtonStyle="@ProjectBlazor.Components.ThemeConfig.Styles.ButtonPrimary"
+                      OnCancel="CloseComposeModal"
+                      OnConfirm="SendNotification" />
+    </FooterContent>
+</DialogModal>
 
 @code {
 
+    private string _messageText = "";
+
+    private bool _showComposeModal = false;
+    private string _selectedSubject = "Corporate";
+    private bool _sendToAll = false;
+    private List<string> _selectedNotifications = new();
+
+    private List<string> _availableNotifications = new()
+    {
+        "20% Discount for New VIP at Restaurant Beach",
+        "New food & Beverage Outlet Have Been Added to AOPC Mobile App",
+        "New Jewelry Brands Have Been Added to Your Priveleges",
+        "New food & Beverage Offers Are Available on the AOPC Mobile App"
+    };
+
+    private void OpenComposeModal() => _showComposeModal = true;
+    private void CloseComposeModal() => _showComposeModal = false;
+
+    private void ToggleNotification(string notif, ChangeEventArgs e)
+    {
+        var isChecked = (bool)(e.Value ?? false);
+        if (isChecked)
+            _selectedNotifications.Add(notif);
+        else
+            _selectedNotifications.Remove(notif);
+    }
+
+    private void SendNotification()
+    {
+        CloseComposeModal();
+    }
+        private List<TableColumn<NotificationsItem>> _notificationColumns = new();    
+
+        protected override void OnInitialized()
+        {
+            _notificationColumns = new List<TableColumn<NotificationsItem>>
+        {
+            new()
+                {
+                    Header = "Details",
+                    Width = "40%",
+                    SortField = "Details",
+                    RenderCell = item => __builder =>
+                    {
+                    <span class="text-gray-600">@item.Details</span>
+                    ;
+                }
+            },
+            new()
+                {
+                    Header = "Module",
+                    Width = "30%",
+                    SortField = "Module",
+                    RenderCell = item => __builder =>
+                    {
+                    <span class="text-gray-600">@item.Module</span>
+                    ;
+                }
+            },
+            new()
+                {
+                    Header = "Date Created",
+                    Width = "30%",
+                    SortField = "DateCreated",
+                    RenderCell = item => __builder =>
+                    {
+                    <span class="text-gray-600">@item.DateCreated</span>
+                    ;
+                }
+            }
+        };
+    }
+
+    private List<NotificationsItem> _notificationItems = new()
+    {
+        new NotificationsItem
+        {
+        Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Offering",
+            DateCreated = DateTime.Now.AddDays(-1)
+        },
+        new NotificationsItem
+        {
+            Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Company",
+            DateCreated = DateTime.Now.AddDays(-2)
+        },
+        new NotificationsItem
+        {
+        Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Vendor",
+            DateCreated = DateTime.Now.AddDays(-3)
+        },
+        new NotificationsItem
+        {
+        Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Offering",
+            DateCreated = DateTime.Now.AddDays(-1)
+        },
+        new NotificationsItem
+        {
+            Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Company",
+            DateCreated = DateTime.Now.AddDays(-2)
+        },
+        new NotificationsItem
+        {
+        Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Vendor",
+            DateCreated = DateTime.Now.AddDays(-3)
+        },
+        new NotificationsItem
+        {
+        Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Offering",
+            DateCreated = DateTime.Now.AddDays(-1)
+        },
+        new NotificationsItem
+        {
+            Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Company",
+            DateCreated = DateTime.Now.AddDays(-2)
+        },
+        new NotificationsItem
+        {
+        Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Vendor",
+            DateCreated = DateTime.Now.AddDays(-3)
+        },
+        new NotificationsItem
+        {
+        Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Offering",
+            DateCreated = DateTime.Now.AddDays(-1)
+        },
+        new NotificationsItem
+        {
+            Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Company",
+            DateCreated = DateTime.Now.AddDays(-2)
+        },
+        new NotificationsItem
+        {
+        Details = "Has new Offering The Ultimate Longevity Boost",
+            Module = "Vendor",
+            DateCreated = DateTime.Now.AddDays(-3)
+        }
+    };  
+
+    public class NotificationsItem
+    {
+        public string Details { get; set; } = "";
+        public string Module { get; set; } = "";
+        public DateTime DateCreated { get; set; }
+    }
 }

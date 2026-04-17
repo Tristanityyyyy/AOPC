@@ -20,58 +20,32 @@
 @if (_showAddPositionDialog || _showEditPositionDialog)
 {
     var isEdit = _showEditPositionDialog;
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col" style="max-height: calc(100vh - 90px);">
-
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="@ThemeConfig.Styles.HeaderGradient">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.Work" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Position" : "Add Position")</span>
-                </div>
-                <button @onclick="ClosePositionDialog"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
+    <DialogModal IsVisible="_showAddPositionDialog || _showEditPositionDialog"
+                 Title="@(isEdit ? "Edit Position" : "Add Position")"
+                 Icon="@Icons.Material.Filled.Work"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="ClosePositionDialog">
+        <ChildContent>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold text-gray-700">
+                    Position Name <span class="text-red-500">*</span>
+                </label>
+                <input type="text" @bind="_positionName"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none @ThemeConfig.Styles.BorderFocus" />
             </div>
-
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-4">
-
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-semibold text-gray-700">
-                        Position Name <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" @bind="_positionName"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none @ThemeConfig.Styles.BorderFocus" />
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-semibold text-gray-700">Position Description</label>
-                    <input type="text" @bind="_positionDescription"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none @ThemeConfig.Styles.BorderFocus" />
-                </div>
-
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold text-gray-700">Position Description</label>
+                <input type="text" @bind="_positionDescription"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none @ThemeConfig.Styles.BorderFocus" />
             </div>
-
-            @* Footer *@
-            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-                <button @onclick="ClosePositionDialog"
-                        class="text-xs cursor-pointer bg-transparent border-none hover:text-gray-700 underline"
-                        style="@ThemeConfig.Styles.TextAccent">
-                    Cancel
-                </button>
-                <button @onclick="SavePositionDialog"
-                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
-                        style="@ThemeConfig.Styles.ButtonPrimary">
-                    Submit
-                </button>
-            </div>
-
-        </div>
-    </div>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Submit"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="ClosePositionDialog"
+                          OnConfirm="SavePositionDialog" />
+        </FooterContent>
+    </DialogModal>
 }
 @code {
     private List<TableColumn<PositionItem>> _posColumns = new();

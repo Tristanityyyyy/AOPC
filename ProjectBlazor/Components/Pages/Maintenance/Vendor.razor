@@ -67,373 +67,226 @@
 @if (_showAddVendorDialog || _showEditVendorDialog)
 {
     var isEdit = _showEditVendorDialog;
-    <div class="fixed inset-0 flex items-start justify-center z-[100]"
-         style="background:rgba(0,0,0,0.45); padding:60px 20px 20px;">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col"
-             style="max-height:calc(100vh - 80px);">
-
-            @* ── Header ── *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="@ThemeConfig.Styles.HeaderGradient">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.Store" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Vendor" : "Add Vendor")</span>
-                </div>
-                <button @onclick="CloseVendorDialog"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
+    <DialogModal IsVisible="_showAddVendorDialog || _showEditVendorDialog"
+                 Title="@(isEdit ? "Edit Vendor" : "Add Vendor")"
+                 Icon="@Icons.Material.Filled.Store"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 MaxWidth="2xl"
+                 OnClose="CloseVendorDialog">
+        <ChildContent>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-xs font-semibold tracking-widest uppercase"
+                      style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">
+                    Media Assets
+                </span>
+                <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
             </div>
 
-            @* ── Body ── *@
-            <div class="overflow-y-auto flex flex-col" style="padding:0;">
-
-                @* ── SECTION: Media Assets ── *@
-                <div class="px-6 py-5 flex flex-col gap-4"
-                     style="border-bottom:0.5px solid @ThemeConfig.Colors.Border.Subtle;">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold tracking-widest uppercase"
-                              style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">
-                            Media Assets
-                        </span>
-                        <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
-                    </div>
-
-                    @* Featured + Logo side by side *@
-                    <div class="grid grid-cols-2 gap-3">
-
-                        @* Featured Image *@
-                        <label class="cursor-pointer group">
-                            <div class="border-2 border-dashed rounded-xl p-4 flex flex-col items-center gap-3
-                                            transition-all hover:border-amber-400"
-                                 style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle; min-height:120px;
-                                            justify-content:center; position:relative;">
-                                <div class="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded"
-                                     style="background:rgba(201,168,76,0.12); color:@ThemeConfig.Colors.Primary;
-                                                font-size:9px; letter-spacing:0.5px;">
-                                    FEATURED
-                                </div>
-                                @if (!string.IsNullOrEmpty(_vendorFeaturedImageUrl))
-                                {
-                                    <img src="@_vendorFeaturedImageUrl"
-                                         class="w-14 h-14 rounded-full object-cover"
-                                         style="border:2px solid rgba(201,168,76,0.3);" />
-                                }
-                                else
-                                {
-                                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                                         style="background:rgba(201,168,76,0.1);
-                                                        border:1.5px solid rgba(201,168,76,0.2);">
-                                        <MudIcon Icon="@Icons.Material.Filled.AddPhotoAlternate"
-                                                 Style="@($"font-size:18px; color:{ThemeConfig.Colors.Primary};")" />
-                                    </div>
-                                }
-                                <div class="text-center">
-                                    <div class="text-xs font-medium text-gray-600">Upload Featured Image</div>
-                                    <div class="text-gray-400 mt-0.5" style="font-size:9px;">
-                                        JPEG · PNG · WEBP
-                                    </div>
-                                </div>
-                            </div>
-                            <InputFile OnChange="OnVendorFeaturedImageSelected"
-                                       accept="image/*" class="hidden" />
-                        </label>
-
-                        @* Logo *@
-                        <label class="cursor-pointer group">
-                            <div class="border-2 border-dashed rounded-xl p-4 flex flex-col items-center gap-3
-                                            transition-all hover:border-amber-400"
-                                 style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle; min-height:120px;
-                                            justify-content:center; position:relative;">
-                                <div class="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded"
-                                     style="background:rgba(13,27,42,0.07); color:@ThemeConfig.Colors.Text.Primary;
-                                                font-size:9px; letter-spacing:0.5px;">
-                                    LOGO
-                                </div>
-                                @if (!string.IsNullOrEmpty(_vendorLogoUrl))
-                                {
-                                    <img src="@_vendorLogoUrl"
-                                         class="w-14 h-14 rounded-lg object-cover"
-                                         style="border:2px solid rgba(201,168,76,0.3);" />
-                                }
-                                else
-                                {
-                                    <div class="w-10 h-10 rounded-lg flex items-center justify-center"
-                                         style="background:rgba(13,27,42,0.05);
-                                                        border:1.5px solid rgba(13,27,42,0.12);">
-                                        <MudIcon Icon="@Icons.Material.Filled.Image"
-                                                 Style="@($"font-size:18px; color:{ThemeConfig.Colors.Text.Muted};")" />
-                                    </div>
-                                }
-                                <div class="text-center">
-                                    <div class="text-xs font-medium text-gray-600">Upload Logo</div>
-                                    <div class="text-gray-400 mt-0.5" style="font-size:9px;">
-                                        JPEG · PNG · WEBP
-                                    </div>
-                                </div>
-                            </div>
-                            <InputFile OnChange="OnVendorLogoSelected"
-                                       accept="image/*" class="hidden" />
-                        </label>
-                    </div>
-
-                    @* Gallery filmstrip *@
-                    <div class="flex flex-col gap-2">
-                        <div class="text-xs font-semibold text-gray-500" style="font-size:10px;">
-                            Gallery Images
+            <div class="grid grid-cols-2 gap-3">
+                <label class="cursor-pointer group">
+                    <div class="border-2 border-dashed rounded-xl p-4 flex flex-col items-center gap-3 transition-all hover:border-amber-400"
+                         style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle; min-height:120px; justify-content:center; position:relative;">
+                        <div class="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded"
+                             style="background:rgba(201,168,76,0.12); color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:0.5px;">
+                            FEATURED
                         </div>
-                        <div class="flex items-center gap-2 overflow-x-auto pb-1">
-                            @foreach (var (img, idx) in _vendorGalleryImages.Select((x, i) => (x, i)))
-                            {
-                                <div class="relative flex-shrink-0">
-                                    <img src="@img"
-                                         class="w-14 h-14 rounded-lg object-cover"
-                                         style="border:1px solid @ThemeConfig.Colors.Border.Light;" />
-                                    <button @onclick="() => RemoveGalleryImage(idx)"
-                                            class="absolute flex items-center justify-center
-                                                           text-white border-none cursor-pointer"
-                                            style="top:-5px; right:-5px; width:16px; height:16px;
-                                                           border-radius:50%; background:@ThemeConfig.Colors.Primary; font-size:9px;">
-                                        ✕
-                                    </button>
-                                </div>
-                            }
-                        @* Add tile *@
-                        <label class="flex-shrink-0 cursor-pointer">
-                            <div class="w-14 h-14 rounded-lg border-2 border-dashed flex flex-col
-                                            items-center justify-center gap-0.5 transition-all
-                                            hover:border-amber-400"
-                                 style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle;">
-                                <span class="text-gray-400 font-light" style="font-size:20px; line-height:1;">+</span>
-                                <span class="text-gray-400" style="font-size:8px;">Add</span>
+                        @if (!string.IsNullOrEmpty(_vendorFeaturedImageUrl))
+                        {
+                            <img src="@_vendorFeaturedImageUrl" class="w-14 h-14 rounded-full object-cover" style="border:2px solid rgba(201,168,76,0.3);" />
+                        }
+                        else
+                        {
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                                 style="background:rgba(201,168,76,0.1); border:1.5px solid rgba(201,168,76,0.2);">
+                                <MudIcon Icon="@Icons.Material.Filled.AddPhotoAlternate" Style="@($"font-size:18px; color:{ThemeConfig.Colors.Primary};")" />
                             </div>
-                            <InputFile OnChange="OnVendorGallerySelected"
-                                       accept="image/*" multiple class="hidden" />
-                        </label>
+                        }
+                        <div class="text-center">
+                            <div class="text-xs font-medium text-gray-600">Upload Featured Image</div>
+                            <div class="text-gray-400 mt-0.5" style="font-size:9px;">JPEG · PNG · WEBP</div>
+                        </div>
                     </div>
-                </div>
+                    <InputFile OnChange="OnVendorFeaturedImageSelected" accept="image/*" class="hidden" />
+                </label>
+
+                <label class="cursor-pointer group">
+                    <div class="border-2 border-dashed rounded-xl p-4 flex flex-col items-center gap-3 transition-all hover:border-amber-400"
+                         style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle; min-height:120px; justify-content:center; position:relative;">
+                        <div class="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded"
+                             style="background:rgba(13,27,42,0.07); color:@ThemeConfig.Colors.Text.Primary; font-size:9px; letter-spacing:0.5px;">
+                            LOGO
+                        </div>
+                        @if (!string.IsNullOrEmpty(_vendorLogoUrl))
+                        {
+                            <img src="@_vendorLogoUrl" class="w-14 h-14 rounded-lg object-cover" style="border:2px solid rgba(201,168,76,0.3);" />
+                        }
+                        else
+                        {
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                                 style="background:rgba(13,27,42,0.05); border:1.5px solid rgba(13,27,42,0.12);">
+                                <MudIcon Icon="@Icons.Material.Filled.Image" Style="@($"font-size:18px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                            </div>
+                        }
+                        <div class="text-center">
+                            <div class="text-xs font-medium text-gray-600">Upload Logo</div>
+                            <div class="text-gray-400 mt-0.5" style="font-size:9px;">JPEG · PNG · WEBP</div>
+                        </div>
+                    </div>
+                    <InputFile OnChange="OnVendorLogoSelected" accept="image/*" class="hidden" />
+                </label>
             </div>
 
-            @* ── SECTION: Basic Info ── *@
-            <div class="px-6 py-5 flex flex-col gap-4"
-                 style="border-bottom:0.5px solid @ThemeConfig.Colors.Border.Subtle;">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-semibold tracking-widest uppercase"
-                          style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">Basic Info</span>
-                    <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
-                </div>
-
-                @* Vendor Name + Contact *@
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-semibold text-gray-600">
-                            Vendor Name <span style="color:@ThemeConfig.Colors.Primary;">*</span>
-                        </label>
-                        <input type="text" @bind="_vendorName"
-                               class="border border-gray-300 rounded-lg px-3 py-2 text-xs
-                                          focus:outline-none focus:border-amber-400" />
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-semibold text-gray-600">
-                            Contact Number <span style="color:@ThemeConfig.Colors.Primary;">*</span>
-                        </label>
-                        <input type="text" @bind="_vendorContactNumber"
-                               class="border border-gray-300 rounded-lg px-3 py-2 text-xs
-                                          focus:outline-none focus:border-amber-400"
-                               placeholder="+1 234 567 8900" />
-                    </div>
-                </div>
-
-                @* Description *@
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-semibold text-gray-600">
-                        Description <span style="color:@ThemeConfig.Colors.Primary;">*</span>
-                    </label>
-                    <textarea @bind="_vendorDescription" rows="4"
-                              class="border border-gray-300 rounded-lg px-3 py-2 text-xs
-                                         resize-y focus:outline-none focus:border-amber-400"></textarea>
-                </div>
-
-                @* Address *@
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-semibold text-gray-600">
-                        Address <span style="color:@ThemeConfig.Colors.Primary;">*</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500"
-                              style="font-size:12px;">📍</span>
-                        <input type="text" @bind="_vendorAddress"
-                               class="w-full border rounded-lg pl-8 pr-3 py-2 text-xs
-                                          focus:outline-none"
-                               style="border-color:@ThemeConfig.Colors.Background.WarningBorder; background:@ThemeConfig.Colors.Background.WarningLight;" />
-                    </div>
-                </div>
-            </div>
-
-            @* ── SECTION: Contact & Web ── *@
-            <div class="px-6 py-5 flex flex-col gap-4"
-                 style="border-bottom:0.5px solid @ThemeConfig.Colors.Border.Subtle;">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-semibold tracking-widest uppercase"
-                          style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">
-                        Contact & Web
-                    </span>
-                    <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
-                </div>
-
-                @* Services + Website *@
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-semibold text-gray-600">Services</label>
-                        <input type="text" @bind="_vendorServices"
-                               class="border border-gray-300 rounded-lg px-3 py-2 text-xs
-                                          focus:outline-none focus:border-amber-400" />
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-semibold text-gray-600">
-                            Website URL <span style="color:@ThemeConfig.Colors.Primary;">*</span>
-                        </label>
-                        <input type="text" @bind="_vendorWebsiteUrl"
-                               class="border border-gray-300 rounded-lg px-3 py-2 text-xs
-                                          focus:outline-none focus:border-amber-400"
-                               placeholder="https://" />
-                    </div>
-                </div>
-
-                @* Email + Map *@
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-semibold text-gray-600">Email</label>
-                        <input type="email" @bind="_vendorEmail"
-                               class="border border-gray-300 rounded-lg px-3 py-2 text-xs
-                                          focus:outline-none focus:border-amber-400"
-                               placeholder="vendor@example.com" />
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-semibold text-gray-600">Map Embed</label>
-                        <input type="text" @bind="_vendorMap"
-                               class="border border-gray-300 rounded-lg px-3 py-2 text-xs
-                                          focus:outline-none focus:border-amber-400"
-                               placeholder="&lt;iframe src=&quot;https://maps.google.com/...&quot;" />
-                    </div>
-                </div>
-            </div>
-
-            @* ── SECTION: Business Details ── *@
-            <div class="px-6 py-5 flex flex-col gap-4">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-semibold tracking-widest uppercase"
-                          style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">
-                        Business Details
-                    </span>
-                    <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    @* Business Type multi-select *@
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-semibold text-gray-600">
-                            Business Type <span style="color:@ThemeConfig.Colors.Primary;">*</span>
-                        </label>
-                        <div class="relative">
-                            <button type="button" @onclick="ToggleVendorBizTypeDropdown"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2
-                                               text-xs text-left bg-white flex items-center
-                                               justify-between focus:outline-none hover:border-amber-400">
-                                <span class="text-gray-400 truncate">
-                                    @(_vendorSelectedBusinessTypes.Any()
-                                                                        ? $"{_vendorSelectedBusinessTypes.Count} type(s) selected"
-                                                                        : "-Select Business Type-")
-                                </span>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                                    <polyline points="6,9 12,15 18,9" stroke="@ThemeConfig.Colors.Text.Muted"
-                                              stroke-width="2" stroke-linecap="round" />
-                                </svg>
+            <div class="flex flex-col gap-2">
+                <div class="text-xs font-semibold text-gray-500" style="font-size:10px;">Gallery Images</div>
+                <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                    @foreach (var (img, idx) in _vendorGalleryImages.Select((x, i) => (x, i)))
+                    {
+                        <div class="relative flex-shrink-0">
+                            <img src="@img" class="w-14 h-14 rounded-lg object-cover" style="border:1px solid @ThemeConfig.Colors.Border.Light;" />
+                            <button @onclick="() => RemoveGalleryImage(idx)"
+                                    class="absolute flex items-center justify-center text-white border-none cursor-pointer"
+                                    style="top:-5px; right:-5px; width:16px; height:16px; border-radius:50%; background:@ThemeConfig.Colors.Primary; font-size:9px;">
+                                ✕
                             </button>
-                            @* Selected tags *@
-                            @if (_vendorSelectedBusinessTypes.Any())
+                        </div>
+                    }
+                    <label class="flex-shrink-0 cursor-pointer">
+                        <div class="w-14 h-14 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-0.5 transition-all hover:border-amber-400"
+                             style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle;">
+                            <span class="text-gray-400 font-light" style="font-size:20px; line-height:1;">+</span>
+                            <span class="text-gray-400" style="font-size:8px;">Add</span>
+                        </div>
+                        <InputFile OnChange="OnVendorGallerySelected" accept="image/*" multiple class="hidden" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-xs font-semibold tracking-widest uppercase" style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">Basic Info</span>
+                <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Vendor Name <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <input type="text" @bind="_vendorName" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Contact Number <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <input type="text" @bind="_vendorContactNumber" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" placeholder="+1 234 567 8900" />
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold text-gray-600">Description <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                <textarea @bind="_vendorDescription" rows="4" class="border border-gray-300 rounded-lg px-3 py-2 text-xs resize-y focus:outline-none focus:border-amber-400"></textarea>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold text-gray-600">Address <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" style="font-size:12px;">📍</span>
+                    <input type="text" @bind="_vendorAddress" class="w-full border rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-none"
+                           style="border-color:@ThemeConfig.Colors.Background.WarningBorder; background:@ThemeConfig.Colors.Background.WarningLight;" />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-xs font-semibold tracking-widest uppercase" style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">Contact & Web</span>
+                <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Services</label>
+                    <input type="text" @bind="_vendorServices" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Website URL <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <input type="text" @bind="_vendorWebsiteUrl" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" placeholder="https://" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Email</label>
+                    <input type="email" @bind="_vendorEmail" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" placeholder="vendor@example.com" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Map Embed</label>
+                    <input type="text" @bind="_vendorMap" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" placeholder="&lt;iframe src=&quot;https://maps.google.com/...&quot;" />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-xs font-semibold tracking-widest uppercase" style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">Business Details</span>
+                <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Business Type <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <div class="relative">
+                        <button type="button" @onclick="ToggleVendorBizTypeDropdown"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs text-left bg-white flex items-center justify-between focus:outline-none hover:border-amber-400">
+                            <span class="text-gray-400 truncate">
+                                @(_vendorSelectedBusinessTypes.Any() ? $"{_vendorSelectedBusinessTypes.Count} type(s) selected" : "-Select Business Type-")
+                            </span>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                                <polyline points="6,9 12,15 18,9" stroke="@ThemeConfig.Colors.Text.Muted" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </button>
+                        @if (_vendorSelectedBusinessTypes.Any())
+                        {
+                            <div class="flex flex-wrap gap-1 mt-1.5">
+                                @foreach (var bt in _vendorSelectedBusinessTypes.ToList())
                                 {
-                                    <div class="flex flex-wrap gap-1 mt-1.5">
-                                        @foreach (var bt in _vendorSelectedBusinessTypes.ToList())
-                                        {
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
-                                                  style="background:rgba(201,168,76,0.12);
-                                                                     border:1px solid rgba(201,168,76,0.25);
-                                                                     color:@ThemeConfig.Colors.Text.LabelAccent; font-size:10px;">
-                                                @bt
-                                                <button @onclick="() => ToggleVendorBizType(bt, false)"
-                                                        class="bg-transparent border-none cursor-pointer
-                                                                           leading-none"
-                                                        style="color:@ThemeConfig.Colors.Text.LabelAccent; font-size:11px;">
-                                                    ×
-                                                </button>
-                                            </span>
-                                        }
-                                    </div>
-                                }
-                                @if (_showVendorBizTypeDropdown)
-                                {
-                                    <div class="absolute left-0 top-full mt-1 z-50 bg-white border
-                                                        border-gray-200 rounded-lg shadow-lg w-full"
-                                         style="max-height:160px; overflow-y:auto;">
-                                        @foreach (var bt in _businessTypes)
-                                        {
-                                            <label class="flex items-center gap-2 text-xs text-gray-700
-                                                                      cursor-pointer py-1.5 px-3 hover:bg-gray-50">
-                                                <input type="checkbox"
-                                                       checked="@_vendorSelectedBusinessTypes.Contains(bt)"
-                                                       @onchange="e => ToggleVendorBizType(bt, (bool)e.Value)"
-                                                       style="accent-color:@ThemeConfig.Colors.Primary;" />
-                                                @bt
-                                            </label>
-                                        }
-                                    </div>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
+                                          style="background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.25); color:@ThemeConfig.Colors.Text.LabelAccent; font-size:10px;">
+                                        @bt
+                                        <button @onclick="() => ToggleVendorBizType(bt, false)" class="bg-transparent border-none cursor-pointer leading-none"
+                                                style="color:@ThemeConfig.Colors.Text.LabelAccent; font-size:11px;">×</button>
+                                    </span>
                                 }
                             </div>
-                        </div>
-
-                        @* Hotel Business Address *@
-                        <div class="flex flex-col gap-1">
-                            <label class="text-xs font-semibold text-gray-600">
-                                Hotel Business Address <span style="color:@ThemeConfig.Colors.Primary;">*</span>
-                            </label>
-                            <select @bind="_vendorHotelBusinessAddress"
-                                    class="border border-gray-300 rounded-lg px-3 py-2 text-xs
-                                               focus:outline-none focus:border-amber-400 bg-white">
-                                <option value="">-Select Location-</option>
-                                <option value="Doha">Doha</option>
-                                <option value="Istanbul">Istanbul</option>
-                                <option value="Muscat">Muscat</option>
-                                <option value="Westbay - STR">Westbay - STR</option>
-                                <option value="The Pearl Island - STR MAI">The Pearl Island - STR MAI</option>
-                                <option value="The Pearl Island - MMK">The Pearl Island - MMK</option>
-                            </select>
-                        </div>
+                        }
+                        @if (_showVendorBizTypeDropdown)
+                        {
+                            <div class="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-full" style="max-height:160px; overflow-y:auto;">
+                                @foreach (var bt in _businessTypes)
+                                {
+                                    <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer py-1.5 px-3 hover:bg-gray-50">
+                                        <input type="checkbox" checked="@_vendorSelectedBusinessTypes.Contains(bt)"
+                                               @onchange="e => ToggleVendorBizType(bt, (bool)e.Value)" style="accent-color:@ThemeConfig.Colors.Primary;" />
+                                        @bt
+                                    </label>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
 
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Hotel Business Address <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <select @bind="_vendorHotelBusinessAddress" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400 bg-white">
+                        <option value="">-Select Location-</option>
+                        <option value="Doha">Doha</option>
+                        <option value="Istanbul">Istanbul</option>
+                        <option value="Muscat">Muscat</option>
+                        <option value="Westbay - STR">Westbay - STR</option>
+                        <option value="The Pearl Island - STR MAI">The Pearl Island - STR MAI</option>
+                        <option value="The Pearl Island - MMK">The Pearl Island - MMK</option>
+                    </select>
+                </div>
             </div>
-
-            @* ── Footer ── *@
-            <div class="flex items-center justify-end gap-3 px-6 py-4 flex-shrink-0"
-                 style="border-top:0.5px solid @ThemeConfig.Colors.Border.Subtle; background:@ThemeConfig.Colors.Background.Subtle; border-radius:0 0 1rem 1rem;">
-                <button @onclick="CloseVendorDialog"
-                        class="text-xs cursor-pointer bg-transparent border-none
-                                   hover:text-gray-700 underline"
-                        style="color:@ThemeConfig.Colors.Primary;">
-                    Cancel
-                </button>
-                <button @onclick="SaveVendorDialog"
-                        class="px-6 py-2 text-xs rounded-lg text-white font-medium
-                                   border-none cursor-pointer"
-                        style="@ThemeConfig.Styles.ButtonPrimary">
-                    @(isEdit ? "Save Changes" : "Register Vendor")
-                </button>
-            </div>
-
-        </div>
-    </div>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="@(isEdit ? "Save Changes" : "Register Vendor")"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CloseVendorDialog"
+                          OnConfirm="SaveVendorDialog" />
+        </FooterContent>
+    </DialogModal>
 }
 @code {
     private List<TableColumn<VendorItem>> _vendorColumns = new();

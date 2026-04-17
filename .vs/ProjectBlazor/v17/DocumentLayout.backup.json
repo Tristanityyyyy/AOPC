@@ -3,56 +3,84 @@
   "WorkspaceRootPath": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\supportlogs.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\supportlogs.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\qrcodelogs.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\qrcodelogs.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\notifications.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\notifications.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\corporate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\corporate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\datatable.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\datatable.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\error.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\error.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\membershipprivilege.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\membershipprivilege.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\audittrail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\audittrail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\dashboardadmin.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\dashboardadmin.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\registration.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\registration.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\vendor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\vendor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\membershipprivilege.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\membershipprivilege.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\datatable.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\datatable.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\dialogfooter.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\dialogfooter.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\dialogmodal.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\dialogmodal.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\supportlogs.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\supportlogs.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\position.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\position.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\offering.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\offering.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\position.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\position.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\corporate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\corporate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\business.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\business.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\qrcodelogs.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\qrcodelogs.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\error.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\error.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\registration.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\registration.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\dashboarduser.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\dashboarduser.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\vendor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\vendor.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\tablecolumn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\tablecolumn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\audittrail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\audittrail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -63,18 +91,6 @@
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\routes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\maintenance\\business.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\maintenance\\business.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\dialogmodal.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\dialogmodal.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\tablecolumn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\tablecolumn.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\themebutton.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\themebutton.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -83,20 +99,12 @@
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\themeselect.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\shared\\dialogfooter.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\shared\\dialogfooter.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\themeconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\themeconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\users.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\users.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\dashboarduser.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\dashboarduser.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\tristan\\Downloads\\CorporateMaintenance.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
@@ -126,16 +134,8 @@
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\layout\\blanklayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\layout\\blanklayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|solutionrelative:projectblazor\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B61583B2-5BFD-4665-BAE0-A7943216D334}|ProjectBlazor\\ProjectBlazor.csproj|c:\\users\\tristan\\source\\repos\\projectblazor\\projectblazor\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -213,7 +213,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 10,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -229,41 +229,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "AuditTrail.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\AuditTrail.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\AuditTrail.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\AuditTrail.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\AuditTrail.razor",
-              "ViewState": "AgIAAEIAAAAAAAAAAADwv2kAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T02:48:22.313Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "QRCodeLogs.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\QRCodeLogs.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\QRCodeLogs.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\QRCodeLogs.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\QRCodeLogs.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T02:50:43.157Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Notifications.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Notifications.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Notifications.razor",
               "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Notifications.razor",
               "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Notifications.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAiwF8AAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-03-23T02:50:35.598Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MembershipPrivilege.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\MembershipPrivilege.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\MembershipPrivilege.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\MembershipPrivilege.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\MembershipPrivilege.razor",
+              "ViewState": "AgIAABYAAAAAAAAAAAAiwC8AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-23T02:52:36.309Z",
               "EditorCaption": ""
             },
             {
@@ -274,40 +261,157 @@
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\DataTable.razor",
               "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DataTable.razor",
               "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\DataTable.razor",
-              "ViewState": "AgIAAP0AAAAAAAAAAAAQwG8AAAAtAAAAAAAAAA==",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAiwEwAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-04-15T05:14:53.008Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
+              "Title": "DialogModal.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DialogModal.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\DialogModal.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DialogModal.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\DialogModal.razor",
+              "ViewState": "AgIAABwAAAAAAAAAAADwv0MAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-15T06:03:55.011Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "DialogFooter.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DialogFooter.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\DialogFooter.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DialogFooter.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\DialogFooter.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-15T06:05:20.77Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\NavMenu.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Layout\\NavMenu.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\NavMenu.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Layout\\NavMenu.razor",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAWwFIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-27T05:46:28.284Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DashboardAdmin.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\DashboardAdmin.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\DashboardAdmin.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\DashboardAdmin.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\DashboardAdmin.razor",
+              "ViewState": "AgIAACADAAAAAAAAAAAQwKgDAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-23T02:46:27.859Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "SupportLogs.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\SupportLogs.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\SupportLogs.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\SupportLogs.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\SupportLogs.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-23T02:50:51.793Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Position.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Position.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Position.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Position.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Position.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-23T02:51:34.101Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Offering.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Offering.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Offering.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Offering.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Offering.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-23T02:58:45.559Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "Corporate.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Corporate.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Corporate.razor",
               "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Corporate.razor",
               "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Corporate.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-03-23T02:52:43.43Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "MembershipPrivilege.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\MembershipPrivilege.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\MembershipPrivilege.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\MembershipPrivilege.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\MembershipPrivilege.razor",
-              "ViewState": "AgIAAHkBAAAAAAAAAAAmwIABAAAlAAAAAAAAAA==",
+              "DocumentIndex": 11,
+              "Title": "Home.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Home.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Home.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Home.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Home.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T02:52:36.309Z",
+              "WhenOpened": "2026-03-23T04:57:47.206Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 12,
+              "Title": "Business.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Business.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Business.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Business.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Business.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-23T02:50:03.193Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "QRCodeLogs.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\QRCodeLogs.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\QRCodeLogs.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\QRCodeLogs.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\QRCodeLogs.razor",
+              "ViewState": "AgIAAJIAAAAAAAAAAAAQwCMAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-23T02:50:43.157Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
               "Title": "Error.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Error.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Error.razor",
@@ -320,160 +424,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "SupportLogs.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\SupportLogs.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\SupportLogs.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\SupportLogs.razor*",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\SupportLogs.razor*",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAQwDQAAACGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T02:50:51.793Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "DashboardAdmin.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\DashboardAdmin.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\DashboardAdmin.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\DashboardAdmin.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\DashboardAdmin.razor",
-              "ViewState": "AgIAAJMDAAAAAAAAAAAkwKgDAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T02:46:27.859Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 15,
               "Title": "Registration.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Registration.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Registration.razor",
               "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Registration.razor",
               "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Registration.razor",
-              "ViewState": "AgIAAFcCAAAAAAAAAAAAAG4CAABJAAAAAAAAAA==",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAQwBAAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-04-08T09:00:16.425Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 16,
+              "Title": "DashboardUser.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\DashboardUser.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\DashboardUser.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\DashboardUser.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\DashboardUser.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-24T02:49:03.005Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
               "Title": "Vendor.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Vendor.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Vendor.razor",
               "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Vendor.razor",
               "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Vendor.razor",
-              "ViewState": "AgIAADUCAAAAAAAAAAAuwFUCAAACAAAAAAAAAA==",
+              "ViewState": "AgIAABMAAAAAAAAAAAAQwFUCAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-03-23T02:51:23.67Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Offering.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Offering.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Offering.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Offering.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Offering.razor",
-              "ViewState": "AgIAAMAAAAAAAAAAAAAvwM0AAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T02:58:45.559Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Position.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Position.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Position.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Position.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Position.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHcAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T02:51:34.101Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "MainLayout.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\MainLayout.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Layout\\MainLayout.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\MainLayout.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Layout\\MainLayout.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAACcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-27T05:35:47.171Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "Routes.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Routes.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Routes.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Routes.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Routes.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-17T05:36:43.193Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Business.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Business.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Maintenance\\Business.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Maintenance\\Business.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Maintenance\\Business.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T02:50:03.193Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "DialogModal.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DialogModal.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\DialogModal.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DialogModal.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\DialogModal.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-15T06:03:55.011Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "ThemeSelect.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\ThemeSelect.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\ThemeSelect.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\ThemeSelect.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\ThemeSelect.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-15T05:21:19Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 18,
-              "Title": "ThemeButton.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\ThemeButton.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\ThemeButton.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\ThemeButton.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\ThemeButton.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-15T05:20:14.955Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
               "Title": "TableColumn.cs",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\TableColumn.cs",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\TableColumn.cs",
@@ -485,7 +475,67 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "AuditTrail.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\AuditTrail.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\AuditTrail.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\AuditTrail.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\AuditTrail.razor",
+              "ViewState": "AgIAAEIAAAAAAAAAAADwv2kAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-23T02:48:22.313Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAACcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-27T05:35:47.171Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 21,
+              "Title": "Routes.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Routes.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Routes.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Routes.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Routes.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-17T05:36:43.193Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "ThemeSelect.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\ThemeSelect.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\ThemeSelect.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\ThemeSelect.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\ThemeSelect.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-15T05:21:19Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ThemeButton.razor",
+              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\ThemeButton.razor",
+              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\ThemeButton.razor",
+              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\ThemeButton.razor",
+              "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\ThemeButton.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-15T05:20:14.955Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
               "Title": "ThemeConfig.cs",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\ThemeConfig.cs",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\ThemeConfig.cs",
@@ -497,19 +547,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "DialogFooter.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DialogFooter.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Shared\\DialogFooter.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Shared\\DialogFooter.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Shared\\DialogFooter.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-15T06:05:20.77Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 25,
               "Title": "Users.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Users.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Users.razor",
@@ -521,19 +559,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "DashboardUser.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\DashboardUser.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\DashboardUser.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\DashboardUser.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\DashboardUser.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-24T02:49:03.005Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 28,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\appsettings.json",
               "RelativeDocumentMoniker": "ProjectBlazor\\appsettings.json",
@@ -545,7 +571,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 27,
               "Title": "Login.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Account\\Login.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Account\\Login.razor",
@@ -557,7 +583,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 26,
               "Title": "CorporateMaintenance.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\Downloads\\CorporateMaintenance.razor",
               "RelativeDocumentMoniker": "..\\..\\..\\Downloads\\CorporateMaintenance.razor",
@@ -569,7 +595,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 29,
               "Title": "package.json",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\package.json",
               "RelativeDocumentMoniker": "ProjectBlazor\\package.json",
@@ -581,7 +607,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 31,
               "Title": "tailwind.config.js.txt",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\tailwind.config.js.txt",
               "RelativeDocumentMoniker": "ProjectBlazor\\tailwind.config.js.txt",
@@ -593,7 +619,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 32,
               "Title": "App.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\App.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\App.razor",
@@ -605,19 +631,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
-              "Title": "NavMenu.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\NavMenu.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Layout\\NavMenu.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\NavMenu.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Layout\\NavMenu.razor",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAWwFIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-27T05:46:28.284Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 30,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Program.cs",
               "RelativeDocumentMoniker": "ProjectBlazor\\Program.cs",
@@ -629,7 +643,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 33,
               "Title": "BlankLayout.razor",
               "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Layout\\BlankLayout.razor",
               "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Layout\\BlankLayout.razor",
@@ -638,18 +652,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-04-10T08:51:39.923Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 33,
-              "Title": "Home.razor",
-              "DocumentMoniker": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Home.razor",
-              "RelativeDocumentMoniker": "ProjectBlazor\\Components\\Pages\\Home.razor",
-              "ToolTip": "C:\\Users\\tristan\\source\\repos\\ProjectBlazor\\ProjectBlazor\\Components\\Pages\\Home.razor",
-              "RelativeToolTip": "ProjectBlazor\\Components\\Pages\\Home.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T04:57:47.206Z"
             },
             {
               "$type": "Document",

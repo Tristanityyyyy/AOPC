@@ -25,178 +25,147 @@
 @if (_showAddOfferDialog || _showEditOfferDialog)
 {
     var isEdit = _showEditOfferDialog;
-    <div class="fixed inset-0 flex items-start justify-center z-[100]" style="background: rgba(0,0,0,0.4); padding: 70px 20px 20px 20px;">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col" style="max-height: calc(100vh - 90px);">
-
-            @* Header *@
-            <div class="flex items-center justify-between px-6 py-4 rounded-t-xl"
-                 style="@ThemeConfig.Styles.HeaderGradient">
-                <div class="flex items-center gap-2">
-                    <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="font-size:18px; color:white;" />
-                    <span class="text-sm font-semibold text-white">@(isEdit ? "Edit Offering" : "Add Offering")</span>
+    <DialogModal IsVisible="_showAddOfferDialog || _showEditOfferDialog"
+                 Title="@(isEdit ? "Edit Offering" : "Add Offering")"
+                 Icon="@Icons.Material.Filled.LocalOffer"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="CloseOfferDialog">
+        <ChildContent>
+            <div class="flex items-center gap-6">
+                <div class="relative flex-shrink-0">
+                    @if (!string.IsNullOrEmpty(_offerImageUrl))
+                    {
+                        <img src="@_offerImageUrl"
+                             class="w-24 h-24 rounded-full object-cover border-2 border-gray-200" />
+                    }
+                    else
+                    {
+                        <div class="w-24 h-24 rounded-full border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
+                            <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="@($"font-size:32px; color:{ThemeConfig.Colors.Text.LightGray};")" />
+                        </div>
+                    }
                 </div>
-                <button @onclick="CloseOfferDialog"
-                        class="flex items-center justify-center w-7 h-7 rounded-full border-none cursor-pointer text-white hover:opacity-80"
-                        style="background: rgba(255,255,255,0.15);">
-                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="font-size:16px;" Color="Color.Inherit" />
-                </button>
+                <div class="flex flex-col gap-1">
+                    <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer w-fit"
+                           style="background:@ThemeConfig.Colors.Primary;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
+                            <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" fill="none" />
+                            <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
+                        </svg>
+                        Upload Image
+                        <InputFile OnChange="OnOfferImageSelected" accept="image/jpeg,image/png,image/webp" class="hidden" />
+                    </label>
+                    <span class="text-xs text-gray-400">Valid image type are JPEG, PNG, WEBP.</span>
+                </div>
             </div>
 
-            @* Body *@
-            <div class="overflow-y-auto px-6 py-5 flex flex-col gap-5">
-
-                @* Image Upload Row *@
-                <div class="flex items-center gap-6">
-                    <div class="relative flex-shrink-0">
-                        @if (!string.IsNullOrEmpty(_offerImageUrl))
-                        {
-                            <img src="@_offerImageUrl"
-                                 class="w-24 h-24 rounded-full object-cover border-2 border-gray-200" />
-                        }
-                        else
-                        {
-                            <div class="w-24 h-24 rounded-full border-2 border-gray-200 bg-gray-100 flex items-center justify-center">
-                                <MudIcon Icon="@Icons.Material.Filled.LocalOffer" Style="@($"font-size:32px; color:{ThemeConfig.Colors.Text.LightGray};")" />
-                            </div>
-                        }
-                    </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="flex items-center gap-2 px-5 py-2 rounded-lg text-white text-xs font-medium cursor-pointer w-fit"
-                               style="background:@ThemeConfig.Colors.Primary;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                                <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="2" fill="none" />
-                                <polyline points="21,15 16,10 5,21" stroke="white" stroke-width="2" fill="none" />
-                                <circle cx="8.5" cy="8.5" r="1.5" fill="white" />
-                            </svg>
-                            Upload Image
-                            <InputFile OnChange="OnOfferImageSelected" accept="image/jpeg,image/png,image/webp" class="hidden" />
-                        </label>
-                        <span class="text-xs text-gray-400">Valid image type are JPEG, PNG, WEBP.</span>
-                    </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Offering Name</label>
+                    <input type="text" @bind="_offerName"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
                 </div>
-
-                @* Offering Name + Promo Description *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Offering Name</label>
-                        <input type="text" @bind="_offerName"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Promo Description</label>
-                        <textarea @bind="_offerPromoDescription" rows="3"
-                                  class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Promo Description</label>
+                    <textarea @bind="_offerPromoDescription" rows="3"
+                              class="w-full border border-gray-300 rounded px-3 py-2 text-xs resize-y focus:outline-none"></textarea>
                 </div>
-
-                @* Vendor Name + Business Type *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Vendor Name</label>
-                        <select @bind="_offerVendorName"
-                                class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
-                            <option value="">-Select Vendor-</option>
-                            <option value="Vine Terrace">Vine Terrace</option>
-                            <option value="Sky Lounge">Sky Lounge</option>
-                            <option value="The Lounge">The Lounge</option>
-                            <option value="Club Social">Club Social</option>
-                            <option value="Alfardan Club">Alfardan Club</option>
-                            <option value="Rift Bar">Rift Bar</option>
-                            <option value="Executive Dining">Executive Dining</option>
-                            <option value="FAUCHON">FAUCHON</option>
-                            <option value="Serenity Spa">Serenity Spa</option>
-                            <option value="Royal Golf Club">Royal Golf Club</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type</label>
-                        <select @bind="_offerBusinessType"
-                                class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
-                            <option value="">-Select Business Type-</option>
-                            <option value="Food & Beverages">Food & Beverages</option>
-                            <option value="Health">Health</option>
-                            <option value="Rooms & Suites">Rooms & Suites</option>
-                            <option value="Wellness">Wellness</option>
-                            <option value="Sports & Leisure">Sports & Leisure</option>
-                            <option value="Access to co-working spaces">Access to co-working spaces</option>
-                        </select>
-                    </div>
-                </div>
-
-                @* Membership Tier + Offering URL *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Tier</label>
-                        <select @bind="_offerMembershipTier"
-                                class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
-                            <option value="">-ALL TIERS-</option>
-                            <option value="EXCLUSIVE - VIP">EXCLUSIVE - VIP</option>
-                            <option value="PLATINUM">PLATINUM</option>
-                            <option value="EXCLUSIVE">EXCLUSIVE</option>
-                            <option value="EXCLUSIVE OMAN">EXCLUSIVE OMAN</option>
-                            <option value="BRONZE">BRONZE</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Offering URL</label>
-                        <input type="text" @bind="_offerUrl"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none"
-                               placeholder="https://" />
-                    </div>
-                </div>
-
-                @* Start Date + End Date *@
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Start Date</label>
-                        <input type="date" @bind="_offerStartDate"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">End Date</label>
-                        <input type="date" @bind="_offerEndDate"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
-                </div>
-
-                @* From Time + To Time + Offer Days *@
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">From Time</label>
-                        <input type="time" @bind="_offerFromTime"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">To Time</label>
-                        <input type="time" @bind="_offerToTime"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Offer Days</label>
-                        <input type="text" @bind="_offerDays"
-                               class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none"
-                               placeholder="e.g. Sunday to Wednesday" />
-                    </div>
-                </div>
-
             </div>
 
-            @* Footer *@
-            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-                <button @onclick="CloseOfferDialog"
-                        class="text-xs cursor-pointer bg-transparent border-none hover:text-gray-700 underline"
-                        style="color:@ThemeConfig.Colors.Primary;">
-                    Cancel
-                </button>
-                <button @onclick="SaveOfferDialog"
-                        class="px-6 py-2 text-xs rounded-lg text-white font-medium border-none cursor-pointer"
-                        style="@ThemeConfig.Styles.ButtonPrimary">
-                    Submit
-                </button>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Vendor Name</label>
+                    <select @bind="_offerVendorName"
+                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                        <option value="">-Select Vendor-</option>
+                        <option value="Vine Terrace">Vine Terrace</option>
+                        <option value="Sky Lounge">Sky Lounge</option>
+                        <option value="The Lounge">The Lounge</option>
+                        <option value="Club Social">Club Social</option>
+                        <option value="Alfardan Club">Alfardan Club</option>
+                        <option value="Rift Bar">Rift Bar</option>
+                        <option value="Executive Dining">Executive Dining</option>
+                        <option value="FAUCHON">FAUCHON</option>
+                        <option value="Serenity Spa">Serenity Spa</option>
+                        <option value="Royal Golf Club">Royal Golf Club</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Business Type</label>
+                    <select @bind="_offerBusinessType"
+                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                        <option value="">-Select Business Type-</option>
+                        <option value="Food & Beverages">Food & Beverages</option>
+                        <option value="Health">Health</option>
+                        <option value="Rooms & Suites">Rooms & Suites</option>
+                        <option value="Wellness">Wellness</option>
+                        <option value="Sports & Leisure">Sports & Leisure</option>
+                        <option value="Access to co-working spaces">Access to co-working spaces</option>
+                    </select>
+                </div>
             </div>
 
-        </div>
-    </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Membership Tier</label>
+                    <select @bind="_offerMembershipTier"
+                            class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none">
+                        <option value="">-ALL TIERS-</option>
+                        <option value="EXCLUSIVE - VIP">EXCLUSIVE - VIP</option>
+                        <option value="PLATINUM">PLATINUM</option>
+                        <option value="EXCLUSIVE">EXCLUSIVE</option>
+                        <option value="EXCLUSIVE OMAN">EXCLUSIVE OMAN</option>
+                        <option value="BRONZE">BRONZE</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Offering URL</label>
+                    <input type="text" @bind="_offerUrl"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none"
+                           placeholder="https://" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Start Date</label>
+                    <input type="date" @bind="_offerStartDate"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">End Date</label>
+                    <input type="date" @bind="_offerEndDate"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">From Time</label>
+                    <input type="time" @bind="_offerFromTime"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">To Time</label>
+                    <input type="time" @bind="_offerToTime"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Offer Days</label>
+                    <input type="text" @bind="_offerDays"
+                           class="w-full border border-gray-300 rounded px-3 py-2 text-xs focus:outline-none"
+                           placeholder="e.g. Sunday to Wednesday" />
+                </div>
+            </div>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Submit"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CloseOfferDialog"
+                          OnConfirm="SaveOfferDialog" />
+        </FooterContent>
+    </DialogModal>
 }
 @code {
     private List<TableColumn<OfferingItem>> _offerColumns = new();

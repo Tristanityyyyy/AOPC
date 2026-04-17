@@ -98,15 +98,10 @@
             </div>
         </ChildContent>
         <FooterContent>
-            <button @onclick="CancelEditLocation"
-                    class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
-                Cancel
-            </button>
-            <button @onclick="SaveEditLocation"
-                    class="px-4 py-2 text-xs rounded-lg text-white font-medium"
-                    style="@ThemeConfig.Styles.ButtonPrimary">
-                Save Changes
-            </button>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEditLocation"
+                          OnConfirm="SaveEditLocation" />
         </FooterContent>
     </DialogModal>
 }
@@ -209,15 +204,10 @@
         </ChildContent>
 
         <FooterContent>
-            <button @onclick="CancelEditType"
-                    class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
-                Cancel
-            </button>
-            <button @onclick="SaveEditType"
-                    class="px-4 py-2 text-xs rounded-lg text-white font-medium"
-                    style="@ThemeConfig.Styles.ButtonPrimary">
-                Save Changes
-            </button>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEditType"
+                          OnConfirm="SaveEditType" />
         </FooterContent>
 
     </DialogModal>
@@ -276,15 +266,10 @@
             </div>
         </ChildContent>
         <FooterContent>
-            <button @onclick="() => _showAddTypeDialog = false"
-                    class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
-                Cancel
-            </button>
-            <button @onclick="AddType"
-                    class="px-4 py-2 text-xs rounded-lg text-white font-medium"
-                    style="@ThemeConfig.Styles.ButtonPrimary">
-                Add Type
-            </button>
+            <DialogFooter ConfirmText="Add Type"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => _showAddTypeDialog = false"
+                          OnConfirm="AddType" />
         </FooterContent>
     </DialogModal>
 }
@@ -396,15 +381,10 @@
         </div>
     </ChildContent>
     <FooterContent>
-        <button @onclick="CancelEditHotel"
-                class="px-5 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition">
-            Cancel
-        </button>
-        <button @onclick="SaveEditHotel"
-                class="px-5 py-2 text-xs rounded-lg text-white font-medium"
-                style="@ThemeConfig.Styles.ButtonPrimary">
-            Save Changes
-        </button>
+        <DialogFooter ConfirmText="Save Changes"
+                      ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                      OnCancel="CancelEditHotel"
+                      OnConfirm="SaveEditHotel" />
     </FooterContent>
 </DialogModal>
 
@@ -521,15 +501,10 @@
             </div>
         </ChildContent>
         <FooterContent>
-            <button @onclick="() => _showAddHotelDialog = false"
-                    class="px-4 py-2 text-xs rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 font-medium">
-                Cancel
-            </button>
-            <button @onclick="AddHotel"
-                    class="px-5 py-2 text-xs rounded-lg text-white font-medium"
-                    style="@ThemeConfig.Styles.ButtonPrimary">
-                Add Hotel
-            </button>
+            <DialogFooter ConfirmText="Add Hotel"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => _showAddHotelDialog = false"
+                          OnConfirm="AddHotel" />
         </FooterContent>
     </DialogModal>
 }
