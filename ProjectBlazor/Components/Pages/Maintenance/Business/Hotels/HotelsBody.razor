@@ -1,0 +1,112 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Business.Hotels
+@using ProjectBlazor.Components.Shared
+
+<HotelsHeader />
+
+<div class="col-span-12">
+    <DataTable T="HotelItem"
+               Title="@HotelsHeader.Title"
+               Items="Items"
+               Columns="Columns"
+               ButtonColor="@HotelsHeader.ButtonColor"
+               HeaderGradient="@HotelsHeader.HeaderGradient"
+               TableWrapperStyle="overflow-x: auto;"
+               TableStyle="width: 100%; min-width: max-content;"
+               OnAddClick="OpenAdd" />
+</div>
+
+<CascadingValue Value="this">
+    <HotelsDialogs @ref="Dialogs" />
+</CascadingValue>
+
+@code {
+    [Parameter] public List<HotelItem> Items { get; set; } = new();
+
+    [Parameter] public List<TableColumn<HotelItem>> Columns { get; set; } = new();
+
+    public HotelsDialogs Dialogs { get; set; } = null!;
+    public HotelsHeader HotelsHeader { get; set; } = new();
+
+    [Inject] private HotelsService? HotelsService { get; set; }
+
+    public void OpenAdd() => Dialogs.OpenAdd();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var hotels = await HotelsService!.GetHotelsAsync();
+        Items = hotels.Select(h => new HotelItem(
+            h.BusinessID,
+            h.BusinessName,
+            h.FeatureImg,
+            h.City + ", " + h.Country,
+            h.Address,
+            h.Cno,
+            h.Email,
+            h.Url,
+            h.Description,
+            h.DateCreated
+        )).ToList();
+
+        Columns = new List<TableColumn<HotelItem>>
+        {
+            new() {
+                Header = "Name", Width = "300px", SortField = "Name",
+                RenderCell = item => __builder =>
+                {
+                    <div class="flex items-center gap-2">
+                        <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
+                        <div class="relative">
+                            <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">@item.Code</div>
+                            <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 group-hover:translate-y-2">@item.Name</div>
+                            <div class="flex gap-2 mt-1 transition-transform duration-200 group-hover:translate-y-2">
+                                <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                                </button>
+                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Location", Width = "200px", SortField = "Location",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600 whitespace-nowrap">@item.Location</span>
+                ; }
+            },
+            new() {
+                Header = "Address", Width = "250px", SortField = "Address",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600">@item.Address</span>
+                ; }
+            },
+            new() {
+                Header = "Contact No.", Width = "150px", SortField = "ContactNo",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600 whitespace-nowrap">@item.ContactNo</span>
+                ; }
+            },
+            new() {
+                Header = "Email", Width = "200px", SortField = "Email",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600">@item.Email</span>
+                ; }
+            },
+            new() {
+                Header = "URL", Width = "200px", SortField = "Url",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600 truncate block max-w-xs">@item.Url</span>
+                ; }
+            },
+            new() {
+                Header = "Date Created", Width = "150px", SortField = "DateCreated",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600">@item.DateCreated</span>
+                ; }
+            }
+        };
+    }
+}

@@ -1,0 +1,36 @@
+@page "/maintenance/membershipprivilege"
+@rendermode InteractiveServer
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Privileges
+@using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Membership & Privilege</h3>
+
+<div class="flex border-b border-gray-200 mb-4">
+    <button @onclick='() => _activeTab = "privileges"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "privileges" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
+        Privileges Maintenance
+    </button>
+    <button @onclick='() => _activeTab = "tiers"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "tiers" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
+        Membership Tier Maintenance
+    </button>
+</div>
+
+<div class="grid grid-cols-12 gap-4">
+    @if (_activeTab == "privileges")
+    {
+        <Privileges />
+    }
+    @if (_activeTab == "tiers")
+    {
+        <Tiers />
+    }
+</div>
+
+@code {
+    private string _activeTab = "privileges";
+}

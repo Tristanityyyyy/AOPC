@@ -51,6 +51,7 @@ public static class ThemeConfig
     {
         public static string ButtonPrimary => $"background: linear-gradient(135deg,{Colors.Primary},{Colors.PrimaryDark}); color:{Colors.Text.OnPrimary};";
         public static string ButtonPrimarySolid => $"background:{Colors.Primary}; color:{Colors.Text.OnPrimary};";
+        public static string ButtonAddNew => Colors.Primary;
         public static string HeaderGradient => $"background: linear-gradient(135deg,{Colors.Header.Start} 0%,{Colors.Header.Middle} 90%,{Colors.Header.End} 100%);";
         public static string TextPrimary => $"color:{Colors.Text.Primary};";
         public static string TextAccent => $"color:{Colors.Primary};";

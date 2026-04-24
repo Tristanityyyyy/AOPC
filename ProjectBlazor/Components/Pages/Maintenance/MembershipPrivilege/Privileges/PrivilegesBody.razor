@@ -1,0 +1,136 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Privileges
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Pages.Maintenance.Business.Types
+
+<PrivilegesHeader />
+
+<div class="col-span-12">
+    <DataTable T="PrivilegeItem"
+               Title="@PrivilegesHeader.Title"
+               Items="Items"
+               Columns="Columns"
+               ButtonColor="@PrivilegesHeader.ButtonColor"
+               HeaderGradient="@PrivilegesHeader.HeaderGradient"
+               OnAddClick="OpenAdd" />
+</div>
+
+<PrivilegesDialogs @ref="Dialogs" OnAdd="HandleAdd" OnEdit="HandleEdit" BusinessTypes="BusinessTypes" />
+
+@code {
+    [Parameter] public List<PrivilegeItem> Items { get; set; } = new();
+    [Parameter] public List<TableColumn<PrivilegeItem>> Columns { get; set; } = new();
+
+    public PrivilegesHeader PrivilegesHeader { get; set; } = new();
+    public PrivilegesDialogs Dialogs { get; set; } = null!;
+
+    [Inject] private PrivilegesService? PrivilegesService { get; set; }
+    [Inject] private TypesService? TypesService { get; set; }
+
+    private List<BusinessTypeDto> BusinessTypes { get; set; } = new();
+
+    public void OpenAdd()
+    {
+        if (Dialogs != null)
+        {
+            Dialogs.OpenAdd();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (TypesService != null)
+        {
+            BusinessTypes = await TypesService.GetBusinessTypesAsync();
+        }
+        
+        if (PrivilegesService != null)
+        {
+            var privileges = await PrivilegesService.GetPrivilegesAsync();
+        
+            Items = privileges.Select(p => new PrivilegeItem(
+                p.PrivilegeID,
+                p.Title,
+                p.ImgUrl,
+                p.Description,
+                p.Validity,
+                p.NoExpiry == 0 ? "NO" : "YES",
+                p.BusinessTypeName,
+                p.DateCreated,
+                p.Tmc,
+                p.Mechanics
+            )).ToList();
+        }
+
+        Columns = new List<TableColumn<PrivilegeItem>>
+        {
+            new() {
+                Header = "Name", Width = "250px", SortField = "Name",
+                RenderCell = item => __builder =>
+                {
+                    <div class="flex items-center gap-2">
+                        <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
+                        <div class="relative">
+                            <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">@item.Code</div>
+                            <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 group-hover:translate-y-2">@item.Name</div>
+                            <div class="flex gap-2 mt-1 transition-transform duration-200 group-hover:translate-y-2">
+                                <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                                </button>
+                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                                </button>
+                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
+                                    <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size:14px;" Color="Color.Inherit" /> View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Description", Width = "300px", SortField = "Description",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600">@item.Description</span>
+                ; }
+            },
+            new() {
+                Header = "Validity", Width = "150px", SortField = "Validity",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600 whitespace-nowrap">@item.Validity</span>
+                ; }
+            },
+            new() {
+                Header = "No Expiry", Width = "120px", SortField = "NoExpiry",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600">@item.NoExpiry</span>
+                ; }
+            },
+            new() {
+                Header = "Business Type", Width = "200px", SortField = "BusinessTypeName",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600">@item.BusinessTypeName</span>
+                ; }
+            },
+            new() {
+                Header = "Date Created", Width = "150px", SortField = "DateCreated",
+                RenderCell = item => __builder => {
+                <span class="text-gray-600 whitespace-nowrap">@item.DateCreated</span>
+                ; }
+            }
+        };
+    }
+
+    private async Task HandleAdd(PrivilegeItem item)
+    {
+        Items.Add(item);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleEdit(PrivilegeItem item)
+    {
+        var index = Items.FindIndex(i => i.Code == item.Code);
+        if (index >= 0) Items[index] = item;
+        await InvokeAsync(StateHasChanged);
+    }
+}

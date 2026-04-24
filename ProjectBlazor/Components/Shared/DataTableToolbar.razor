@@ -1,0 +1,66 @@
+@namespace ProjectBlazor.Components.Shared
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="flex items-center justify-between mb-3">
+    <div class="flex items-center gap-2 text-xs text-gray-600">
+        <select value="@PageSize" @onchange="OnPageSizeChanged" class="border border-gray-300 rounded px-2 py-1 text-xs">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+        </select>
+        entries per page
+    </div>
+    <div class="flex items-center gap-2 text-xs text-gray-600">
+        @if (ShowImportExport)
+        {
+            <InputFile id="@ImportFileId" OnChange="OnImportFileSelected" accept=".xlsx,.xls" class="hidden" />
+            <label for="@ImportFileId" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-xs text-gray-600 cursor-pointer hover:bg-gray-50 transition">
+                <MudIcon Icon="@Icons.Material.Filled.AttachFile" Style="font-size:13px;" />
+                @(ImportedFileName ?? "Choose File")
+            </label>
+            <button @onclick="OnImportClick" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs border-none cursor-pointer font-medium transition" style="background:@ButtonColor;">
+                <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:13px;" /> Upload
+            </button>
+            <button @onclick="OnExportTemplateClick" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-600 hover:bg-gray-50 transition">
+                <MudIcon Icon="@Icons.Material.Filled.Download" Style="font-size:13px;" /> Download Template
+            </button>
+            <div class="w-px h-4 bg-gray-300 mx-1"></div>
+        }
+        <span class="text-xs text-gray-600 font-medium">Search:</span>
+        <input type="text" @bind="SearchText" @bind:event="oninput" class="border border-gray-300 rounded-lg px-2 py-1.5 text-xs w-44" placeholder="Type to search..." />
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool ShowImportExport { get; set; }
+    [Parameter] public string ButtonColor { get; set; } = "#3b82f6";
+    [Parameter] public string ImportFileId { get; set; } = "";
+    [Parameter] public string? ImportedFileName { get; set; }
+    [Parameter] public EventCallback<string> OnImport { get; set; }
+    [Parameter] public EventCallback OnImportButtonClick { get; set; }
+    [Parameter] public EventCallback OnExportTemplateClick { get; set; }
+
+    [Parameter] public int PageSize { get; set; } = 10;
+    [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
+
+    [Parameter] public string SearchText { get; set; } = "";
+    [Parameter] public EventCallback<string> SearchTextChanged { get; set; }
+
+    [Parameter] public EventCallback<int> OnPageSizeChange { get; set; }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        var newSize = int.Parse(e.Value?.ToString() ?? "10");
+        await PageSizeChanged.InvokeAsync(newSize);
+        await OnPageSizeChange.InvokeAsync(newSize);
+    }
+
+    private async Task OnImportFileSelected(InputFileChangeEventArgs e)
+    {
+        ImportedFileName = e.File.Name;
+        await OnImport.InvokeAsync(e.File.Name);
+    }
+
+    private async Task OnImportClick() => await OnImportButtonClick.InvokeAsync();
+}

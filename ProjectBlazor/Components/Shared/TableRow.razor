@@ -1,0 +1,11 @@
+@namespace ProjectBlazor.Components.Shared
+@typeparam T
+
+<tr class="border-b border-gray-100 hover:bg-amber-50 group @(Index % 2 == 0 ? "bg-white" : "bg-gray-50")">
+    @ChildContent
+</tr>
+
+@code {
+    [Parameter] public required int Index { get; set; }
+    [Parameter] public required RenderFragment ChildContent { get; set; }
+}

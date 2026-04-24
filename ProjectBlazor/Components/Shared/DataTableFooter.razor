@@ -1,0 +1,39 @@
+@namespace ProjectBlazor.Components.Shared
+
+<div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
+    <span class="text-xs text-gray-500">@ShowingText</span>
+    <div class="flex items-center gap-1">
+        <button type="button" @onclick="() => OnGoToPage.InvokeAsync(1)" disabled="@(CurrentPage == 1)" class="w-6 h-6 text-xs rounded flex items-center justify-center cursor-pointer border" style="@(CurrentPage == 1 ? "background:white; color:#ccc; border-color:#eee;" : "background:white; color:gray; border-color:#ddd;")">«</button>
+        <button type="button" @onclick="() => OnGoToPage.InvokeAsync(CurrentPage - 1)" disabled="@(CurrentPage == 1)" class="w-6 h-6 text-xs rounded flex items-center justify-center cursor-pointer border" style="@(CurrentPage == 1 ? "background:white; color:#ccc; border-color:#eee;" : "background:white; color:gray; border-color:#ddd;")">‹</button>
+        @foreach (var pg in VisiblePages)
+        {
+            <button type="button" @onclick="() => OnGoToPage.InvokeAsync(pg)" class="w-6 h-6 text-xs rounded flex items-center justify-center cursor-pointer border-none" style="@(pg == CurrentPage ? $"background:{ButtonColor}; color:white;" : "background:white; color:gray; border:1px solid #ddd;")">@pg</button>
+        }
+        <button type="button" @onclick="() => OnGoToPage.InvokeAsync(CurrentPage + 1)" disabled="@(CurrentPage == TotalPages)" class="w-6 h-6 text-xs rounded flex items-center justify-center cursor-pointer border" style="@(CurrentPage == TotalPages ? "background:white; color:#ccc; border-color:#eee;" : "background:white; color:gray; border-color:#ddd;")">›</button>
+        <button type="button" @onclick="() => OnGoToPage.InvokeAsync(TotalPages)" disabled="@(CurrentPage == TotalPages)" class="w-6 h-6 text-xs rounded flex items-center justify-center cursor-pointer border" style="@(CurrentPage == TotalPages ? "background:white; color:#ccc; border-color:#eee;" : "background:white; color:gray; border-color:#ddd;")">»</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string ButtonColor { get; set; } = "#3b82f6";
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public string ShowingText { get; set; } = "";
+    [Parameter] public EventCallback<int> OnGoToPage { get; set; }
+
+    private IEnumerable<int> VisiblePages
+    {
+        get
+        {
+            var pages = new List<int>();
+            for (int i = 1; i <= TotalPages; i++)
+            {
+                if (i == 1 || i == TotalPages || (i >= CurrentPage - 1 && i <= CurrentPage + 1))
+                    pages.Add(i);
+                else if (pages.LastOrDefault() != -1)
+                    pages.Add(-1);
+            }
+            return pages.Where(p => p != -1);
+        }
+    }
+}

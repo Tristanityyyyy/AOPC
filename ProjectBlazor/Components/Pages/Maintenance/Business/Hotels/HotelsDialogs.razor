@@ -1,0 +1,208 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Business.Hotels
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+
+@if (ShowEditDialog)
+{
+    <DialogModal IsVisible="ShowEditDialog"
+               Title="Edit Hotel"
+               Icon="@Icons.Material.Filled.Hotel"
+               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               MaxWidth="2xl"
+               OnClose="CancelEdit">
+        <ChildContent>
+            <FormField Label="Profile Picture">
+                <ImageUpload @bind-ImageUrl="EditHotelImageUrl" ImageClass="w-16 h-16 rounded-lg" PlaceholderIcon="@Icons.Material.Filled.Hotel" />
+            </FormField>
+
+            <FormGrid Columns="2">
+                <FormField Label="Hotel Name" Required>
+                    <TextInput @bind-Value="EditHotelName" />
+                </FormField>
+                <FormField Label="Business Location">
+                    <SelectInput @bind-Value="EditHotelLocation">
+                        <option value="">Select Location</option>
+                        <option value="Istanbul">Istanbul</option>
+                        <option value="Doha">Doha</option>
+                        <option value="The Pearl">The Pearl</option>
+                    </SelectInput>
+                </FormField>
+                <FormField Label="Contact Number">
+                    <TextInput @bind-Value="EditHotelContactNo" />
+                </FormField>
+                <FormField Label="Email">
+                    <TextInput Type="email" @bind-Value="EditHotelEmail" />
+                </FormField>
+                <FormField Label="Website URL">
+                    <TextInput @bind-Value="EditHotelUrl" />
+                </FormField>
+                <FormField Label="Services">
+                    <TextInput @bind-Value="EditHotelServices" Placeholder="e.g. WiFi, Pool, Spa" />
+                </FormField>
+            </FormGrid>
+
+            <FormField Label="Address">
+                <TextAreaInput @bind-Value="EditHotelAddress" Rows="2" />
+            </FormField>
+
+            <FormField Label="Description">
+                <TextAreaInput @bind-Value="EditHotelDescription" Rows="3" />
+            </FormField>
+
+            <FormField Label="Map (Embed URL or Address)">
+                <TextInput @bind-Value="EditHotelMap" Placeholder="Google Maps embed URL or address" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEdit"
+                          OnConfirm="SaveEdit" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@if (ShowAddDialog)
+{
+    <DialogModal IsVisible="ShowAddDialog"
+               Title="Add Hotel"
+               Icon="@Icons.Material.Filled.AddHome"
+               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               MaxWidth="2xl"
+               OnClose="() => ShowAddDialog = false">
+        <ChildContent>
+            <FormField Label="Profile Picture">
+                <ImageUpload @bind-ImageUrl="AddHotelImageUrl" ImageClass="w-16 h-16 rounded-lg" PlaceholderIcon="@Icons.Material.Filled.Hotel" />
+            </FormField>
+
+            <FormGrid Columns="2">
+                <FormField Label="Hotel Name" Required>
+                    <TextInput @bind-Value="AddHotelName" Placeholder="Enter hotel name" />
+                </FormField>
+                <FormField Label="Business Location">
+                    <SelectInput @bind-Value="AddHotelLocation">
+                        <option value="">Select Location</option>
+                        <option value="Istanbul">Istanbul</option>
+                        <option value="Doha">Doha</option>
+                        <option value="The Pearl">The Pearl</option>
+                    </SelectInput>
+                </FormField>
+                <FormField Label="Contact Number">
+                    <TextInput @bind-Value="AddHotelContactNo" Placeholder="e.g. +974 4446 0000" />
+                </FormField>
+                <FormField Label="Email">
+                    <TextInput Type="email" @bind-Value="AddHotelEmail" Placeholder="e.g. info@hotel.com" />
+                </FormField>
+                <FormField Label="Website URL">
+                    <TextInput @bind-Value="AddHotelUrl" Placeholder="https://..." />
+                </FormField>
+                <FormField Label="Services">
+                    <TextInput @bind-Value="AddHotelServices" Placeholder="e.g. WiFi, Pool, Spa" />
+                </FormField>
+            </FormGrid>
+
+            <FormField Label="Address">
+                <TextAreaInput @bind-Value="AddHotelAddress" Rows="2" Placeholder="Enter full address" />
+            </FormField>
+
+            <FormField Label="Description">
+                <TextAreaInput @bind-Value="AddHotelDescription" Rows="3" Placeholder="Enter hotel description" />
+            </FormField>
+
+            <FormField Label="Map (Embed URL or Address)">
+                <TextInput @bind-Value="AddHotelMap" Placeholder="Google Maps embed URL or address" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Hotel"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => ShowAddDialog = false"
+                          OnConfirm="Add" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    [CascadingParameter] public HotelsBody? HotelsBody { get; set; }
+
+    public bool ShowEditDialog { get; set; }
+    public bool ShowAddDialog { get; set; }
+    private HotelItem? EditingItem;
+    private string EditHotelImageUrl = "", EditHotelName = "", EditHotelLocation = "";
+    private string EditHotelAddress = "", EditHotelContactNo = "", EditHotelEmail = "";
+    private string EditHotelUrl = "", EditHotelDescription = "", EditHotelServices = "", EditHotelMap = "";
+    private List<string> EditHotelImages = new();
+    private string AddHotelImageUrl = "", AddHotelName = "", AddHotelLocation = "";
+    private string AddHotelAddress = "", AddHotelContactNo = "", AddHotelEmail = "";
+    private string AddHotelUrl = "", AddHotelDescription = "", AddHotelServices = "", AddHotelMap = "";
+    private List<string> AddHotelImages = new();
+
+    public void OpenAdd()
+    {
+        AddHotelImageUrl = ""; AddHotelImages = new(); AddHotelName = ""; AddHotelLocation = "";
+        AddHotelAddress = ""; AddHotelContactNo = ""; AddHotelEmail = ""; AddHotelUrl = "";
+        AddHotelDescription = ""; AddHotelServices = ""; AddHotelMap = "";
+        ShowAddDialog = true;
+    }
+
+    private void Add()
+    {
+        HotelsBody?.Items.Insert(0, new HotelItem(
+            $"HTL-{HotelsBody.Items.Count + 1:D3}",
+            AddHotelName,
+            AddHotelImageUrl,
+            AddHotelLocation,
+            AddHotelAddress,
+            AddHotelContactNo,
+            AddHotelEmail,
+            AddHotelUrl,
+            AddHotelDescription,
+            DateTime.Now.ToString("MM/dd/yyyy")
+        ));
+        ShowAddDialog = false;
+    }
+
+    public void OpenEdit(HotelItem item)
+    {
+        EditingItem = item;
+        EditHotelImageUrl = item.ImageUrl;
+        EditHotelImages = new List<string> { item.ImageUrl };
+        EditHotelName = item.Name;
+        EditHotelLocation = item.Location;
+        EditHotelAddress = item.Address;
+        EditHotelContactNo = item.ContactNo;
+        EditHotelEmail = item.Email;
+        EditHotelUrl = item.Url;
+        EditHotelDescription = item.Description;
+        EditHotelServices = "";
+        EditHotelMap = "";
+        ShowEditDialog = true;
+    }
+
+    private void SaveEdit()
+    {
+        if (EditingItem != null && HotelsBody != null)
+        {
+            var i = HotelsBody.Items.FindIndex(x => x.Code == EditingItem.Code);
+            if (i >= 0)
+            {
+                HotelsBody.Items[i] = new HotelItem(
+                    EditingItem.Code,
+                    EditHotelName,
+                    EditHotelImageUrl,
+                    EditHotelLocation,
+                    EditHotelAddress,
+                    EditHotelContactNo,
+                    EditHotelEmail,
+                    EditHotelUrl,
+                    EditHotelDescription,
+                    EditingItem.DateCreated
+                );
+            }
+        }
+        ShowEditDialog = false;
+    }
+
+    public void CancelEdit() => ShowEditDialog = false;
+}
+}

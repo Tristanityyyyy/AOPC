@@ -1,0 +1,131 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Business.Types
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+
+@if (ShowEditDialog)
+{
+    <DialogModal IsVisible="ShowEditDialog"
+               Title="Edit Business Type"
+               Icon="@Icons.Material.Filled.Category"
+               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               OnClose="CancelEdit">
+        <ChildContent>
+            <FormField Label="Profile Picture">
+                <ImageUpload @bind-ImageUrl="EditImageUrl" ImageClass="w-16 h-16 rounded-lg" PlaceholderIcon="@Icons.Material.Filled.Business" />
+            </FormField>
+
+            <FormField Label="Business Type Name" Required>
+                <TextInput @bind-Value="EditTypeName" />
+            </FormField>
+
+            <FormField Label="Description">
+                <TextAreaInput @bind-Value="EditTypeDescription" Rows="3" />
+            </FormField>
+
+            <FormField Label="Promo">
+                <TextInput @bind-Value="EditTypePromo" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEdit"
+                          OnConfirm="SaveEdit" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@if (ShowAddDialog)
+{
+    <DialogModal IsVisible="ShowAddDialog"
+               Title="Add Business Type"
+               Icon="@Icons.Material.Filled.AddBusiness"
+               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               OnClose="() => ShowAddDialog = false">
+        <ChildContent>
+            <FormField Label="Profile Picture">
+                <ImageUpload @bind-ImageUrl="AddImageUrl" ImageClass="w-16 h-16 rounded-lg" PlaceholderIcon="@Icons.Material.Filled.Business" />
+            </FormField>
+
+            <FormField Label="Business Type Name" Required>
+                <TextInput @bind-Value="AddTypeName" Placeholder="Enter business type name" />
+            </FormField>
+
+            <FormField Label="Description">
+                <TextAreaInput @bind-Value="AddTypeDescription" Rows="3" Placeholder="Enter description" />
+            </FormField>
+
+            <FormField Label="Promo">
+                <TextInput @bind-Value="AddTypePromo" Placeholder="e.g. Up to 20% preferred rates" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Type"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => ShowAddDialog = false"
+                          OnConfirm="Add" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    [CascadingParameter] public TypesBody? TypesBody { get; set; }
+
+    public bool ShowEditDialog { get; set; }
+    public bool ShowAddDialog { get; set; }
+    private BusinessTypeItem? EditingItem;
+    private string EditImageUrl = "", EditTypeName = "", EditTypeDescription = "", EditTypePromo = "";
+    private string AddImageUrl = "", AddTypeName = "", AddTypeDescription = "", AddTypePromo = "";
+
+    public void OpenAdd()
+    {
+        AddImageUrl = ""; AddTypeName = ""; AddTypeDescription = ""; AddTypePromo = "";
+        ShowAddDialog = true;
+    }
+
+    private void Add()
+    {
+        TypesBody?.Items.Insert(0, new BusinessTypeItem(
+            $"BT-{TypesBody.Items.Count + 1:D3}",
+            AddTypeName,
+            AddImageUrl,
+            AddTypePromo,
+            AddTypeDescription,
+            DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
+        ));
+        ShowAddDialog = false;
+    }
+
+    public void OpenEdit(BusinessTypeItem item)
+    {
+        EditingItem = item;
+        EditImageUrl = item.ImageUrl;
+        EditTypeName = item.Name;
+        EditTypeDescription = item.Description;
+        EditTypePromo = item.Promo;
+        ShowEditDialog = true;
+    }
+
+    private void SaveEdit()
+    {
+        if (EditingItem != null && TypesBody != null)
+        {
+            var i = TypesBody.Items.FindIndex(x => x.Code == EditingItem.Code);
+            if (i >= 0)
+            {
+                TypesBody.Items[i] = new BusinessTypeItem(
+                    EditingItem.Code,
+                    EditTypeName,
+                    EditImageUrl,
+                    EditTypePromo,
+                    EditTypeDescription,
+                    EditingItem.DateCreated
+                );
+            }
+        }
+        ShowEditDialog = false;
+    }
+
+    public void CancelEdit() => ShowEditDialog = false;
+}
+}

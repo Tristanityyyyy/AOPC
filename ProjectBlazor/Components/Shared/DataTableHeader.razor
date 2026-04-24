@@ -1,0 +1,18 @@
+@namespace ProjectBlazor.Components.Shared
+
+<div class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 rounded-t-lg mb-3"
+     style="@(HeaderGradient ?? "")">
+    <h4 class="text-sm font-medium text-white">@Title</h4>
+    @if (ToolbarButtons != null)
+    {
+        <div class="flex items-center gap-2">
+            @ToolbarButtons
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string? HeaderGradient { get; set; }
+    [Parameter] public RenderFragment? ToolbarButtons { get; set; }
+}
