@@ -1,0 +1,215 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Corporate
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+
+@if (_showAddDialog)
+{
+    <DialogModal IsVisible="_showAddDialog"
+                 Title="Add Corporate"
+                 Icon="@Icons.Material.Filled.Business"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="() => _showAddDialog = false">
+        <ChildContent>
+            <FormGrid Columns="2">
+                <FormField Label="Corporate Name" Required>
+                    <TextInput @bind-Value="_addName" Placeholder="Enter corporate name" />
+                </FormField>
+                <FormField Label="Contact Number">
+                    <TextInput @bind-Value="_addContactNumber" Placeholder="e.g. +974 4446 0000" />
+                </FormField>
+                <FormField Label="Email Address">
+                    <TextInput Type="email" @bind-Value="_addEmailAddress" Placeholder="e.g. info@company.com" />
+                </FormField>
+                <FormField Label="Membership Tier">
+                    <SelectInput @bind-Value="_addMembershipTier">
+                        <option value="">Select Tier</option>
+                        @foreach (var tier in MembershipTiers)
+                        {
+                            <option value="@tier.MembershipName">@tier.MembershipName</option>
+                        }
+                    </SelectInput>
+                </FormField>
+                <FormField Label="VIP Count">
+                    <input type="number" @bind="_addVipCount" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" placeholder="0" />
+                </FormField>
+                <div></div>
+                <FormField Label="Date Start">
+                    <input type="date" @bind="_addDateStart" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+                <FormField Label="Date End">
+                    <input type="date" @bind="_addDateEnd" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+            </FormGrid>
+
+            <FormField Label="Address">
+                <TextAreaInput @bind-Value="_addAddress" Rows="2" Placeholder="Enter full address" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Corporate"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => _showAddDialog = false"
+                          OnConfirm="AddCorporate" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@if (_showEditDialog)
+{
+    <DialogModal IsVisible="_showEditDialog"
+                 Title="Edit Corporate"
+                 Icon="@Icons.Material.Filled.Business"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="CancelEdit">
+        <ChildContent>
+            <FormGrid Columns="2">
+                <FormField Label="Corporate Name" Required>
+                    <TextInput @bind-Value="_editName" />
+                </FormField>
+                <FormField Label="Contact Number">
+                    <TextInput @bind-Value="_editContactNumber" />
+                </FormField>
+                <FormField Label="Email Address">
+                    <TextInput Type="email" @bind-Value="_editEmailAddress" />
+                </FormField>
+                <FormField Label="Membership Tier">
+                    <SelectInput @bind-Value="_editMembershipTier">
+                        @foreach (var tier in MembershipTiers)
+                        {
+                            <option value="@tier.MembershipName">@tier.MembershipName</option>
+                        }
+                    </SelectInput>
+                </FormField>
+                <FormField Label="VIP Count">
+                    <input type="number" @bind="_editVipCount" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+                <div></div>
+                <FormField Label="Date Start">
+                    <input type="date" @bind="_editDateStart" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+                <FormField Label="Date End">
+                    <input type="date" @bind="_editDateEnd" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+            </FormGrid>
+
+            <FormField Label="Address">
+                <TextAreaInput @bind-Value="_editAddress" Rows="2" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEdit"
+                          OnConfirm="SaveEdit" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    private bool _showAddDialog;
+    private bool _showEditDialog;
+    private CorporateItem? _editingItem;
+
+    private string _addName = "";
+    private string _addAddress = "";
+    private string _addContactNumber = "";
+    private string _addEmailAddress = "";
+    private string _addMembershipTier = "";
+    private int _addVipCount = 0;
+    private DateTime _addDateStart = DateTime.Today;
+    private DateTime _addDateEnd = DateTime.Today.AddYears(1);
+
+    private string _editName = "";
+    private string _editAddress = "";
+    private string _editContactNumber = "";
+    private string _editEmailAddress = "";
+    private string _editMembershipTier = "";
+    private int _editVipCount = 0;
+    private DateTime _editDateStart = DateTime.Today;
+    private DateTime _editDateEnd = DateTime.Today.AddYears(1);
+
+    [Parameter] public EventCallback<CorporateItem> OnAdd { get; set; }
+    [Parameter] public EventCallback<CorporateItem> OnEdit { get; set; }
+    [Parameter] public List<MembershipTierDto> MembershipTiers { get; set; } = new();
+
+    public void OpenAdd()
+    {
+        _addName = "";
+        _addAddress = "";
+        _addContactNumber = "";
+        _addEmailAddress = "";
+        _addMembershipTier = "";
+        _addVipCount = 0;
+        _addDateStart = DateTime.Today;
+        _addDateEnd = DateTime.Today.AddYears(1);
+        _showAddDialog = true;
+    }
+
+    public void OpenEdit(CorporateItem item)
+    {
+        _editingItem = item;
+        _editName = item.Name;
+        _editAddress = item.Address;
+        _editContactNumber = item.ContactNumber;
+        _editEmailAddress = item.EmailAddress;
+        _editMembershipTier = item.MembershipTier;
+        _editVipCount = item.VipCount;
+        DateTime.TryParse(item.DateStart, out var ds);
+        DateTime.TryParse(item.DateEnd, out var de);
+        _editDateStart = ds == default ? DateTime.Today : ds;
+        _editDateEnd = de == default ? DateTime.Today.AddYears(1) : de;
+        _showEditDialog = true;
+    }
+
+    private void CancelEdit()
+    {
+        _showEditDialog = false;
+        _editingItem = null;
+    }
+
+    private async void AddCorporate()
+    {
+        var newItem = new CorporateItem(
+            $"CM-001",
+            _addName,
+            _addAddress,
+            _addContactNumber,
+            _addEmailAddress,
+            _addMembershipTier,
+            0,
+            _addVipCount,
+            $"{_addMembershipTier} MEMBERSHIP",
+            DateTime.Now.ToString("MM/dd/yyyy"),
+            _addDateStart.ToString("yyyy-MM-dd"),
+            _addDateEnd.ToString("yyyy-MM-dd")
+        );
+        await OnAdd.InvokeAsync(newItem);
+        _showAddDialog = false;
+    }
+
+    private async void SaveEdit()
+    {
+        if (_editingItem != null)
+        {
+            var updatedItem = new CorporateItem(
+                _editingItem.Code,
+                _editName,
+                _editAddress,
+                _editContactNumber,
+                _editEmailAddress,
+                _editMembershipTier,
+                _editingItem.UserCount,
+                _editVipCount,
+                _editingItem.MembershipDescription,
+                _editingItem.DateCreated,
+                _editDateStart.ToString("yyyy-MM-dd"),
+                _editDateEnd.ToString("yyyy-MM-dd")
+            );
+            await OnEdit.InvokeAsync(updatedItem);
+        }
+        _showEditDialog = false;
+        _editingItem = null;
+    }
+}

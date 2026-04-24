@@ -1,0 +1,158 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components
+
+@if (_showAddDialog)
+{
+    <DialogModal IsVisible="_showAddDialog"
+                 Title="Add Membership Tier"
+                 Icon="@Icons.Material.Filled.CardMembership"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="() => _showAddDialog = false">
+        <ChildContent>
+            <FormGrid Columns="2">
+                <FormField Label="Membership Name" Required>
+                    <TextInput @bind-Value="_addName" Placeholder="Enter membership name" />
+                </FormField>
+                <div></div>
+                <FormField Label="Date Started">
+                    <input type="date" @bind="_addDateStarted" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+                <FormField Label="Date Ended">
+                    <input type="date" @bind="_addDateEnded" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+            </FormGrid>
+
+            <FormField Label="Description">
+                <TextAreaInput @bind-Value="_addDescription" Rows="3" Placeholder="Enter membership description" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Tier"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => _showAddDialog = false"
+                          OnConfirm="AddTier" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@if (_showEditDialog)
+{
+    <DialogModal IsVisible="_showEditDialog"
+                 Title="Edit Membership Tier"
+                 Icon="@Icons.Material.Filled.CardMembership"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="CancelEdit">
+        <ChildContent>
+            <FormGrid Columns="2">
+                <FormField Label="Membership Name" Required>
+                    <TextInput @bind-Value="_editName" />
+                </FormField>
+                <div></div>
+                <FormField Label="Date Started">
+                    <input type="date" @bind="_editDateStarted" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+                <FormField Label="Date Ended">
+                    <input type="date" @bind="_editDateEnded" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100" />
+                </FormField>
+            </FormGrid>
+
+            <FormField Label="Description">
+                <TextAreaInput @bind-Value="_editDescription" Rows="3" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEdit"
+                          OnConfirm="SaveEdit" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    private bool _showAddDialog;
+    private bool _showEditDialog;
+    private MembershipTierItem? _editingItem;
+
+    private string _addName = "";
+    private string _addDescription = "";
+    private DateTime _addDateStarted = DateTime.Today;
+    private DateTime _addDateEnded = DateTime.Today.AddYears(1);
+
+    private string _editName = "";
+    private string _editDescription = "";
+    private DateTime _editDateStarted = DateTime.Today;
+    private DateTime _editDateEnded = DateTime.Today.AddYears(1);
+
+    [Parameter] public EventCallback<MembershipTierItem> OnAdd { get; set; }
+    [Parameter] public EventCallback<MembershipTierItem> OnEdit { get; set; }
+
+    public void OpenAdd()
+    {
+        _addName = "";
+        _addDescription = "";
+        _addDateStarted = DateTime.Today;
+        _addDateEnded = DateTime.Today.AddYears(1);
+        _showAddDialog = true;
+        StateHasChanged();
+    }
+
+    public void OpenEdit(MembershipTierItem item)
+    {
+        _editingItem = item;
+        _editName = item.Name;
+        _editDescription = item.Description;
+        DateTime.TryParse(item.DateStarted, out var ds);
+        DateTime.TryParse(item.DateEnded, out var de);
+        _editDateStarted = ds == default ? DateTime.Today : ds;
+        _editDateEnded = de == default ? DateTime.Today.AddYears(1) : de;
+        _showEditDialog = true;
+        StateHasChanged();
+    }
+
+    private void CancelEdit()
+    {
+        _showEditDialog = false;
+        _editingItem = null;
+    }
+
+    private async Task AddTier()
+    {
+        var newItem = new MembershipTierItem(
+            $"TIER-{DateTime.Now:yyyyMMddHHmmss}",
+            _addName,
+            _addDescription,
+            _addDateStarted.ToString("yyyy-MM-dd"),
+            _addDateEnded.ToString("yyyy-MM-dd"),
+            0,
+            0,
+            DateTime.Now.ToString("MM/dd/yyyy")
+        );
+        await OnAdd.InvokeAsync(newItem);
+        _showAddDialog = false;
+        StateHasChanged();
+    }
+
+    private async Task SaveEdit()
+    {
+        if (_editingItem != null)
+        {
+            var updatedItem = new MembershipTierItem(
+                _editingItem.Code,
+                _editName,
+                _editDescription,
+                _editDateStarted.ToString("yyyy-MM-dd"),
+                _editDateEnded.ToString("yyyy-MM-dd"),
+                _editingItem.UserCount,
+                _editingItem.VipCount,
+                _editingItem.DateCreated
+            );
+            await OnEdit.InvokeAsync(updatedItem);
+        }
+        _showEditDialog = false;
+        _editingItem = null;
+        StateHasChanged();
+    }
+}

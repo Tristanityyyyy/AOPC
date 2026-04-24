@@ -1,0 +1,46 @@
+@page "/maintenance/business"
+@rendermode InteractiveServer
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Pages.Maintenance.Business.Locations
+@using ProjectBlazor.Components.Pages.Maintenance.Business.Types
+@using ProjectBlazor.Components.Pages.Maintenance.Business.Hotels
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Business</h3>
+
+<div class="flex border-b border-gray-200 mb-4">
+    <button @onclick='() => _activeTab = "locations"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "locations" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
+        Business Locations
+    </button>
+    <button @onclick='() => _activeTab = "types"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "types" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
+        Business Types
+    </button>
+    <button @onclick='() => _activeTab = "hotels"'
+            class="px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "hotels" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
+        Hotels
+    </button>
+</div>
+
+<div class="grid grid-cols-12 gap-4">
+    @if (_activeTab == "locations")
+    {
+        <Locations />
+    }
+    @if (_activeTab == "types")
+    {
+        <Types />
+    }
+    @if (_activeTab == "hotels")
+    {
+        <Hotels />
+    }
+</div>
+
+@code {
+    private string _activeTab = "locations";
+}

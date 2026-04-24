@@ -1,0 +1,94 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Business.Locations
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+
+@if (ShowEditDialog)
+{
+    <DialogModal IsVisible="ShowEditDialog"
+               Title="Edit Business Location"
+               Icon="@Icons.Material.Filled.LocationOn"
+               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               CenterVertically="true"
+               OnClose="CancelEdit">
+        <ChildContent>
+            <FormField Label="Name" Required>
+                <TextInput @bind-Value="EditName" />
+            </FormField>
+            <FormField Label="Postal Code">
+                <TextInput @bind-Value="EditPostalCode" />
+            </FormField>
+            <FormField Label="Country" Required>
+                <TextInput @bind-Value="EditCountry" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEdit"
+                          OnConfirm="SaveEdit" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@if (ShowAddDialog)
+{
+    <DialogModal IsVisible="ShowAddDialog"
+               Title="Add Business Location"
+               Icon="@Icons.Material.Filled.AddLocation"
+               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               CenterVertically="true"
+               OnClose="() => ShowAddDialog = false">
+
+        <ChildContent>
+            <FormField Label="Name" Required>
+                <TextInput @bind-Value="AddName" Placeholder="Enter location name" />
+            </FormField>
+            <FormField Label="Postal Code">
+                <TextInput @bind-Value="AddPostalCode" Placeholder="Enter postal code" />
+            </FormField>
+            <FormField Label="Country" Required>
+                <TextInput @bind-Value="AddCountry" Placeholder="Enter country" />
+            </FormField>
+        </ChildContent>
+
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Location"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => ShowAddDialog = false"
+                          OnConfirm="Add" />
+        </FooterContent>
+
+    </DialogModal>
+}
+
+@code {
+    [CascadingParameter] public LocationsBody? LocationsBody { get; set; }
+
+    public bool ShowEditDialog { get; set; }
+    public bool ShowAddDialog { get; set; }
+    private LocationItem? EditingItem;
+    private string EditName = "", EditPostalCode = "", EditCountry = "";
+    private string AddName = "", AddPostalCode = "", AddCountry = "";
+
+    public void OpenAdd() { AddName = ""; AddPostalCode = ""; AddCountry = ""; ShowAddDialog = true; }
+
+    private void Add()
+    {
+        LocationsBody?.Items.Insert(0, new LocationItem($"LOC-{LocationsBody.Items.Count + 1:D3}", AddName, AddPostalCode, AddCountry, DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")));
+        ShowAddDialog = false;
+    }
+
+    public void OpenEdit(LocationItem item) { EditingItem = item; EditName = item.Name; EditPostalCode = item.PostalCode; EditCountry = item.Country; ShowEditDialog = true; }
+
+    private void SaveEdit()
+    {
+        if (EditingItem != null && LocationsBody != null)
+        {
+            var i = LocationsBody.Items.FindIndex(x => x.Code == EditingItem.Code);
+            if (i >= 0) LocationsBody.Items[i] = new LocationItem(EditingItem.Code, EditName, EditPostalCode, EditCountry, EditingItem.DateCreated);
+        }
+        ShowEditDialog = false;
+    }
+
+    public void CancelEdit() => ShowEditDialog = false;
+}

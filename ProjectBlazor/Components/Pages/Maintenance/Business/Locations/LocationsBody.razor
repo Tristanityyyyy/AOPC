@@ -1,0 +1,152 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Business.Locations
+@using ProjectBlazor.Components.Shared
+
+<LocationsHeader />
+
+<div class="col-span-12">
+    @if (Items.Count == 0)
+    {
+        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded">
+            <p>No locations data. Items count: @Items.Count, Columns count: @Columns.Count</p>
+            <p>Service null: @(LocationsService == null)</p>
+            <p>OnInitAsync called: @_initCalled</p>
+            <p>API returned count: @_apiCount</p>
+            <p class="font-bold">Status: @_errorMessage</p>
+            <p class="text-blue-600">Debug: @_serviceDebug</p>
+        </div>
+    }
+    <DataTable T="LocationItem"
+               Title="@LocationsHeader.Title"
+               Items="Items"
+               Columns="Columns"
+               ButtonColor="@LocationsHeader.ButtonColor"
+               HeaderGradient="@LocationsHeader.HeaderGradient"
+               OnAddClick="OpenAdd" />
+</div>
+
+<CascadingValue Value="this">
+    <LocationsDialogs @ref="Dialogs" />
+</CascadingValue>
+
+@code {
+    private bool _initCalled = false;
+    private string _errorMessage = "";
+    private int _apiCount = 0;
+    private string _serviceDebug = "";
+    
+    [Parameter] public List<LocationItem> Items { get; set; } = new();
+
+    [Parameter] public List<TableColumn<LocationItem>> Columns { get; set; } = new();
+
+    public LocationsDialogs Dialogs { get; set; } = null!;
+    public LocationsHeader LocationsHeader { get; set; } = new();
+
+    [Inject] private LocationsService? LocationsService { get; set; }
+    [Inject] private IHttpClientFactory? HttpClientFactory { get; set; }
+
+    public LocationsBody()
+    {
+        Console.WriteLine("LocationsBody constructor called");
+    }
+
+    public void OpenAdd() => Dialogs.OpenAdd();
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("LocationsBody OnInitialized called");
+        base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _initCalled = true;
+        try
+        {
+            _errorMessage = "Calling API...";
+            StateHasChanged();
+            
+            var locations = await LocationsService!.GetLocationsAsync();
+            _apiCount = locations.Count;
+            _errorMessage = $"API returned {locations.Count} locations";
+            
+            // Check if we got data
+            if (locations.Count > 0)
+            {
+                var first = locations.First();
+                _serviceDebug = $"First: ID={first.Id}, City={first.City}, BLocID={first.BusinessLocID}";
+            }
+            else
+            {
+                _serviceDebug = "API returned empty array";
+            }
+            
+            StateHasChanged();
+            
+            Console.WriteLine($"Locations count: {locations.Count}");
+            
+            Items = locations.Select(l => new LocationItem(
+                l.BusinessLocID,
+                l.City,
+                l.PostalCode ?? "",
+                l.Country,
+                l.DateCreated
+            )).ToList();
+            
+            _errorMessage = $"Mapped to {Items.Count} items";
+            StateHasChanged();
+            
+            Console.WriteLine($"Items count: {Items.Count}");
+
+            Columns = new List<TableColumn<LocationItem>>
+            {
+                new() {
+                    Header = "Name", Width = "45%", SortField = "Name",
+                    RenderCell = item => __builder =>
+                    {
+                        <div class="relative w-full" style="height:64px;">
+                            <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:8px;">@item.Code</div>
+                            <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 group-hover:translate-y-2" style="top:16px;">@item.Name</div>
+                            <div class="absolute left-0 flex gap-2 transition-transform duration-200 group-hover:translate-y-2" style="top:36px;">
+                                <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                    <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                                </button>
+                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                    <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                                </button>
+                            </div>
+                        </div>
+                        ;
+                    }
+                },
+                new() {
+                    Header = "Postal Code", Width = "20%", SortField = "PostalCode",
+                    RenderCell = item => __builder => {
+                    <span class="text-gray-600">@item.PostalCode</span>
+                    ; }
+                },
+                new() {
+                    Header = "Country", Width = "20%", SortField = "Country",
+                    RenderCell = item => __builder => {
+                    <span class="text-gray-600">@item.Country</span>
+                    ; }
+                },
+                new() {
+                    Header = "Date Created", Width = "15%", SortField = "DateCreated",
+                    RenderCell = item => __builder => {
+                    <span class="text-gray-600">@item.DateCreated</span>
+                    ; }
+                }
+            };
+            
+            Console.WriteLine($"Columns count: {Columns.Count}");
+            _errorMessage = $"Success! {Items.Count} items, {Columns.Count} columns";
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"EXCEPTION: {ex.Message} | {ex.GetType().Name}";
+            Console.WriteLine($"LocationsBody error: {ex.Message}");
+            Console.WriteLine($"Stack: {ex.StackTrace}");
+        }
+    }
+}

@@ -1,0 +1,95 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Business.Types
+@using ProjectBlazor.Components.Shared
+
+<TypesHeader />
+
+<div class="col-span-12">
+    <DataTable T="BusinessTypeItem"
+               Title="@TypesHeader.Title"
+               Items="Items"
+               Columns="Columns"
+               ButtonColor="@TypesHeader.ButtonColor"
+               HeaderGradient="@TypesHeader.HeaderGradient"
+               OnAddClick="OpenAdd" />
+</div>
+
+<CascadingValue Value="this">
+    <TypesDialogs @ref="Dialogs" />
+</CascadingValue>
+
+@code {
+    [Parameter] public List<BusinessTypeItem> Items { get; set; } = new();
+
+    [Parameter] public List<TableColumn<BusinessTypeItem>> Columns { get; set; } = new();
+
+    public TypesDialogs Dialogs { get; set; } = null!;
+    public TypesHeader TypesHeader { get; set; } = new();
+
+    [Inject] private TypesService? TypesService { get; set; }
+
+    public void OpenAdd() => Dialogs.OpenAdd();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var types = await TypesService!.GetBusinessTypesAsync();
+            
+            Items = types.Select(t => new BusinessTypeItem(
+                t.BusinessTypeID,
+                t.BusinessTypeName,
+                t.ImgURL,
+                t.PromoText,
+                t.Description,
+                t.DateCreated
+            )).ToList();
+
+            Columns = new List<TableColumn<BusinessTypeItem>>
+            {
+                new() {
+                    Header = "Name", Width = "40%", SortField = "Name",
+                    RenderCell = item => __builder =>
+                    {
+                        <div class="flex items-center gap-2">
+                            <img src="@item.ImageUrl" class="w-10 h-10 rounded object-cover" alt="@item.Name" />
+                            <div class="relative">
+                                <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">@item.Code</div>
+                                <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 group-hover:translate-y-2">@item.Name</div>
+                                <div class="flex gap-2 mt-1 transition-transform duration-200 group-hover:translate-y-2">
+                                    <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                                    </button>
+                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-500">
+                                        <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="font-size:14px;" Color="Color.Inherit" /> Duplicate
+                                    </button>
+                                    <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                        <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        ;
+                    }
+                },
+                new() {
+                    Header = "Promo", Width = "40%", SortField = "Promo",
+                    RenderCell = item => __builder => {
+                    <span class="text-gray-600">@item.Promo</span>
+                    ; }
+                },
+                new() {
+                    Header = "Date Created", Width = "20%", SortField = "DateCreated",
+                    RenderCell = item => __builder => {
+                    <span class="text-gray-600">@item.DateCreated</span>
+                    ; }
+                }
+            };
+            
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"TypesBody error: {ex.Message}");
+        }
+    }
+}
