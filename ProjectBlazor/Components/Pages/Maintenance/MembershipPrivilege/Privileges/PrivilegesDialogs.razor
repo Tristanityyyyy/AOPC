@@ -4,66 +4,63 @@
 @using ProjectBlazor.Components
 @using ProjectBlazor.Components.Pages.Maintenance.Business.Types
 
-@if (_showAddDialog)
-{
-    <DialogModal IsVisible="_showAddDialog"
-                 Title="Add Privilege"
-                 Icon="@Icons.Material.Filled.CardGiftcard"
-                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
-                 OnClose="() => _showAddDialog = false">
-        <ChildContent>
-            <FormGrid Columns="2">
-                <FormField Label="Title" Required>
-                    <TextInput @bind-Value="_addTitle" Placeholder="Enter privilege title" />
-                </FormField>
-                <FormField Label="Business Type">
-                    <SelectInput @bind-Value="_addBusinessTypeID">
-                        <option value="">Select Business Type</option>
-                        @foreach (var type in BusinessTypes)
-                        {
-                            <option value="@type.BusinessTypeID">@type.BusinessTypeName</option>
-                        }
-                    </SelectInput>
-                </FormField>
-                <FormField Label="Validity">
-                    <TextInput @bind-Value="_addValidity" Placeholder="e.g. Valid until Dec 31, 2024" />
-                </FormField>
-                <FormField Label="No Expiry">
-                    <SelectInput @bind-Value="_addNoExpiry">
-                        <option value="0">NO</option>
-                        <option value="1">YES</option>
-                    </SelectInput>
-                </FormField>
-            </FormGrid>
-
-            <FormField Label="Description">
-                <TextAreaInput @bind-Value="_addDescription" Rows="2" Placeholder="Enter privilege description" />
+<DialogModal IsVisible="IsVisible"
+             Title="Add Privilege"
+             Icon="@Icons.Material.Filled.CardGiftcard"
+             HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+             OnClose="() => OnClose.InvokeAsync()">
+    <ChildContent>
+        <FormGrid Columns="2">
+            <FormField Label="Title" Required>
+                <TextInput @bind-Value="_addTitle" Placeholder="Enter privilege title" />
             </FormField>
-
-            <FormField Label="Terms & Conditions">
-                <TextAreaInput @bind-Value="_addTmc" Rows="3" Placeholder="Enter terms and conditions" />
+            <FormField Label="Business Type">
+                <SelectInput @bind-Value="_addBusinessTypeID">
+                    <option value="">Select Business Type</option>
+                    @foreach (var type in BusinessTypes)
+                    {
+                        <option value="@type.BusinessTypeID">@type.BusinessTypeName</option>
+                    }
+                </SelectInput>
             </FormField>
-
-            <FormField Label="Mechanics">
-                <TextAreaInput @bind-Value="_addMechanics" Rows="3" Placeholder="Enter mechanics" />
+            <FormField Label="Validity">
+                <TextInput @bind-Value="_addValidity" Placeholder="e.g. Valid until Dec 31, 2024" />
             </FormField>
-
-            <FormField Label="Image">
-                <ImageUpload @bind-Value="_addImgUrl" PlaceholderIcon="@Icons.Material.Filled.CardGiftcard" />
+            <FormField Label="No Expiry">
+                <SelectInput @bind-Value="_addNoExpiry">
+                    <option value="0">NO</option>
+                    <option value="1">YES</option>
+                </SelectInput>
             </FormField>
-        </ChildContent>
-        <FooterContent>
-            <DialogFooter ConfirmText="Add Privilege"
-                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
-                          OnCancel="() => _showAddDialog = false"
-                          OnConfirm="AddPrivilege" />
-        </FooterContent>
-    </DialogModal>
-}
+        </FormGrid>
+
+        <FormField Label="Description">
+            <TextAreaInput @bind-Value="_addDescription" Rows="2" Placeholder="Enter privilege description" />
+        </FormField>
+
+        <FormField Label="Terms & Conditions">
+            <TextAreaInput @bind-Value="_addTmc" Rows="3" Placeholder="Enter terms and conditions" />
+        </FormField>
+
+        <FormField Label="Mechanics">
+            <TextAreaInput @bind-Value="_addMechanics" Rows="3" Placeholder="Enter mechanics" />
+        </FormField>
+
+        <FormField Label="Image">
+            <ImageUpload @bind-Value="_addImgUrl" PlaceholderIcon="@Icons.Material.Filled.CardGiftcard" />
+        </FormField>
+    </ChildContent>
+    <FooterContent>
+        <DialogFooter ConfirmText="Add Privilege"
+                      ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                      OnCancel="() => OnClose.InvokeAsync()"
+                      OnConfirm="AddPrivilege" />
+    </FooterContent>
+</DialogModal>
 
 @if (_showEditDialog)
 {
-    <DialogModal IsVisible="_showEditDialog"
+    <DialogModal IsVisible="true"
                  Title="Edit Privilege"
                  Icon="@Icons.Material.Filled.CardGiftcard"
                  HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
@@ -118,7 +115,12 @@
 }
 
 @code {
-    private bool _showAddDialog;
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<PrivilegeItem> OnAdd { get; set; }
+    [Parameter] public EventCallback<PrivilegeItem> OnEdit { get; set; }
+    [Parameter] public List<BusinessTypeDto> BusinessTypes { get; set; } = new();
+
     private bool _showEditDialog;
     private PrivilegeItem? _editingItem;
 
@@ -140,10 +142,6 @@
     private string _editTmc = "";
     private string _editMechanics = "";
 
-    [Parameter] public EventCallback<PrivilegeItem> OnAdd { get; set; }
-    [Parameter] public EventCallback<PrivilegeItem> OnEdit { get; set; }
-    [Parameter] public List<BusinessTypeDto> BusinessTypes { get; set; } = new();
-
     public void OpenAdd()
     {
         _addTitle = "";
@@ -154,8 +152,6 @@
         _addImgUrl = "";
         _addTmc = "";
         _addMechanics = "";
-        _showAddDialog = true;
-        StateHasChanged();
     }
 
     public void OpenEdit(PrivilegeItem item)
@@ -170,7 +166,6 @@
         _editTmc = item.TermsHtml;
         _editMechanics = item.MechanicsHtml;
         _showEditDialog = true;
-        StateHasChanged();
     }
 
     private void CancelEdit()
@@ -195,8 +190,7 @@
             _addMechanics
         );
         await OnAdd.InvokeAsync(newItem);
-        _showAddDialog = false;
-        StateHasChanged();
+        await OnClose.InvokeAsync();
     }
 
     private async Task SaveEdit()
@@ -220,6 +214,5 @@
         }
         _showEditDialog = false;
         _editingItem = null;
-        StateHasChanged();
     }
 }

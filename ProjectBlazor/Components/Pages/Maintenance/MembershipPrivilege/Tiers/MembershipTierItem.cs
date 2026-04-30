@@ -8,4 +8,8 @@ public record MembershipTierItem(
     string DateEnded,
     int UserCount,
     int VipCount,
-    string DateCreated);
+    string DateCreated)
+{
+    public string? TextCardColor { get; set; }
+    public string? MembershipCountry { get; set; }
+}

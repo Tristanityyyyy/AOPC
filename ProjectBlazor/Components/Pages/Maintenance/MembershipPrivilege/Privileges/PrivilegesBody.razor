@@ -1,6 +1,7 @@
 @namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Privileges
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Pages.Maintenance.Business.Types
+@rendermode InteractiveServer
 
 <PrivilegesHeader />
 
@@ -11,54 +12,74 @@
                Columns="Columns"
                ButtonColor="@PrivilegesHeader.ButtonColor"
                HeaderGradient="@PrivilegesHeader.HeaderGradient"
-               OnAddClick="OpenAdd" />
+               OnAddClick="() => _showAddDialog = true" />
 </div>
 
-<PrivilegesDialogs @ref="Dialogs" OnAdd="HandleAdd" OnEdit="HandleEdit" BusinessTypes="BusinessTypes" />
+@if (_showAddDialog)
+{
+    <PrivilegesDialogs 
+        IsVisible="_showAddDialog"
+        OnAdd="HandleAdd" 
+        OnEdit="HandleEdit" 
+        BusinessTypes="BusinessTypes"
+        OnClose="() => _showAddDialog = false" />
+}
+
+@if (_showEditDialog && _editingItem != null)
+{
+    <PrivilegesDialogs 
+        IsVisible="true"
+        OnAdd="HandleAdd" 
+        OnEdit="HandleEdit" 
+        BusinessTypes="BusinessTypes"
+        OnClose="() => { _showEditDialog = false; _editingItem = null; }" />
+}
 
 @code {
-    [Parameter] public List<PrivilegeItem> Items { get; set; } = new();
-    [Parameter] public List<TableColumn<PrivilegeItem>> Columns { get; set; } = new();
+    private bool _showAddDialog = false;
+    private bool _showEditDialog = false;
+    private PrivilegeItem? _editingItem;
+    
+    public List<PrivilegeItem> Items { get; set; } = new();
+    public List<TableColumn<PrivilegeItem>> Columns { get; set; } = new();
 
     public PrivilegesHeader PrivilegesHeader { get; set; } = new();
-    public PrivilegesDialogs Dialogs { get; set; } = null!;
 
     [Inject] private PrivilegesService? PrivilegesService { get; set; }
     [Inject] private TypesService? TypesService { get; set; }
 
     private List<BusinessTypeDto> BusinessTypes { get; set; } = new();
 
-    public void OpenAdd()
-    {
-        if (Dialogs != null)
-        {
-            Dialogs.OpenAdd();
-        }
-    }
-
     protected override async Task OnInitializedAsync()
     {
-        if (TypesService != null)
+        try
         {
-            BusinessTypes = await TypesService.GetBusinessTypesAsync();
+            if (TypesService != null)
+            {
+                BusinessTypes = await TypesService.GetBusinessTypesAsync();
+            }
+            
+            if (PrivilegesService != null)
+            {
+                var privileges = await PrivilegesService.GetPrivilegesAsync();
+            
+                Items = privileges.Select(p => new PrivilegeItem(
+                    p.PrivilegeID,
+                    p.Title,
+                    p.ImgUrl,
+                    p.Description,
+                    p.Validity,
+                    p.NoExpiry == 0 ? "NO" : "YES",
+                    p.BusinessTypeName,
+                    p.DateCreated,
+                    p.Tmc ?? "",
+                    p.Mechanics ?? ""
+                )).ToList();
+            }
         }
-        
-        if (PrivilegesService != null)
+        catch (Exception ex)
         {
-            var privileges = await PrivilegesService.GetPrivilegesAsync();
-        
-            Items = privileges.Select(p => new PrivilegeItem(
-                p.PrivilegeID,
-                p.Title,
-                p.ImgUrl,
-                p.Description,
-                p.Validity,
-                p.NoExpiry == 0 ? "NO" : "YES",
-                p.BusinessTypeName,
-                p.DateCreated,
-                p.Tmc,
-                p.Mechanics
-            )).ToList();
+            Console.WriteLine($"Error in OnInitializedAsync: {ex.Message}");
         }
 
         Columns = new List<TableColumn<PrivilegeItem>>
@@ -73,7 +94,7 @@
                             <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">@item.Code</div>
                             <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 group-hover:translate-y-2">@item.Name</div>
                             <div class="flex gap-2 mt-1 transition-transform duration-200 group-hover:translate-y-2">
-                                <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <button @onclick="() => OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
                                     <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
                                 </button>
                                 <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
@@ -121,9 +142,16 @@
         };
     }
 
+    private void OpenEdit(PrivilegeItem item)
+    {
+        _editingItem = item;
+        _showEditDialog = true;
+    }
+
     private async Task HandleAdd(PrivilegeItem item)
     {
         Items.Add(item);
+        _showAddDialog = false;
         await InvokeAsync(StateHasChanged);
     }
 
@@ -131,6 +159,8 @@
     {
         var index = Items.FindIndex(i => i.Code == item.Code);
         if (index >= 0) Items[index] = item;
+        _showEditDialog = false;
+        _editingItem = null;
         await InvokeAsync(StateHasChanged);
     }
 }
