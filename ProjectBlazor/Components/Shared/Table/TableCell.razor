@@ -1,0 +1,20 @@
+@namespace ProjectBlazor.Components.Shared
+@typeparam T
+
+<td class="px-2" style="height: 72px; overflow: hidden; vertical-align: middle;">
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+    else
+    {
+        @Value
+    }
+</td>
+
+@code {
+    [Parameter] public T? Value { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    [CascadingParameter] public T? Item { get; set; }
+}

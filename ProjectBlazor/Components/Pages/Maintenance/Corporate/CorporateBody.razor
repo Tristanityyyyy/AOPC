@@ -1,0 +1,143 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Corporate
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+
+<CorporateHeader />
+
+<div class="col-span-12">
+    <DataTable T="CorporateItem"
+               Title="@CorporateHeader.Title"
+               Items="Items"
+               Columns="Columns"
+               ButtonColor="@CorporateHeader.ButtonColor"
+               HeaderGradient="@CorporateHeader.HeaderGradient"
+               ShowImportExport="true"
+               ImportedFileName="@UploadedFileName"
+               TableWrapperStyle="overflow-x: auto;"
+               TableStyle="width: 100%; min-width: max-content;"
+               OnAddClick="OpenAdd"
+               OnImport="HandleFileUpload"
+               OnImportButtonClick="HandleImportClick"
+               OnExportTemplateClick="HandleExportTemplate" />
+</div>
+
+<CorporateDialogs @ref="Dialogs" OnAdd="HandleAdd" OnEdit="HandleEdit" MembershipTiers="MembershipTiers" />
+
+@code {
+    [Parameter] public List<CorporateItem> Items { get; set; } = new();
+
+    [Parameter] public List<TableColumn<CorporateItem>> Columns { get; set; } = new();
+
+    public CorporateDialogs Dialogs { get; set; } = null!;
+    public CorporateHeader CorporateHeader { get; set; } = new();
+
+    [Inject] private CorporateService? CorporateService { get; set; }
+    [Inject] private TiersService? TiersService { get; set; }
+
+    private List<MembershipTierDto> MembershipTiers { get; set; } = new();
+
+    public void OpenAdd() => Dialogs.OpenAdd();
+
+    protected override async Task OnInitializedAsync()
+    {
+        MembershipTiers = await TiersService!.GetTiersAsync();
+        
+        var corporates = await CorporateService!.GetCorporatesAsync();
+        Items = corporates.Select(c => new CorporateItem(
+            c.CompanyID,
+            c.CorporateName,
+            c.Address,
+            c.CNo,
+            c.EmailAddress,
+            c.Tier,
+            int.TryParse(c.UserCount, out var uc) ? uc : 0,
+            int.TryParse(c.VipCount, out var vc) ? vc : 0,
+            c.Description,
+            c.DateCreated,
+            c.DateUsed,
+            c.DateEnded
+        )).ToList();
+
+        Columns = new List<TableColumn<CorporateItem>>
+        {
+            new() {
+                Header = "Name", Width = "250px", SortField = "Name",
+                RenderCell = item => __builder =>
+                {
+                    <div class="relative w-full" style="height:64px;">
+                        <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:8px;">@item.Code</div>
+                        <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 group-hover:translate-y-2" style="top:16px;">@item.Name</div>
+                        <div class="absolute left-0 flex gap-2 transition-transform duration-200 group-hover:translate-y-2" style="top:36px;">
+                            <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
+                                <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size:14px;" Color="Color.Inherit" /> View
+                            </button>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Address", Width = "200px", SortField = "Address",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.Address</span>; }
+            },
+            new() {
+                Header = "Contact Number", Width = "150px", SortField = "ContactNumber",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.ContactNumber</span>; }
+            },
+            new() {
+                Header = "Email Address", Width = "200px", SortField = "EmailAddress",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.EmailAddress</span>; }
+            },
+            new() {
+                Header = "Membership Tier", Width = "150px", SortField = "MembershipTier",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.MembershipTier</span>; }
+            },
+            new() {
+                Header = "User Count", Width = "120px", SortField = "UserCount",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.UserCount</span>; }
+            },
+            new() {
+                Header = "VIP Count", Width = "120px", SortField = "VipCount",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.VipCount</span>; }
+            },
+            new() {
+                Header = "Membership Description", Width = "200px", SortField = "MembershipDescription",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.MembershipDescription</span>; }
+            },
+            new() {
+                Header = "Date Created", Width = "150px", SortField = "DateCreated",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.DateCreated</span>; }
+            }
+        };
+    }
+
+    private string? UploadedFileName { get; set; }
+
+    private async Task HandleFileUpload(string fileName)
+    {
+        UploadedFileName = fileName;
+        await Task.CompletedTask;
+    }
+
+    private Task HandleImportClick() => Task.CompletedTask;
+    private Task HandleExportTemplate() => Task.CompletedTask;
+
+    private async Task HandleAdd(CorporateItem item)
+    {
+        Items.Add(item);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleEdit(CorporateItem item)
+    {
+        var index = Items.FindIndex(i => i.Code == item.Code);
+        if (index >= 0) Items[index] = item;
+        await InvokeAsync(StateHasChanged);
+    }
+}

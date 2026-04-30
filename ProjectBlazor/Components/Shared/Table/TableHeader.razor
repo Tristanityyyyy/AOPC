@@ -1,0 +1,37 @@
+@namespace ProjectBlazor.Components.Shared
+@typeparam T
+
+<th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" 
+   style="width: @Width;"
+   @onclick="OnSortClick">
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+    else
+    {
+        @Header
+    }
+    <span class="text-gray-400">@SortIcon</span>
+</th>
+
+@code {
+    [Parameter] public string Header { get; set; } = "";
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? SortField { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    [CascadingParameter] public string? CurrentSortField { get; set; }
+    [CascadingParameter] public bool SortAsc { get; set; }
+    [CascadingParameter] public EventCallback<string>? OnSort { get; set; }
+
+    private string SortIcon => SortField == CurrentSortField ? (SortAsc ? "▲" : "▼") : "";
+
+    private async Task OnSortClick()
+    {
+        if (!string.IsNullOrEmpty(SortField) && OnSort.HasValue)
+        {
+            await OnSort.Value.InvokeAsync(SortField);
+        }
+    }
+}

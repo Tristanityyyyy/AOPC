@@ -1,0 +1,399 @@
+﻿@namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components
+
+@if (_showAddDialog)
+{
+    <DialogModal IsVisible="_showAddDialog"
+                 Title="Membership Tier Form"
+                 Icon="@Icons.Material.Filled.CardMembership"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 MaxWidth="2xl"
+                 CenterVertically="true"
+                 OnClose="() => _showAddDialog = false">
+        <ChildContent>
+            @RenderTierForm(
+                _addMembershipCardFile, _addVipCardFile, _addQrCodeFrameFile, _addVipBadgeFile,
+                _addTextCardColor, _addMembershipCountry,
+                _addName, _addDescription,
+                _addDateStarted, _addDateEnded,
+                _addUserCount, _addVipCount,
+                isAdd: true
+            )
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Submit"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => _showAddDialog = false"
+                          OnConfirm="AddTier" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@if (_showEditDialog)
+{
+    <DialogModal IsVisible="_showEditDialog"
+                 Title="Membership Tier Form"
+                 Icon="@Icons.Material.Filled.CardMembership"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 MaxWidth="2xl"
+                 CenterVertically="true"
+                 OnClose="CancelEdit">
+        <ChildContent>
+            @RenderTierForm(
+                _editMembershipCardFile, _editVipCardFile, _editQrCodeFrameFile, _editVipBadgeFile,
+                _editTextCardColor, _editMembershipCountry,
+                _editName, _editDescription,
+                _editDateStarted, _editDateEnded,
+                _editUserCount, _editVipCount,
+                isAdd: false
+            )
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Submit"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEdit"
+                          OnConfirm="SaveEdit" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    // ── CSS helpers ────────────────────────────────────────────────────────────
+    private const string DateInputCss =
+        "w-full border border-gray-300 rounded-lg px-3 py-2 text-xs " +
+        "focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100";
+
+    private const string NumberInputCss =
+        "w-full border border-gray-300 rounded-lg px-3 py-2 text-xs " +
+        "focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100";
+
+    private const string SelectCss =
+        "w-full border border-gray-300 rounded-lg px-3 py-2 text-xs " +
+        "focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100 bg-white";
+
+    // ── Add state ──────────────────────────────────────────────────────────────
+    private bool _showAddDialog;
+    private IBrowserFile? _addMembershipCardFile;
+    private IBrowserFile? _addVipCardFile;
+    private IBrowserFile? _addQrCodeFrameFile;
+    private IBrowserFile? _addVipBadgeFile;
+    private string _addTextCardColor = "#000000";
+    private string _addMembershipCountry = "";
+    private string _addName = "";
+    private string _addDescription = "";
+    private DateTime _addDateStarted = DateTime.Today;
+    private DateTime _addDateEnded = DateTime.Today.AddYears(1);
+    private int _addUserCount = 0;
+    private int _addVipCount = 0;
+
+    // ── Edit state ─────────────────────────────────────────────────────────────
+    private bool _showEditDialog;
+    private MembershipTierItem? _editingItem;
+    private IBrowserFile? _editMembershipCardFile;
+    private IBrowserFile? _editVipCardFile;
+    private IBrowserFile? _editQrCodeFrameFile;
+    private IBrowserFile? _editVipBadgeFile;
+    private string _editTextCardColor = "#000000";
+    private string _editMembershipCountry = "";
+    private string _editName = "";
+    private string _editDescription = "";
+    private DateTime _editDateStarted = DateTime.Today;
+    private DateTime _editDateEnded = DateTime.Today.AddYears(1);
+    private int _editUserCount = 0;
+    private int _editVipCount = 0;
+
+    // ── Parameters ─────────────────────────────────────────────────────────────
+    [Parameter] public EventCallback<MembershipTierItem> OnAdd { get; set; }
+    [Parameter] public EventCallback<MembershipTierItem> OnEdit { get; set; }
+
+    // ── Public API (called via @ref) ───────────────────────────────────────────
+    public async Task OpenAdd()
+    {
+        _addMembershipCardFile = _addVipCardFile = _addQrCodeFrameFile = _addVipBadgeFile = null;
+        _addTextCardColor = "#000000";
+        _addMembershipCountry = "";
+        _addName = "";
+        _addDescription = "";
+        _addDateStarted = DateTime.Today;
+        _addDateEnded = DateTime.Today.AddYears(1);
+        _addUserCount = 0;
+        _addVipCount = 0;
+        _showAddDialog = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task OpenEdit(MembershipTierItem item)
+    {
+        _editingItem = item;
+        _editMembershipCardFile = _editVipCardFile = _editQrCodeFrameFile = _editVipBadgeFile = null;
+        _editTextCardColor = item.TextCardColor ?? "#000000";
+        _editMembershipCountry = item.MembershipCountry ?? "";
+        _editName = item.Name;
+        _editDescription = item.Description;
+        DateTime.TryParse(item.DateStarted, out var ds);
+        DateTime.TryParse(item.DateEnded, out var de);
+        _editDateStarted = ds == default ? DateTime.Today : ds;
+        _editDateEnded = de == default ? DateTime.Today.AddYears(1) : de;
+        _editUserCount = item.UserCount;
+        _editVipCount = item.VipCount;
+        _showEditDialog = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // ── Render fragment ────────────────────────────────────────────────────────
+    private RenderFragment RenderTierForm(
+        IBrowserFile? membershipCard, IBrowserFile? vipCard,
+        IBrowserFile? qrCodeFrame, IBrowserFile? vipBadge,
+        string textCardColor, string membershipCountry,
+        string name, string description,
+        DateTime dateStarted, DateTime dateEnded,
+        int userCount, int vipCount,
+        bool isAdd) => __builder =>
+    {
+        <div class="grid grid-cols-4 gap-4 mb-4">
+            @foreach (var (label, field) in new[]
+            {
+                ("Upload Membership Card Here", "membershipCard"),
+                ("Upload VIP Card Here",        "vipCard"),
+                ("Upload QR Code Frame Here",   "qrCodeFrame"),
+                ("Upload VIP Badge Here",       "vipBadge"),
+            })
+            {
+                <div class="flex flex-col items-center">
+                    <span class="text-xs text-gray-600 mb-1 text-center">@label</span>
+                    <label class="w-full h-28 border border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-amber-400 bg-gray-50 overflow-hidden relative">
+                        <InputFile OnChange="@(e => HandleFileUpload(e, field, isAdd))"
+                                   class="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                   accept="image/*" />
+                        @{
+                            var preview = GetPreviewUrl(field, isAdd);
+                        }
+                        @if (!string.IsNullOrEmpty(preview))
+                        {
+                            <img src="@preview" class="w-full h-full object-contain" alt="@label" />
+                        }
+                        else
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        }
+                    </label>
+                </div>
+            }
+        </div>
+
+        <hr class="border-gray-200 mb-4" />
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <FormField Label="Text Card Color">
+                <div class="flex items-center gap-2">
+                    <input type="color"
+                           value="@(isAdd ? _addTextCardColor : _editTextCardColor)"
+                           @oninput="@(e => SetColor(e.Value?.ToString() ?? "#000000", isAdd))"
+                           class="w-10 h-10 rounded border border-gray-300 cursor-pointer p-0.5 bg-white" />
+                    <span class="text-xs text-gray-500">@(isAdd ? _addTextCardColor : _editTextCardColor)</span>
+                </div>
+            </FormField>
+            <FormField Label="Membership Country">
+                <select value="@(isAdd ? _addMembershipCountry : _editMembershipCountry)"
+                        @onchange="@(e => SetCountry(e.Value?.ToString() ?? "", isAdd))"
+                        class="@SelectCss">
+                    <option value="">-Select Country-</option>
+                    <option value="PH">Philippines</option>
+                    <option value="US">United States</option>
+                    <option value="SG">Singapore</option>
+                    <option value="AU">Australia</option>
+                    <option value="JP">Japan</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="CA">Canada</option>
+                    <option value="MY">Malaysia</option>
+                    <option value="ID">Indonesia</option>
+                    <option value="TH">Thailand</option>
+                </select>
+            </FormField>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <FormField Label="Membership Name" Required>
+                @if (isAdd)
+                {
+                    <TextInput @bind-Value="_addName" Placeholder="Enter membership name" />
+                }
+                else
+                {
+                    <TextInput @bind-Value="_editName" />
+                }
+            </FormField>
+            <FormField Label="Description">
+                @if (isAdd)
+                {
+                    <TextAreaInput @bind-Value="_addDescription" Rows="1" Placeholder="Enter membership description" />
+                }
+                else
+                {
+                    <TextAreaInput @bind-Value="_editDescription" Rows="1" />
+                }
+            </FormField>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <FormField Label="Date Used">
+                @if (isAdd)
+                {
+                    <input type="date" @bind="_addDateStarted" class="@DateInputCss" />
+                }
+                else
+                {
+                    <input type="date" @bind="_editDateStarted" class="@DateInputCss" />
+                }
+            </FormField>
+            <FormField Label="Date Ended">
+                @if (isAdd)
+                {
+                    <input type="date" @bind="_addDateEnded" class="@DateInputCss" />
+                }
+                else
+                {
+                    <input type="date" @bind="_editDateEnded" class="@DateInputCss" />
+                }
+            </FormField>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <FormField Label="User Count">
+                @if (isAdd)
+                {
+                    <input type="number" @bind="_addUserCount" min="0" class="@NumberInputCss" />
+                }
+                else
+                {
+                    <input type="number" @bind="_editUserCount" min="0" class="@NumberInputCss" />
+                }
+            </FormField>
+            <FormField Label="VIP Count">
+                @if (isAdd)
+                {
+                    <input type="number" @bind="_addVipCount" min="0" class="@NumberInputCss" />
+                }
+                else
+                {
+                    <input type="number" @bind="_editVipCount" min="0" class="@NumberInputCss" />
+                }
+            </FormField>
+        </div>
+    };
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+    private Dictionary<string, string> _previewUrls = new();
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e, string field, bool isAdd)
+    {
+        var file = e.File;
+        var key = $"{(isAdd ? "add" : "edit")}_{field}";
+
+        if (isAdd)
+        {
+            switch (field)
+            {
+                case "membershipCard": _addMembershipCardFile = file; break;
+                case "vipCard":        _addVipCardFile        = file; break;
+                case "qrCodeFrame":    _addQrCodeFrameFile    = file; break;
+                case "vipBadge":       _addVipBadgeFile       = file; break;
+            }
+        }
+        else
+        {
+            switch (field)
+            {
+                case "membershipCard": _editMembershipCardFile = file; break;
+                case "vipCard":        _editVipCardFile        = file; break;
+                case "qrCodeFrame":    _editQrCodeFrameFile    = file; break;
+                case "vipBadge":       _editVipBadgeFile       = file; break;
+            }
+        }
+
+        using var stream = file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024);
+        using var ms = new System.IO.MemoryStream();
+        await stream.CopyToAsync(ms);
+        var base64 = Convert.ToBase64String(ms.ToArray());
+        _previewUrls[key] = $"data:{file.ContentType};base64,{base64}";
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string GetPreviewUrl(string field, bool isAdd)
+    {
+        var key = $"{(isAdd ? "add" : "edit")}_{field}";
+        return _previewUrls.TryGetValue(key, out var url) ? url : "";
+    }
+
+    private void SetColor(string color, bool isAdd)
+    {
+        if (isAdd) _addTextCardColor  = color;
+        else       _editTextCardColor = color;
+    }
+
+    private void SetCountry(string country, bool isAdd)
+    {
+        if (isAdd) _addMembershipCountry  = country;
+        else       _editMembershipCountry = country;
+    }
+
+    private async Task CancelEdit()
+    {
+        _showEditDialog = false;
+        _editingItem = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task AddTier()
+    {
+        var newItem = new MembershipTierItem(
+            $"TIER-{DateTime.Now:yyyyMMddHHmmss}",
+            _addName,
+            _addDescription,
+            _addDateStarted.ToString("yyyy-MM-dd"),
+            _addDateEnded.ToString("yyyy-MM-dd"),
+            _addUserCount,
+            _addVipCount,
+            DateTime.Now.ToString("MM/dd/yyyy")
+        )
+        {
+            TextCardColor     = _addTextCardColor,
+            MembershipCountry = _addMembershipCountry,
+        };
+
+        await OnAdd.InvokeAsync(newItem);
+        _showAddDialog = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SaveEdit()
+    {
+        if (_editingItem != null)
+        {
+            var updatedItem = new MembershipTierItem(
+                _editingItem.Code,
+                _editName,
+                _editDescription,
+                _editDateStarted.ToString("yyyy-MM-dd"),
+                _editDateEnded.ToString("yyyy-MM-dd"),
+                _editUserCount,
+                _editVipCount,
+                _editingItem.DateCreated
+            )
+            {
+                TextCardColor     = _editTextCardColor,
+                MembershipCountry = _editMembershipCountry,
+            };
+
+            await OnEdit.InvokeAsync(updatedItem);
+        }
+
+        _showEditDialog = false;
+        _editingItem = null;
+        await InvokeAsync(StateHasChanged);
+    }
+}

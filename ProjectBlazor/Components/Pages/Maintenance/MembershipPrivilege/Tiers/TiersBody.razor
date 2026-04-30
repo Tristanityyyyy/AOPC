@@ -1,0 +1,136 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+@using ProjectBlazor.Components.Shared
+@rendermode InteractiveServer
+
+<TiersHeader />
+
+<div class="col-span-12">
+    <DataTable T="MembershipTierItem"
+               Title="@TiersHeader.Title"
+               Items="Items"
+               Columns="Columns"
+               ButtonColor="@TiersHeader.ButtonColor"
+               HeaderGradient="@TiersHeader.HeaderGradient"
+               OnAddClick="OpenAdd" />
+</div>
+
+<TiersDialogs @ref="Dialogs" OnAdd="HandleAdd" OnEdit="HandleEdit" />
+
+@code {
+    public List<MembershipTierItem> Items { get; set; } = new();
+    public List<TableColumn<MembershipTierItem>> Columns { get; set; } = new();
+
+    public TiersHeader TiersHeader { get; set; } = new();
+    public TiersDialogs Dialogs { get; set; } = null!;
+
+    [Inject] private TiersService? TiersService { get; set; }
+
+    public async Task OpenAdd()
+    {
+        if (Dialogs != null)
+            await Dialogs.OpenAdd();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (TiersService != null)
+            {
+                var tiers = await TiersService.GetTiersAsync();
+
+                Items = tiers.Select(t => new MembershipTierItem(
+                    t.MembershipID,
+                    t.MembershipName,
+                    t.Description,
+                    t.DateStarted,
+                    t.DateEnded,
+                    t.UserCount,
+                    t.VipCount,
+                    t.DateCreated
+                )).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in OnInitializedAsync: {ex.Message}");
+        }
+
+        Columns = new List<TableColumn<MembershipTierItem>>
+        {
+            new() {
+                Header = "Name", Width = "200px", SortField = "Name",
+                RenderCell = item => __builder =>
+                {
+<div class="relative w-full" style="height:64px;">
+    <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:8px;">@item.Code</div>
+    <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 group-hover:translate-y-2" style="top:16px;">@item.Name</div>
+    <div class="absolute left-0 flex gap-2 transition-transform duration-200 group-hover:translate-y-2" style="top:36px;">
+        <button @onclick="async () => await Dialogs.OpenEdit(item)"
+                class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent"
+                style="color:@ThemeConfig.Colors.Primary;">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+        </button>
+        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+            <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+        </button>
+        <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
+            <MudIcon Icon="@Icons.Material.Filled.Visibility" Style="font-size:14px;" Color="Color.Inherit" /> View
+        </button>
+    </div>
+</div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Description", Width = "250px", SortField = "Description",
+                RenderCell = item => __builder => {
+<span class="text-gray-600">@item.Description</span>
+                ; }
+            },
+            new() {
+                Header = "Date Started", Width = "150px", SortField = "DateStarted",
+                RenderCell = item => __builder => {
+<span class="text-gray-600 whitespace-nowrap">@item.DateStarted</span>
+                ; }
+            },
+            new() {
+                Header = "Date Ended", Width = "150px", SortField = "DateEnded",
+                RenderCell = item => __builder => {
+<span class="text-gray-600 whitespace-nowrap">@item.DateEnded</span>
+                ; }
+            },
+            new() {
+                Header = "User Count", Width = "120px", SortField = "UserCount",
+                RenderCell = item => __builder => {
+<span class="text-gray-600">@item.UserCount</span>
+                ; }
+            },
+            new() {
+                Header = "VIP Count", Width = "120px", SortField = "VipCount",
+                RenderCell = item => __builder => {
+<span class="text-gray-600">@item.VipCount</span>
+                ; }
+            },
+            new() {
+                Header = "Date Created", Width = "150px", SortField = "DateCreated",
+                RenderCell = item => __builder => {
+<span class="text-gray-600 whitespace-nowrap">@item.DateCreated</span>
+                ; }
+            }
+        };
+    }
+
+    private async Task HandleAdd(MembershipTierItem item)
+    {
+        Items.Add(item);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleEdit(MembershipTierItem item)
+    {
+        var index = Items.FindIndex(i => i.Code == item.Code);
+        if (index >= 0) Items[index] = item;
+        await InvokeAsync(StateHasChanged);
+    }
+}

@@ -1,0 +1,161 @@
+@namespace ProjectBlazor.Components.Shared
+@typeparam T
+
+<div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="@ContainerStyle">
+    <DataTableHeader Title="@Title" HeaderGradient="@HeaderGradient" ToolbarButtons="@ToolbarButtons" />
+
+    <DataTableToolbar ShowImportExport="@ShowImportExport" 
+                      ButtonColor="@ButtonColor"
+                      ImportFileId="@ImportFileId"
+                      ImportedFileName="@ImportedFileName"
+                      OnImport="OnImport"
+                      OnImportButtonClick="OnImportButtonClick"
+                      OnExportTemplateClick="OnExportTemplateClick"
+                      @bind-PageSize="PageSize"
+                      @bind-SearchText="SearchText"
+                      OnPageSizeChange="OnPageSizeChange" />
+
+    @if (ShowAddButton)
+    {
+        <div class="mb-3 px-1">
+            <button type="button" @onclick="OnAddButtonClick" class="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-xs border-none cursor-pointer font-medium" style="background: @ButtonColor;">
+                + Add New
+            </button>
+        </div>
+    }
+    @if (AboveTableContent != null)
+    {
+        <div class="mb-3 px-1">@AboveTableContent</div>
+    }
+
+    <div class="overflow-y-auto" style="max-height: @TableHeight; @TableWrapperStyle">
+        <table class="text-xs" style="@TableStyle">
+            <thead style="position:sticky; top:0; background:white; z-index:1;">
+                <tr class="border-b-2 border-gray-200">
+                    @if (ColumnDefinitions != null)
+                    {
+                        @ColumnDefinitions
+                    }
+                    else if (ColumnsContent != null)
+                    {
+                        @ColumnsContent
+                    }
+                    else
+                    {
+                        @foreach (var col in Columns)
+                        {
+                            var sortField = col.SortField ?? "";
+                            <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" style="width: @col.Width;" @onclick="() => Sort(sortField)">
+                                @col.Header <span class="text-gray-400">@GetSortIcon(col.SortField)</span>
+                            </th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var (item, index) in PagedItems.Select((x, i) => (x, i)))
+                {
+                    <tr class="border-b border-gray-100 hover:bg-amber-50 group @(index % 2 == 0 ? "bg-white" : "bg-gray-50")">
+                        @if (RowDefinitions != null)
+                        {
+                            <CascadingValue Value="item">
+                                @RowDefinitions
+                            </CascadingValue>
+                        }
+                        else if (CellsContent != null)
+                        {
+                            <CascadingValue Value="item">
+                                <CascadingValue Value="index">
+                                    @CellsContent
+                                </CascadingValue>
+                            </CascadingValue>
+                        }
+                        else
+                        {
+                            @foreach (var col in Columns)
+                            {
+                                <td class="px-2" style="height: 72px; overflow: hidden; vertical-align: middle;">
+                                    @if (col.RenderCell != null)
+                                    {
+                                        @col.RenderCell(item)
+                                    }
+                                    else if (col.CellTemplate != null)
+                                    {
+                                        @col.CellTemplate(item)
+                                    }
+                                </td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <DataTableFooter ButtonColor="@ButtonColor" CurrentPage="@CurrentPage" TotalPages="@TotalPages" ShowingText="@ShowingText" OnGoToPage="GoToPage" />
+</div>
+
+@code {
+    private readonly string ImportFileId = $"importFile-{Guid.NewGuid().ToString("N")[..8]}";
+    public int TotalPages => (int)Math.Ceiling(FilteredItems.Count / (double)PageSize);
+
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public List<T> Items { get; set; } = new();
+    [Parameter] public List<TableColumn<T>> Columns { get; set; } = new();
+    [Parameter] public RenderFragment? ColumnsContent { get; set; }
+    [Parameter] public RenderFragment? CellsContent { get; set; }
+    [Parameter] public Func<T, bool>? ExternalFilter { get; set; }
+
+    public string CurrentSortField => _sortField;
+    public bool SortAscending => _sortAsc;
+
+    [Parameter] public bool ShowAddButton { get; set; } = true;
+    [Parameter] public string ButtonColor { get; set; } = "#3b82f6";
+    [Parameter] public string TableHeight { get; set; } = "560px";
+    [Parameter] public string ContainerStyle { get; set; } = "height:750px;";
+    [Parameter] public EventCallback OnAddClick { get; set; }
+    [Parameter] public EventCallback<int> OnPageSizeChange { get; set; }
+    [Parameter] public string? HeaderGradient { get; set; }
+    
+    [Parameter] public string TableWrapperStyle { get; set; } = "";
+    [Parameter] public string TableStyle { get; set; } = "width: 100%;";
+    [Parameter] public RenderFragment? AboveTableContent { get; set; }
+
+    [Parameter] public bool ShowImportExport { get; set; }
+    [Parameter] public string? ImportedFileName { get; set; }
+    [Parameter] public EventCallback<string> OnImport { get; set; }
+    [Parameter] public EventCallback OnImportButtonClick { get; set; }
+    [Parameter] public EventCallback OnExportTemplateClick { get; set; }
+    [Parameter] public RenderFragment? ToolbarButtons { get; set; }
+
+    [Parameter] public RenderFragment? ColumnDefinitions { get; set; }
+    [Parameter] public RenderFragment? RowDefinitions { get; set; }
+
+    [Parameter] public int PageSize { get; set; } = 10;
+    [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
+    [Parameter] public string SearchText { get; set; } = "";
+    [Parameter] public EventCallback<string> SearchTextChanged { get; set; }
+
+    private async Task OnAddButtonClick() => await OnAddClick.InvokeAsync();
+
+    private string _sortField = "";
+    private bool _sortAsc = true;
+    public int CurrentPage { get; set; } = 1;
+
+    private List<T> FilteredItems => Items.Where(item => (ExternalFilter == null || ExternalFilter(item)) && (string.IsNullOrWhiteSpace(SearchText) || ApplyFilter(item))).ToList();
+    private List<T> PagedItems => FilteredItems.Skip((CurrentPage - 1) * PageSize).Take(PageSize).ToList();
+    private int From => FilteredItems.Count == 0 ? 0 : (CurrentPage - 1) * PageSize + 1;
+    private int To => Math.Min(CurrentPage * PageSize, FilteredItems.Count);
+    private string ShowingText => $"Showing {From} to {To} of {FilteredItems.Count} entries";
+
+    private bool ApplyFilter(T item) => true;
+    private void Sort(string field)
+    {
+        if (string.IsNullOrEmpty(field)) return;
+        if (_sortField == field) _sortAsc = !_sortAsc;
+        else { _sortField = field; _sortAsc = true; }
+        CurrentPage = 1;
+    }
+    private string GetSortIcon(string? field) => field == _sortField ? (_sortAsc ? "▲" : "▼") : "";
+    private void GoToPage(int page) => CurrentPage = page;
+}
