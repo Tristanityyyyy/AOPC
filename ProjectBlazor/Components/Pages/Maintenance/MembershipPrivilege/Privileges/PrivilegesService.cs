@@ -17,6 +17,7 @@ public class PrivilegesService
         try
         {
             var response = await _http.GetAsync("api/ApiPrivilege/PrivilegeList");
+            
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -38,10 +39,10 @@ public class PrivilegeDto
     public string Title { get; set; } = "";
     public string Description { get; set; } = "";
     public string Validity { get; set; } = "";
-    public int NoExpiry { get; set; }
+    public int? NoExpiry { get; set; }
     public string ImgUrl { get; set; } = "";
     public string PrivilegeID { get; set; } = "";
-    public int IsVIP { get; set; }
+    public int? IsVIP { get; set; }
     public string? FeatureImg { get; set; }
     public string Tmc { get; set; } = "";
     public string? VendorID { get; set; }

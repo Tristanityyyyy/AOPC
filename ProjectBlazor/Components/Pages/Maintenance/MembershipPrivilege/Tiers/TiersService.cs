@@ -17,6 +17,7 @@ public class TiersService
         try
         {
             var response = await _http.GetAsync("api/ApiMembership/MembershipList");
+            
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();

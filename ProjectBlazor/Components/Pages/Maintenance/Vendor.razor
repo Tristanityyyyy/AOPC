@@ -1,4 +1,4 @@
-@page "/maintenance/vendor"
+﻿@page "/maintenance/vendor"
 @rendermode InteractiveServer
 @using ProjectBlazor.Components
 @using ProjectBlazor.Components.Shared
@@ -24,7 +24,7 @@
                 <button @onclick="ToggleViewMode"
                         class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-700 hover:bg-gray-50 transition font-medium">
                     @(_showInactive ? "View Active Vendor" : "View Inactive Vendor")
-                    <span>›</span>
+                    <span>ΓÇ║</span>
                 </button>
                 <button @onclick="ToggleFilter"
                         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-700 hover:bg-gray-50 transition">
@@ -63,7 +63,7 @@
     </div>
 </div>
 
-@* ── Add/Edit Vendor Dialog ── *@
+@* ΓöÇΓöÇ Add/Edit Vendor Dialog ΓöÇΓöÇ *@
 @if (_showAddVendorDialog || _showEditVendorDialog)
 {
     var isEdit = _showEditVendorDialog;
@@ -103,7 +103,7 @@
                         }
                         <div class="text-center">
                             <div class="text-xs font-medium text-gray-600">Upload Featured Image</div>
-                            <div class="text-gray-400 mt-0.5" style="font-size:9px;">JPEG · PNG · WEBP</div>
+                            <div class="text-gray-400 mt-0.5" style="font-size:9px;">JPEG ┬╖ PNG ┬╖ WEBP</div>
                         </div>
                     </div>
                     <InputFile OnChange="OnVendorFeaturedImageSelected" accept="image/*" class="hidden" />
@@ -129,7 +129,7 @@
                         }
                         <div class="text-center">
                             <div class="text-xs font-medium text-gray-600">Upload Logo</div>
-                            <div class="text-gray-400 mt-0.5" style="font-size:9px;">JPEG · PNG · WEBP</div>
+                            <div class="text-gray-400 mt-0.5" style="font-size:9px;">JPEG ┬╖ PNG ┬╖ WEBP</div>
                         </div>
                     </div>
                     <InputFile OnChange="OnVendorLogoSelected" accept="image/*" class="hidden" />
@@ -146,7 +146,7 @@
                             <button @onclick="() => RemoveGalleryImage(idx)"
                                     class="absolute flex items-center justify-center text-white border-none cursor-pointer"
                                     style="top:-5px; right:-5px; width:16px; height:16px; border-radius:50%; background:@ThemeConfig.Colors.Primary; font-size:9px;">
-                                ✕
+                                Γ£ò
                             </button>
                         </div>
                     }
@@ -185,7 +185,7 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-semibold text-gray-600">Address <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
                 <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" style="font-size:12px;">📍</span>
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" style="font-size:12px;">≡ƒôì</span>
                     <input type="text" @bind="_vendorAddress" class="w-full border rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-none"
                            style="border-color:@ThemeConfig.Colors.Background.WarningBorder; background:@ThemeConfig.Colors.Background.WarningLight;" />
                 </div>
@@ -245,7 +245,7 @@
                                           style="background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.25); color:@ThemeConfig.Colors.Text.LabelAccent; font-size:10px;">
                                         @bt
                                         <button @onclick="() => ToggleVendorBizType(bt, false)" class="bg-transparent border-none cursor-pointer leading-none"
-                                                style="color:@ThemeConfig.Colors.Text.LabelAccent; font-size:11px;">×</button>
+                                                style="color:@ThemeConfig.Colors.Text.LabelAccent; font-size:11px;">├ù</button>
                                     </span>
                                 }
                             </div>
@@ -311,7 +311,7 @@
                 </div>
                 ;
             }
-        },                                          // ← comma here
+        },                                          // ΓåÉ comma here
         new() {
             Header = "Name", Width = "18%", SortField = "Name",
             RenderCell = item => __builder => {
@@ -349,7 +349,7 @@
             </div>
                             ;
                         }
-                    },                                          // ← comma here, then add remaining columns below
+                    },                                          // ΓåÉ comma here, then add remaining columns below
                     new() {
                         Header = "Email", Width = "20%", SortField = "Email",
                         RenderCell = item => __builder => {
@@ -378,8 +378,8 @@
             <span class="text-gray-600 whitespace-nowrap">@item.DateCreated.ToString("M/d/yyyy")</span>
             ; }
                     }
-                };                                              // ← closes _vendorColumns = new List<>
-    }                                                   // ← closes OnInitialized()
+                };                                              // ΓåÉ closes _vendorColumns = new List<>
+    }                                                   // ΓåÉ closes OnInitialized()
 
     private string? _uploadedFileName;
 
@@ -425,13 +425,13 @@
         else { _vendorSortCol = col; _vendorSortAsc = true; }
         _vendorPage = 1;
     }
-    private string VendorSortIcon(string col) => _vendorSortCol == col ? (_vendorSortAsc ? "↑" : "↓") : "⇅";
+    private string VendorSortIcon(string col) => _vendorSortCol == col ? (_vendorSortAsc ? "Γåæ" : "Γåô") : "Γçà";
 
     private List<VendorItem> _vendorItems = new()
 {
     new("Vendor-001", null, "Kahve Lounge",                                 "",                                      "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,9,3)),
     new("Vendor-001",null, "Toro Latin Gastro Bar",                        "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
-    new("Vendor-001",null, "SAX Türkiye",                                  "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
+    new("Vendor-001",null, "SAX T├╝rkiye",                                  "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
     new("Vendor-001",null, "Scalini Istanbul",                             "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
     new("Vendor-001",null, "1860 Lounge",                                  "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
     new("Vendor-001",null, "Kocatas Patisserie",                           "restaurant-istanbul@sixsenses.com",     "Istanbul",                   "Food & Beverages", "ACTIVE",   new DateTime(2025,8,5)),
@@ -526,7 +526,7 @@
         _vendorPage = 1;
     }
 
-    // ── VENDOR DIALOG STATE ──
+    // ΓöÇΓöÇ VENDOR DIALOG STATE ΓöÇΓöÇ
     private bool _showAddVendorDialog = false;
     private bool _showEditVendorDialog = false;
     private VendorItem? _editingVendor;
