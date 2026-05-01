@@ -1,10 +1,10 @@
-﻿@* Components/Shared/DialogModal.razor *@
+@* Components/Shared/DialogModal.razor *@
 @using MudBlazor
 
 @if (IsVisible)
 {
-    <div class="fixed inset-0 flex @PositionClass z-[100]"
-         style="background: rgba(0,0,0,0.4); @PaddingStyle">
+    <div class="fixed inset-0 flex @PositionClass"
+         style="z-index: 9999; background: rgba(0,0,0,0.4); @PaddingStyle">
         <div class="bg-white rounded-xl shadow-2xl w-full @MaxWidthClass flex flex-col"
              style="max-height: 90vh;">
 
@@ -55,6 +55,8 @@
         "sm" => "max-w-sm",
         "lg" => "max-w-lg",
         "2xl" => "max-w-2xl",
+        "3xl" => "max-w-3xl",  
+        "4xl" => "max-w-4xl", 
         _ => "max-w-md"
     };
 

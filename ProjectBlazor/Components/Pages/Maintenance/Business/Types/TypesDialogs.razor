@@ -1,13 +1,15 @@
 @namespace ProjectBlazor.Components.Pages.Maintenance.Business.Types
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components.Shared.Table
+@rendermode InteractiveServer
 
 @if (ShowEditDialog)
 {
     <DialogModal IsVisible="ShowEditDialog"
                Title="Edit Business Type"
                Icon="@Icons.Material.Filled.Category"
-               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               HeaderGradient="@TypesBodyRef.TypesHeader.HeaderGradient"
                OnClose="CancelEdit">
         <ChildContent>
             <FormField Label="Profile Picture">
@@ -40,7 +42,7 @@
     <DialogModal IsVisible="ShowAddDialog"
                Title="Add Business Type"
                Icon="@Icons.Material.Filled.AddBusiness"
-               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               HeaderGradient="@TypesBodyRef.TypesHeader.HeaderGradient"
                OnClose="() => ShowAddDialog = false">
         <ChildContent>
             <FormField Label="Profile Picture">
@@ -69,7 +71,9 @@
 }
 
 @code {
-    [CascadingParameter] public TypesBody? TypesBody { get; set; }
+    [Parameter] public TypesBody? TypesBodyRef { get; set; }
+    
+    private TypesBody? TypesBody => TypesBodyRef;
 
     public bool ShowEditDialog { get; set; }
     public bool ShowAddDialog { get; set; }
@@ -81,6 +85,7 @@
     {
         AddImageUrl = ""; AddTypeName = ""; AddTypeDescription = ""; AddTypePromo = "";
         ShowAddDialog = true;
+        StateHasChanged();
     }
 
     private void Add()
@@ -104,6 +109,7 @@
         EditTypeDescription = item.Description;
         EditTypePromo = item.Promo;
         ShowEditDialog = true;
+        StateHasChanged();
     }
 
     private void SaveEdit()

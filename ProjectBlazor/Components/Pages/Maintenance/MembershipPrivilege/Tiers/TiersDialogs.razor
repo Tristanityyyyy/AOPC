@@ -1,6 +1,7 @@
-﻿@namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+@namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components.Shared.Table
 @using ProjectBlazor.Components
 
 @if (_showAddDialog)
@@ -8,7 +9,7 @@
     <DialogModal IsVisible="_showAddDialog"
                  Title="Membership Tier Form"
                  Icon="@Icons.Material.Filled.CardMembership"
-                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 HeaderGradient="@HeaderGradient"
                  MaxWidth="2xl"
                  CenterVertically="true"
                  OnClose="() => _showAddDialog = false">
@@ -36,7 +37,7 @@
     <DialogModal IsVisible="_showEditDialog"
                  Title="Membership Tier Form"
                  Icon="@Icons.Material.Filled.CardMembership"
-                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 HeaderGradient="@HeaderGradient"
                  MaxWidth="2xl"
                  CenterVertically="true"
                  OnClose="CancelEdit">
@@ -107,6 +108,7 @@
     // ── Parameters ─────────────────────────────────────────────────────────────
     [Parameter] public EventCallback<MembershipTierItem> OnAdd { get; set; }
     [Parameter] public EventCallback<MembershipTierItem> OnEdit { get; set; }
+    [Parameter] public string HeaderGradient { get; set; } = "";
 
     // ── Public API (called via @ref) ───────────────────────────────────────────
     public async Task OpenAdd()
@@ -152,13 +154,13 @@
         int userCount, int vipCount,
         bool isAdd) => __builder =>
     {
-        <div class="grid grid-cols-4 gap-4 mb-4">
+        <div class="grid grid-cols-4 gap-2 mb-4">
             @foreach (var (label, field) in new[]
             {
-                ("Upload Membership Card Here", "membershipCard"),
-                ("Upload VIP Card Here",        "vipCard"),
-                ("Upload QR Code Frame Here",   "qrCodeFrame"),
-                ("Upload VIP Badge Here",       "vipBadge"),
+                ("Upload Membership Card", "membershipCard"),
+                ("Upload VIP Card",        "vipCard"),
+                ("Upload QR Code Frame",   "qrCodeFrame"),
+                ("Upload VIP Badge",       "vipBadge"),
             })
             {
                 <div class="flex flex-col items-center">

@@ -1,13 +1,14 @@
 @namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Privileges
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components.Shared.Table
 @using ProjectBlazor.Components
 @using ProjectBlazor.Components.Pages.Maintenance.Business.Types
 
 <DialogModal IsVisible="IsVisible"
              Title="Add Privilege"
              Icon="@Icons.Material.Filled.CardGiftcard"
-             HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+             HeaderGradient="@HeaderGradient"
              OnClose="() => OnClose.InvokeAsync()">
     <ChildContent>
         <FormGrid Columns="2">
@@ -63,7 +64,7 @@
     <DialogModal IsVisible="true"
                  Title="Edit Privilege"
                  Icon="@Icons.Material.Filled.CardGiftcard"
-                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 HeaderGradient="@HeaderGradient"
                  OnClose="CancelEdit">
         <ChildContent>
             <FormGrid Columns="2">
@@ -120,6 +121,7 @@
     [Parameter] public EventCallback<PrivilegeItem> OnAdd { get; set; }
     [Parameter] public EventCallback<PrivilegeItem> OnEdit { get; set; }
     [Parameter] public List<BusinessTypeDto> BusinessTypes { get; set; } = new();
+    [Parameter] public string HeaderGradient { get; set; } = "";
 
     private bool _showEditDialog;
     private PrivilegeItem? _editingItem;

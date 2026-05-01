@@ -1,13 +1,15 @@
 @namespace ProjectBlazor.Components.Pages.Maintenance.Business.Hotels
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components.Shared.Table
+@rendermode InteractiveServer
 
 @if (ShowEditDialog)
 {
     <DialogModal IsVisible="ShowEditDialog"
                Title="Edit Hotel"
                Icon="@Icons.Material.Filled.Hotel"
-               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               HeaderGradient="@HotelsBodyRef.HotelsHeader.HeaderGradient"
                MaxWidth="2xl"
                OnClose="CancelEdit">
         <ChildContent>
@@ -67,7 +69,7 @@
     <DialogModal IsVisible="ShowAddDialog"
                Title="Add Hotel"
                Icon="@Icons.Material.Filled.AddHome"
-               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               HeaderGradient="@HotelsBodyRef.HotelsHeader.HeaderGradient"
                MaxWidth="2xl"
                OnClose="() => ShowAddDialog = false">
         <ChildContent>
@@ -123,7 +125,9 @@
 }
 
 @code {
-    [CascadingParameter] public HotelsBody? HotelsBody { get; set; }
+    [Parameter] public HotelsBody? HotelsBodyRef { get; set; }
+    
+    private HotelsBody? HotelsBody => HotelsBodyRef;
 
     public bool ShowEditDialog { get; set; }
     public bool ShowAddDialog { get; set; }
@@ -143,6 +147,7 @@
         AddHotelAddress = ""; AddHotelContactNo = ""; AddHotelEmail = ""; AddHotelUrl = "";
         AddHotelDescription = ""; AddHotelServices = ""; AddHotelMap = "";
         ShowAddDialog = true;
+        StateHasChanged();
     }
 
     private void Add()
@@ -177,6 +182,7 @@
         EditHotelServices = "";
         EditHotelMap = "";
         ShowEditDialog = true;
+        StateHasChanged();
     }
 
     private void SaveEdit()

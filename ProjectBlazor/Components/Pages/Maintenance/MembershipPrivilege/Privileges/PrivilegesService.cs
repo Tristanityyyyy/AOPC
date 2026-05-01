@@ -21,8 +21,32 @@ public class PrivilegesService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var data = JsonSerializer.Deserialize<List<PrivilegeDto>>(content, _options);
-                return data ?? new List<PrivilegeDto>();
+                Console.WriteLine($"Privileges API Response: {content.Substring(0, Math.Min(500, content.Length))}...");
+                
+                // Try direct array first
+                try
+                {
+                    var data = JsonSerializer.Deserialize<List<PrivilegeDto>>(content, _options);
+                    if (data != null && data.Count > 0)
+                    {
+                        Console.WriteLine($"Privileges: Successfully parsed {data.Count} items");
+                        return data;
+                    }
+                }
+                catch
+                {
+                    // Try wrapped response
+                    var wrappedData = JsonSerializer.Deserialize<ApiResponse>(content, _options);
+                    if (wrappedData?.Data != null)
+                    {
+                        Console.WriteLine($"Privileges: Successfully parsed {wrappedData.Data.Count} items from wrapped response");
+                        return wrappedData.Data;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Privileges API error: {response.StatusCode}");
             }
         }
         catch (Exception ex)
@@ -53,4 +77,9 @@ public class PrivilegeDto
     public string DateCreated { get; set; } = "";
     public string Mechanics { get; set; } = "";
     public string? Active { get; set; }
+}
+
+public class ApiResponse
+{
+    public List<PrivilegeDto>? Data { get; set; }
 }

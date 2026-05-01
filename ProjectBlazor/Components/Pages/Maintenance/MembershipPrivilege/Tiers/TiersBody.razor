@@ -1,6 +1,5 @@
 @namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
 @using ProjectBlazor.Components.Shared
-@rendermode InteractiveServer
 
 <TiersHeader />
 
@@ -14,7 +13,7 @@
                OnAddClick="OpenAdd" />
 </div>
 
-<TiersDialogs @ref="Dialogs" OnAdd="HandleAdd" OnEdit="HandleEdit" />
+<TiersDialogs @ref="Dialogs" OnAdd="HandleAdd" OnEdit="HandleEdit" HeaderGradient="@TiersHeader.HeaderGradient" />
 
 @code {
     public List<MembershipTierItem> Items { get; set; } = new();

@@ -1,7 +1,6 @@
 @namespace ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Privileges
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Pages.Maintenance.Business.Types
-@rendermode InteractiveServer
 
 <PrivilegesHeader />
 
@@ -22,6 +21,7 @@
         OnAdd="HandleAdd" 
         OnEdit="HandleEdit" 
         BusinessTypes="BusinessTypes"
+        HeaderGradient="@PrivilegesHeader.HeaderGradient"
         OnClose="() => _showAddDialog = false" />
 }
 
@@ -32,6 +32,7 @@
         OnAdd="HandleAdd" 
         OnEdit="HandleEdit" 
         BusinessTypes="BusinessTypes"
+        HeaderGradient="@PrivilegesHeader.HeaderGradient"
         OnClose="() => { _showEditDialog = false; _editingItem = null; }" />
 }
 

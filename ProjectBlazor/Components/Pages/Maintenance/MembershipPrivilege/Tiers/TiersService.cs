@@ -21,8 +21,32 @@ public class TiersService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var data = JsonSerializer.Deserialize<List<MembershipTierDto>>(content, _options);
-                return data ?? new List<MembershipTierDto>();
+                Console.WriteLine($"Tiers API Response: {content.Substring(0, Math.Min(500, content.Length))}...");
+                
+                // Try direct array first
+                try
+                {
+                    var data = JsonSerializer.Deserialize<List<MembershipTierDto>>(content, _options);
+                    if (data != null && data.Count > 0)
+                    {
+                        Console.WriteLine($"Tiers: Successfully parsed {data.Count} items");
+                        return data;
+                    }
+                }
+                catch
+                {
+                    // Try wrapped response
+                    var wrappedData = JsonSerializer.Deserialize<ApiResponse>(content, _options);
+                    if (wrappedData?.Data != null)
+                    {
+                        Console.WriteLine($"Tiers: Successfully parsed {wrappedData.Data.Count} items from wrapped response");
+                        return wrappedData.Data;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Tiers API error: {response.StatusCode}");
             }
         }
         catch (Exception ex)
@@ -51,4 +75,9 @@ public class MembershipTierDto
     public string DateEnded { get; set; } = "";
     public string Status { get; set; } = "";
     public string Country { get; set; } = "";
+}
+
+public class ApiResponse
+{
+    public List<MembershipTierDto>? Data { get; set; }
 }

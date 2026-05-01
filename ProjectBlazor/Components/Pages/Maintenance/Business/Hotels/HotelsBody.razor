@@ -15,9 +15,7 @@
                OnAddClick="OpenAdd" />
 </div>
 
-<CascadingValue Value="this">
-    <HotelsDialogs @ref="Dialogs" />
-</CascadingValue>
+<HotelsDialogs @ref="Dialogs" HotelsBodyRef="this" />
 
 @code {
     [Parameter] public List<HotelItem> Items { get; set; } = new();
@@ -29,7 +27,23 @@
 
     [Inject] private HotelsService? HotelsService { get; set; }
 
-    public void OpenAdd() => Dialogs.OpenAdd();
+    public void OpenAdd()
+    {
+        if (Dialogs != null)
+        {
+            Dialogs.OpenAdd();
+            StateHasChanged();
+        }
+    }
+
+    public void OpenEdit(HotelItem item)
+    {
+        if (Dialogs != null)
+        {
+            Dialogs.OpenEdit(item);
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +73,7 @@
                             <div class="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mb-1">@item.Code</div>
                             <div class="font-medium text-gray-700 -mt-1 transition-transform duration-200 group-hover:translate-y-2">@item.Name</div>
                             <div class="flex gap-2 mt-1 transition-transform duration-200 group-hover:translate-y-2">
-                                <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <button @onclick="() => OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
                                     <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
                                 </button>
                                 <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">

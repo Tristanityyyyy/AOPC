@@ -24,9 +24,7 @@
                OnAddClick="OpenAdd" />
 </div>
 
-<CascadingValue Value="this">
-    <LocationsDialogs @ref="Dialogs" />
-</CascadingValue>
+<LocationsDialogs @ref="Dialogs" LocationsBodyRef="this" />
 
 @code {
     private bool _initCalled = false;
@@ -49,7 +47,23 @@
         Console.WriteLine("LocationsBody constructor called");
     }
 
-    public void OpenAdd() => Dialogs.OpenAdd();
+    public void OpenAdd()
+    {
+        if (Dialogs != null)
+        {
+            Dialogs.OpenAdd();
+            StateHasChanged();
+        }
+    }
+
+    public void OpenEdit(LocationItem item)
+    {
+        if (Dialogs != null)
+        {
+            Dialogs.OpenEdit(item);
+            StateHasChanged();
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -107,7 +121,7 @@
                             <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:8px;">@item.Code</div>
                             <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 group-hover:translate-y-2" style="top:16px;">@item.Name</div>
                             <div class="absolute left-0 flex gap-2 transition-transform duration-200 group-hover:translate-y-2" style="top:36px;">
-                                <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <button @onclick="() => OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
                                     <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
                                 </button>
                                 <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">

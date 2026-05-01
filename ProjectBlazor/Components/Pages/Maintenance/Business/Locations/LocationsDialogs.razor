@@ -1,13 +1,43 @@
 @namespace ProjectBlazor.Components.Pages.Maintenance.Business.Locations
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components.Shared.Table
+@rendermode InteractiveServer
+
+@if (ShowAddDialog)
+{
+    <DialogModal IsVisible="@ShowAddDialog"
+               Title="Add Business Location"
+               Icon="@Icons.Material.Filled.AddLocation"
+               HeaderGradient="@LocationsBodyRef.LocationsHeader.HeaderGradient"
+               CenterVertically="true"
+               OnClose="() => ShowAddDialog = false">
+        <ChildContent>
+            <FormField Label="Name" Required>
+                <TextInput @bind-Value="AddName" Placeholder="Enter location name" />
+            </FormField>
+            <FormField Label="Postal Code">
+                <TextInput @bind-Value="AddPostalCode" Placeholder="Enter postal code" />
+            </FormField>
+            <FormField Label="Country" Required>
+                <TextInput @bind-Value="AddCountry" Placeholder="Enter country" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Location"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => ShowAddDialog = false"
+                          OnConfirm="Add" />
+        </FooterContent>
+    </DialogModal>
+}
 
 @if (ShowEditDialog)
 {
     <DialogModal IsVisible="ShowEditDialog"
                Title="Edit Business Location"
                Icon="@Icons.Material.Filled.LocationOn"
-               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+               HeaderGradient="@LocationsBodyRef.LocationsHeader.HeaderGradient"
                CenterVertically="true"
                OnClose="CancelEdit">
         <ChildContent>
@@ -30,39 +60,10 @@
     </DialogModal>
 }
 
-@if (ShowAddDialog)
-{
-    <DialogModal IsVisible="ShowAddDialog"
-               Title="Add Business Location"
-               Icon="@Icons.Material.Filled.AddLocation"
-               HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
-               CenterVertically="true"
-               OnClose="() => ShowAddDialog = false">
-
-        <ChildContent>
-            <FormField Label="Name" Required>
-                <TextInput @bind-Value="AddName" Placeholder="Enter location name" />
-            </FormField>
-            <FormField Label="Postal Code">
-                <TextInput @bind-Value="AddPostalCode" Placeholder="Enter postal code" />
-            </FormField>
-            <FormField Label="Country" Required>
-                <TextInput @bind-Value="AddCountry" Placeholder="Enter country" />
-            </FormField>
-        </ChildContent>
-
-        <FooterContent>
-            <DialogFooter ConfirmText="Add Location"
-                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
-                          OnCancel="() => ShowAddDialog = false"
-                          OnConfirm="Add" />
-        </FooterContent>
-
-    </DialogModal>
-}
-
 @code {
-    [CascadingParameter] public LocationsBody? LocationsBody { get; set; }
+    [Parameter] public LocationsBody? LocationsBodyRef { get; set; }
+    
+    private LocationsBody? LocationsBody => LocationsBodyRef;
 
     public bool ShowEditDialog { get; set; }
     public bool ShowAddDialog { get; set; }
@@ -70,7 +71,7 @@
     private string EditName = "", EditPostalCode = "", EditCountry = "";
     private string AddName = "", AddPostalCode = "", AddCountry = "";
 
-    public void OpenAdd() { AddName = ""; AddPostalCode = ""; AddCountry = ""; ShowAddDialog = true; }
+    public void OpenAdd() { AddName = ""; AddPostalCode = ""; AddCountry = ""; ShowAddDialog = true; StateHasChanged(); }
 
     private void Add()
     {
@@ -78,7 +79,7 @@
         ShowAddDialog = false;
     }
 
-    public void OpenEdit(LocationItem item) { EditingItem = item; EditName = item.Name; EditPostalCode = item.PostalCode; EditCountry = item.Country; ShowEditDialog = true; }
+    public void OpenEdit(LocationItem item) { EditingItem = item; EditName = item.Name; EditPostalCode = item.PostalCode; EditCountry = item.Country; ShowEditDialog = true; StateHasChanged(); }
 
     private void SaveEdit()
     {
