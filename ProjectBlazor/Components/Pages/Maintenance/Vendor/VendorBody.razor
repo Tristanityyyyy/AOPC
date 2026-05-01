@@ -1,0 +1,212 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Vendor
+@using ProjectBlazor.Components.Shared
+
+<VendorHeader />
+
+<div class="col-span-12">
+    <DataTable T="VendorItem"
+               Title="@VendorHeader.Title"
+               Items="FilteredVendorItems.ToList()"
+               Columns="Columns"
+               ButtonColor="@VendorHeader.ButtonColor"
+               HeaderGradient="@VendorHeader.HeaderGradient"
+               ShowImportExport="true"
+               ImportedFileName="@UploadedFileName"
+               OnAddClick="OpenAdd"
+               OnImport="HandleFileUpload"
+               OnImportButtonClick="HandleImportClick"
+               OnExportTemplateClick="HandleExportTemplate">
+        <ToolbarButtons>
+            <button @onclick="ToggleViewMode"
+                    class="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-700 hover:bg-gray-50 transition font-medium">
+                @(ShowInactive ? "View Active Vendor" : "View Inactive Vendor")
+                <span>│</span>
+            </button>
+            <button @onclick="ToggleFilter"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-gray-300 cursor-pointer bg-white text-gray-700 hover:bg-gray-50 transition">
+                <MudIcon Icon="@Icons.Material.Filled.FilterList" Style="font-size:13px;" />
+                Filter By Business Type
+            </button>
+            @if (ShowFilter)
+            {
+                <div class="absolute right-0 top-8 z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-72 mt-8">
+                    <div class="flex flex-col gap-2 mb-3">
+                        @foreach (var bt in BusinessTypes)
+                        {
+                            <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
+                                <input type="checkbox"
+                                       checked="@SelectedBusinessTypes.Contains(bt)"
+                                       @onchange="e => ToggleBusinessType(bt, (bool)e.Value)" />
+                                @bt
+                            </label>
+                        }
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                        <button @onclick="ClearFilter"
+                                class="px-3 py-1 text-xs text-gray-600 cursor-pointer border-none bg-transparent hover:text-gray-900">
+                            Clear
+                        </button>
+                        <button @onclick="ToggleFilter"
+                                class="px-3 py-1 text-xs text-white rounded cursor-pointer border-none"
+                                style="background:@ThemeConfig.Colors.Primary;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            }
+        </ToolbarButtons>
+    </DataTable>
+</div>
+
+<VendorDialogs @ref="Dialogs" VendorBodyRef="this" BusinessTypes="BusinessTypes" />
+
+@code {
+    [Parameter] public List<VendorItem> Items { get; set; } = new();
+    [Parameter] public List<TableColumn<VendorItem>> Columns { get; set; } = new();
+
+    public VendorDialogs Dialogs { get; set; } = null!;
+    public VendorHeader VendorHeader { get; set; } = new();
+
+    [Inject] private VendorService? VendorService { get; set; }
+
+    public bool ShowInactive { get; set; } = false;
+    public bool ShowFilter { get; set; } = false;
+    public HashSet<string> SelectedBusinessTypes { get; set; } = new();
+    public List<string> BusinessTypes { get; set; } = new()
+    {
+        "Rooms & Suites Oman", "Food & Beverages Oman", "Wellness Oman",
+        "International Privileges Oman", "Alfardan Jewellery Oman",
+        "International Privileges", "Alfardan Jewellery", "Rooms & Suites",
+        "Shops", "Wellness", "Access to co-working spaces", "Food & Beverages", "Health"
+    };
+
+    private string? UploadedFileName { get; set; }
+
+    public void OpenAdd() => Dialogs?.OpenAdd();
+
+    public void ToggleViewMode()
+    {
+        ShowInactive = !ShowInactive;
+    }
+
+    public void ToggleFilter() => ShowFilter = !ShowFilter;
+
+    public void ToggleBusinessType(string bt, bool selected)
+    {
+        if (selected) SelectedBusinessTypes.Add(bt);
+        else SelectedBusinessTypes.Remove(bt);
+    }
+
+    public void ClearFilter()
+    {
+        SelectedBusinessTypes.Clear();
+    }
+
+    public IEnumerable<VendorItem> FilteredVendorItems
+    {
+        get
+        {
+            var statusFilter = ShowInactive ? "INACTIVE" : "ACTIVE";
+            return Items.Where(x =>
+                x.Status == statusFilter &&
+                (SelectedBusinessTypes.Count == 0 || SelectedBusinessTypes.Contains(x.BusinessType)));
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (VendorService != null)
+            {
+                var vendors = await VendorService.GetVendorsAsync();
+                Items = vendors.Select(v => new VendorItem(
+                    v.VendorID,
+                    v.VendorName,
+                    v.FeatureImg,
+                    v.BusinessTypeName ?? "",
+                    v.City ?? v.Location ?? "",
+                    v.Cno,
+                    v.Email,
+                    v.WebsiteUrl,
+                    v.Description,
+                    v.DateCreated,
+                    v.Status
+                )).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in OnInitializedAsync: {ex.Message}");
+        }
+
+        Columns = new List<TableColumn<VendorItem>>
+        {
+            new() {
+                Header = "", Width = "5%",
+                RenderCell = item => __builder => {
+                    <div class="w-10 h-10 rounded overflow-hidden flex-shrink-0 flex items-center justify-center pointer-events-none"
+                         style="background:@ThemeConfig.Colors.Background.Alt;">
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" alt="@item.Name" class="w-full h-full object-cover" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Store" Style="@($"font-size:16px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                        }
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Name", Width = "18%", SortField = "Name",
+                RenderCell = item => __builder => {
+                    <div class="relative w-full" style="height:72px;">
+                        <div class="absolute left-0 text-gray-400 text-xs mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:4px;">@item.Code</div>
+                        <div class="absolute left-0 font-medium mt-2 text-gray-700 transition-transform duration-200 group-hover:translate-y-3" style="top:8px;">@item.Name</div>
+                        <div class="absolute left-0 flex gap-2 my-2 transition-transform duration-200 group-hover:translate-y-3" style="top:28px;">
+                            <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-500">
+                                <MudIcon Icon="@Icons.Material.Filled.Block" Style="font-size:14px;" Color="Color.Inherit" /> Deactivate
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="font-size:14px;" Color="Color.Inherit" /> Duplicate
+                            </button>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Email", Width = "20%", SortField = "Email",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.Email</span>; }
+            },
+            new() {
+                Header = "Business Address", Width = "35%", SortField = "Location",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.Location</span>; }
+            },
+            new() {
+                Header = "Status", Width = "8%", SortField = "Status",
+                RenderCell = item => __builder => {
+                    <span class="@(item.Status == "ACTIVE" ? "text-green-600 font-medium" : "text-gray-500")">@item.Status</span>;
+                }
+            },
+            new() {
+                Header = "Date Created", Width = "14%", SortField = "DateCreated",
+                RenderCell = item => __builder => { <span class="text-gray-600 whitespace-nowrap">@item.DateCreated</span>; }
+            }
+        };
+    }
+
+    private async Task HandleFileUpload(string fileName)
+    {
+        UploadedFileName = fileName;
+        await Task.CompletedTask;
+    }
+
+    private Task HandleImportClick() => Task.CompletedTask;
+    private Task HandleExportTemplate() => Task.CompletedTask;
+}

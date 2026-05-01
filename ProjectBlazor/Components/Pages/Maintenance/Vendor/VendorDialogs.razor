@@ -1,0 +1,366 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Vendor
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components.Shared.Table
+@using ProjectBlazor.Components
+@rendermode InteractiveServer
+
+@if (ShowAddDialog || ShowEditDialog)
+{
+    var isEdit = ShowEditDialog;
+    <DialogModal IsVisible="ShowAddDialog || ShowEditDialog"
+                 Title="@(isEdit ? "Edit Vendor" : "Add Vendor")"
+                 Icon="@Icons.Material.Filled.Store"
+                 HeaderGradient="@VendorBodyRef.VendorHeader.HeaderGradient"
+                 MaxWidth="2xl"
+                 OnClose="CloseDialog">
+        <ChildContent>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-xs font-semibold tracking-widest uppercase"
+                      style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">
+                    Media Assets
+                </span>
+                <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <label class="cursor-pointer group">
+                    <div class="border-2 border-dashed rounded-xl p-4 flex flex-col items-center gap-3 transition-all hover:border-amber-400"
+                         style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle; min-height:120px; justify-content:center; position:relative;">
+                        <div class="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded"
+                             style="background:rgba(201,168,76,0.12); color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:0.5px;">
+                            FEATURED
+                        </div>
+                        @if (!string.IsNullOrEmpty(FeaturedImageUrl))
+                        {
+                            <img src="@FeaturedImageUrl" class="w-14 h-14 rounded-full object-cover" style="border:2px solid rgba(201,168,76,0.3);" />
+                        }
+                        else
+                        {
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                                 style="background:rgba(201,168,76,0.1); border:1.5px solid rgba(201,168,76,0.2);">
+                                <MudIcon Icon="@Icons.Material.Filled.AddPhotoAlternate" Style="@($"font-size:18px; color:{ThemeConfig.Colors.Primary};")" />
+                            </div>
+                        }
+                        <div class="text-center">
+                            <div class="text-xs font-medium text-gray-600">Upload Featured Image</div>
+                            <div class="text-gray-400 mt-0.5" style="font-size:9px;">JPEG · PNG · WEBP</div>
+                        </div>
+                    </div>
+                    <InputFile OnChange="OnFeaturedImageSelected" accept="image/*" class="hidden" />
+                </label>
+
+                <label class="cursor-pointer group">
+                    <div class="border-2 border-dashed rounded-xl p-4 flex flex-col items-center gap-3 transition-all hover:border-amber-400"
+                         style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle; min-height:120px; justify-content:center; position:relative;">
+                        <div class="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded"
+                             style="background:rgba(13,27,42,0.07); color:@ThemeConfig.Colors.Text.Primary; font-size:9px; letter-spacing:0.5px;">
+                            LOGO
+                        </div>
+                        @if (!string.IsNullOrEmpty(LogoUrl))
+                        {
+                            <img src="@LogoUrl" class="w-14 h-14 rounded-lg object-cover" style="border:2px solid rgba(201,168,76,0.3);" />
+                        }
+                        else
+                        {
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center"
+                                 style="background:rgba(13,27,42,0.05); border:1.5px solid rgba(13,27,42,0.12);">
+                                <MudIcon Icon="@Icons.Material.Filled.Image" Style="@($"font-size:18px; color:{ThemeConfig.Colors.Text.Muted};")" />
+                            </div>
+                        }
+                        <div class="text-center">
+                            <div class="text-xs font-medium text-gray-600">Upload Logo</div>
+                            <div class="text-gray-400 mt-0.5" style="font-size:9px;">JPEG · PNG · WEBP</div>
+                        </div>
+                    </div>
+                    <InputFile OnChange="OnLogoSelected" accept="image/*" class="hidden" />
+                </label>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="text-xs font-semibold text-gray-500" style="font-size:10px;">Gallery Images</div>
+                <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                    @foreach (var (img, idx) in GalleryImages.Select((x, i) => (x, i)))
+                    {
+                        <div class="relative flex-shrink-0">
+                            <img src="@img" class="w-14 h-14 rounded-lg object-cover" style="border:1px solid @ThemeConfig.Colors.Border.Light;" />
+                            <button @onclick="() => RemoveGalleryImage(idx)"
+                                    class="absolute flex items-center justify-center text-white border-none cursor-pointer"
+                                    style="top:-5px; right:-5px; width:16px; height:16px; border-radius:50%; background:@ThemeConfig.Colors.Primary; font-size:9px;">
+                                ×
+                            </button>
+                        </div>
+                    }
+                    <label class="flex-shrink-0 cursor-pointer">
+                        <div class="w-14 h-14 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-0.5 transition-all hover:border-amber-400"
+                             style="border-color:@ThemeConfig.Colors.Border.Light; background:@ThemeConfig.Colors.Background.Subtle;">
+                            <span class="text-gray-400 font-light" style="font-size:20px; line-height:1;">+</span>
+                            <span class="text-gray-400" style="font-size:8px;">Add</span>
+                        </div>
+                        <InputFile OnChange="OnGallerySelected" accept="image/*" multiple class="hidden" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-xs font-semibold tracking-widest uppercase" style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">Basic Info</span>
+                <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Vendor Name <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <input type="text" @bind="VendorName" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Contact Number <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <input type="text" @bind="ContactNumber" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" placeholder="+1 234 567 8900" />
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold text-gray-600">Description <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                <textarea @bind="Description" rows="4" class="border border-gray-300 rounded-lg px-3 py-2 text-xs resize-y focus:outline-none focus:border-amber-400"></textarea>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-semibold text-gray-600">Address <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" style="font-size:12px;">📍</span>
+                    <input type="text" @bind="Address" class="w-full border rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-none"
+                           style="border-color:@ThemeConfig.Colors.Background.WarningBorder; background:@ThemeConfig.Colors.Background.WarningLight;" />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-xs font-semibold tracking-widest uppercase" style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">Contact & Web</span>
+                <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Services</label>
+                    <input type="text" @bind="Services" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Website URL <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <input type="text" @bind="WebsiteUrl" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" placeholder="https://" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Email</label>
+                    <input type="email" @bind="Email" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" placeholder="vendor@example.com" />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Map Embed</label>
+                    <input type="text" @bind="Map" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400" placeholder="<iframe src=&quot;https://maps.google.com/...&quot;" />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-xs font-semibold tracking-widest uppercase" style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">Business Details</span>
+                <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Business Type <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <div class="relative">
+                        <button type="button" @onclick="ToggleBizTypeDropdown"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs text-left bg-white flex items-center justify-between focus:outline-none hover:border-amber-400">
+                            <span class="text-gray-400 truncate">
+                                @(SelectedBusinessTypes.Any() ? $"{SelectedBusinessTypes.Count} type(s) selected" : "-Select Business Type-")
+                            </span>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                                <polyline points="6,9 12,15 18,9" stroke="@ThemeConfig.Colors.Text.Muted" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </button>
+                        @if (SelectedBusinessTypes.Any())
+                        {
+                            <div class="flex flex-wrap gap-1 mt-1.5">
+                                @foreach (var bt in SelectedBusinessTypes.ToList())
+                                {
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
+                                          style="background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.25); color:@ThemeConfig.Colors.Text.LabelAccent; font-size:10px;">
+                                        @bt
+                                        <button @onclick="() => ToggleBizType(bt, false)" class="bg-transparent border-none cursor-pointer leading-none"
+                                                style="color:@ThemeConfig.Colors.Text.LabelAccent; font-size:11px;">×</button>
+                                    </span>
+                                }
+                            </div>
+                        }
+                        @if (ShowBizTypeDropdown)
+                        {
+                            <div class="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-full" style="max-height:160px; overflow-y:auto;">
+                                @foreach (var bt in BusinessTypes)
+                                {
+                                    <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer py-1.5 px-3 hover:bg-gray-50">
+                                        <input type="checkbox" checked="@SelectedBusinessTypes.Contains(bt)"
+                                               @onchange="e => ToggleBizType(bt, (bool)e.Value)" style="accent-color:@ThemeConfig.Colors.Primary;" />
+                                        @bt
+                                    </label>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-semibold text-gray-600">Hotel Business Address <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
+                    <select @bind="HotelBusinessAddress" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400 bg-white">
+                        <option value="">-Select Location-</option>
+                        <option value="Doha">Doha</option>
+                        <option value="Istanbul">Istanbul</option>
+                        <option value="Muscat">Muscat</option>
+                        <option value="Westbay - STR">Westbay - STR</option>
+                        <option value="The Pearl Island - STR MAI">The Pearl Island - STR MAI</option>
+                        <option value="The Pearl Island - MMK">The Pearl Island - MMK</option>
+                    </select>
+                </div>
+            </div>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="@(isEdit ? "Save Changes" : "Register Vendor")"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CloseDialog"
+                          OnConfirm="SaveDialog" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    [Parameter] public VendorBody? VendorBodyRef { get; set; }
+    [Parameter] public List<string> BusinessTypes { get; set; } = new();
+
+    public bool ShowEditDialog { get; set; }
+    public bool ShowAddDialog { get; set; }
+    private VendorItem? EditingItem;
+    private bool ShowBizTypeDropdown = false;
+
+    private string FeaturedImageUrl = "", LogoUrl = "";
+    private List<string> GalleryImages = new();
+    private string VendorName = "", ContactNumber = "", Description = "", Address = "";
+    private string Services = "", WebsiteUrl = "", Email = "", Map = "";
+    private HashSet<string> SelectedBusinessTypes = new();
+    private string HotelBusinessAddress = "";
+
+    public void OpenAdd()
+    {
+        FeaturedImageUrl = ""; LogoUrl = ""; GalleryImages = new();
+        VendorName = ""; ContactNumber = ""; Description = ""; Address = "";
+        Services = ""; WebsiteUrl = ""; Email = ""; Map = "";
+        SelectedBusinessTypes = new(); HotelBusinessAddress = "";
+        ShowBizTypeDropdown = false;
+        ShowAddDialog = true;
+        StateHasChanged();
+    }
+
+    public void OpenEdit(VendorItem item)
+    {
+        EditingItem = item;
+        FeaturedImageUrl = item.ImageUrl;
+        LogoUrl = ""; GalleryImages = new();
+        VendorName = item.Name;
+        Email = item.Email;
+        ContactNumber = item.ContactNumber;
+        Description = item.Description;
+        Address = item.Location;
+        Services = ""; WebsiteUrl = item.WebsiteUrl;
+        Map = ""; SelectedBusinessTypes = new() { item.BusinessType };
+        HotelBusinessAddress = item.Location;
+        ShowBizTypeDropdown = false;
+        ShowEditDialog = true;
+        StateHasChanged();
+    }
+
+    private void CloseDialog()
+    {
+        ShowAddDialog = false;
+        ShowEditDialog = false;
+        EditingItem = null;
+        ShowBizTypeDropdown = false;
+    }
+
+    private void SaveDialog()
+    {
+        if (ShowEditDialog && EditingItem != null && VendorBodyRef != null)
+        {
+            var index = VendorBodyRef.Items.FindIndex(i => i.Code == EditingItem.Code);
+            if (index >= 0)
+            {
+                VendorBodyRef.Items[index] = new VendorItem(
+                    EditingItem.Code,
+                    VendorName,
+                    FeaturedImageUrl,
+                    SelectedBusinessTypes.FirstOrDefault() ?? EditingItem.BusinessType,
+                    Address,
+                    ContactNumber,
+                    Email,
+                    WebsiteUrl,
+                    Description,
+                    EditingItem.DateCreated,
+                    EditingItem.Status
+                );
+            }
+        }
+        else if (VendorBodyRef != null)
+        {
+            VendorBodyRef.Items.Insert(0, new VendorItem(
+                $"Vendor-{VendorBodyRef.Items.Count + 1:D3}",
+                VendorName,
+                FeaturedImageUrl,
+                SelectedBusinessTypes.FirstOrDefault() ?? "",
+                Address,
+                ContactNumber,
+                Email,
+                WebsiteUrl,
+                Description,
+                DateTime.Now.ToString("yyyy-MM-dd"),
+                "ACTIVE"
+            ));
+        }
+        CloseDialog();
+    }
+
+    private void ToggleBizTypeDropdown() => ShowBizTypeDropdown = !ShowBizTypeDropdown;
+
+    private void ToggleBizType(string bt, bool selected)
+    {
+        if (selected) SelectedBusinessTypes.Add(bt);
+        else SelectedBusinessTypes.Remove(bt);
+    }
+
+    private async Task OnFeaturedImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(5 * 1024 * 1024).ReadAsync(buffer);
+        FeaturedImageUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    }
+
+    private async Task OnLogoSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(5 * 1024 * 1024).ReadAsync(buffer);
+        LogoUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    }
+
+    private async Task OnGallerySelected(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles(10))
+        {
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream(5 * 1024 * 1024).ReadAsync(buffer);
+            GalleryImages.Add($"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}");
+        }
+    }
+
+    private void RemoveGalleryImage(int index)
+    {
+        if (index >= 0 && index < GalleryImages.Count)
+            GalleryImages.RemoveAt(index);
+    }
+}

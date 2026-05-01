@@ -8,6 +8,7 @@ using ProjectBlazor.Components.Pages.Maintenance.Business.Hotels;
 using ProjectBlazor.Components.Pages.Maintenance.Business.Types;
 using ProjectBlazor.Components.Pages.Maintenance.Business.Locations;
 using ProjectBlazor.Components.Pages.Maintenance.Corporate;
+using ProjectBlazor.Components.Pages.Maintenance.Vendor;
 using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Privileges;
 using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers;
 using DotNetEnv;
@@ -68,6 +69,12 @@ builder.Services.AddHttpClient<PrivilegesService>(client =>
 });
 
 builder.Services.AddHttpClient<TiersService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
+});
+
+builder.Services.AddHttpClient<VendorService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
     client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
