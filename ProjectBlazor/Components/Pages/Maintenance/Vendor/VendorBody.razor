@@ -58,7 +58,7 @@
     </DataTable>
 </div>
 
-<VendorDialogs @ref="Dialogs" VendorBodyRef="this" BusinessTypes="BusinessTypes" />
+<VendorDialogs @ref="Dialogs" VendorBodyRef="this" BusinessTypes="BusinessTypes" BusinessLocations="BusinessLocations" />
 
 @code {
     [Parameter] public List<VendorItem> Items { get; set; } = new();
@@ -68,17 +68,14 @@
     public VendorHeader VendorHeader { get; set; } = new();
 
     [Inject] private VendorService? VendorService { get; set; }
+    [Inject] private ProjectBlazor.Components.Pages.Maintenance.Business.Types.TypesService? TypesService { get; set; }
+    [Inject] private ProjectBlazor.Components.Pages.Maintenance.Business.Locations.LocationsService? LocationsService { get; set; }
 
     public bool ShowInactive { get; set; } = false;
     public bool ShowFilter { get; set; } = false;
     public HashSet<string> SelectedBusinessTypes { get; set; } = new();
-    public List<string> BusinessTypes { get; set; } = new()
-    {
-        "Rooms & Suites Oman", "Food & Beverages Oman", "Wellness Oman",
-        "International Privileges Oman", "Alfardan Jewellery Oman",
-        "International Privileges", "Alfardan Jewellery", "Rooms & Suites",
-        "Shops", "Wellness", "Access to co-working spaces", "Food & Beverages", "Health"
-    };
+    public List<string> BusinessTypes { get; set; } = new();
+    public List<string> BusinessLocations { get; set; } = new();
 
     private string? UploadedFileName { get; set; }
 
@@ -117,6 +114,18 @@
     {
         try
         {
+            if (TypesService != null)
+            {
+                var types = await TypesService.GetBusinessTypesAsync();
+                BusinessTypes = types.Select(t => t.BusinessTypeName).ToList();
+            }
+
+            if (LocationsService != null)
+            {
+                var locations = await LocationsService.GetLocationsAsync();
+                BusinessLocations = locations.Select(l => $"{l.City}, {l.Country}").ToList();
+            }
+
             if (VendorService != null)
             {
                 var vendors = await VendorService.GetVendorsAsync();

@@ -154,13 +154,13 @@
         int userCount, int vipCount,
         bool isAdd) => __builder =>
     {
-        <div class="grid grid-cols-4 gap-2 mb-4">
+        <div class="grid grid-cols-4 gap-8 mb-4">
             @foreach (var (label, field) in new[]
             {
-                ("Upload Membership Card", "membershipCard"),
-                ("Upload VIP Card",        "vipCard"),
-                ("Upload QR Code Frame",   "qrCodeFrame"),
-                ("Upload VIP Badge",       "vipBadge"),
+                ("Upload Membership Card Here", "membershipCard"),
+                ("Upload VIP Card Here",        "vipCard"),
+                ("Upload QR Code Frame Here",   "qrCodeFrame"),
+                ("Upload VIP Badge Here",       "vipBadge"),
             })
             {
                 <div class="flex flex-col items-center">

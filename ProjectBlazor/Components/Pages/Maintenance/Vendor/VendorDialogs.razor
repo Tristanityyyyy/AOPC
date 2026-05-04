@@ -8,6 +8,7 @@
 @if (ShowAddDialog || ShowEditDialog)
 {
     var isEdit = ShowEditDialog;
+    <div @onclick="HandleOutsideClick">
     <DialogModal IsVisible="ShowAddDialog || ShowEditDialog"
                  Title="@(isEdit ? "Edit Vendor" : "Add Vendor")"
                  Icon="@Icons.Material.Filled.Store"
@@ -15,9 +16,10 @@
                  MaxWidth="2xl"
                  OnClose="CloseDialog">
         <ChildContent>
+            <div @onclick:stopPropagation="true">
             <div class="flex items-center gap-2 mb-4">
                 <span class="text-xs font-semibold tracking-widest uppercase"
-                      style="color:@ThemeConfig.Colors.Primary; font-size:9px; letter-spacing:1.5px;">
+                      style="color:@ThemeConfig.Colors.Text.Primary; font-size:9px; letter-spacing:1.5px;">
                     Media Assets
                 </span>
                 <div class="flex-1 border-t" style="border-color:rgba(201,168,76,0.2);"></div>
@@ -193,7 +195,7 @@
                         }
                         @if (ShowBizTypeDropdown)
                         {
-                            <div class="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-full" style="max-height:160px; overflow-y:auto;">
+                            <div @onclick:stopPropagation="true" class="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-full" style="max-height:200px; overflow-y:auto;">
                                 @foreach (var bt in BusinessTypes)
                                 {
                                     <label class="flex items-center gap-2 text-xs text-gray-700 cursor-pointer py-1.5 px-3 hover:bg-gray-50">
@@ -209,16 +211,33 @@
 
                 <div class="flex flex-col gap-1">
                     <label class="text-xs font-semibold text-gray-600">Hotel Business Address <span style="color:@ThemeConfig.Colors.Primary;">*</span></label>
-                    <select @bind="HotelBusinessAddress" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-400 bg-white">
-                        <option value="">-Select Location-</option>
-                        <option value="Doha">Doha</option>
-                        <option value="Istanbul">Istanbul</option>
-                        <option value="Muscat">Muscat</option>
-                        <option value="Westbay - STR">Westbay - STR</option>
-                        <option value="The Pearl Island - STR MAI">The Pearl Island - STR MAI</option>
-                        <option value="The Pearl Island - MMK">The Pearl Island - MMK</option>
-                    </select>
+                    <div class="relative">
+                        <button type="button" @onclick="ToggleLocationDropdown"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs text-left bg-white flex items-center justify-between focus:outline-none hover:border-amber-400">
+                            <span class="@(string.IsNullOrEmpty(HotelBusinessAddress) ? "text-gray-400" : "text-gray-700")">
+                                @(string.IsNullOrEmpty(HotelBusinessAddress) ? "-Select Location-" : HotelBusinessAddress)
+                            </span>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                                <polyline points="6,9 12,15 18,9" stroke="@ThemeConfig.Colors.Text.Muted" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </button>
+                        @if (ShowLocationDropdown)
+                        {
+                            <div @onclick:stopPropagation="true" class="absolute left-0 top-full mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-full" style="max-height:200px; overflow-y:auto;">
+                                <div @onclick="() => { HotelBusinessAddress = string.Empty; ShowLocationDropdown = false; }" class="text-xs text-gray-700 cursor-pointer py-1.5 px-3 hover:bg-gray-50">
+                                    -Select Location-
+                                </div>
+                                @foreach (var location in BusinessLocations)
+                                {
+                                    <div @onclick="() => { HotelBusinessAddress = location; ShowLocationDropdown = false; }" class="text-xs text-gray-700 cursor-pointer py-1.5 px-3 hover:bg-gray-50">
+                                        @location
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
+            </div>
             </div>
         </ChildContent>
         <FooterContent>
@@ -228,16 +247,19 @@
                           OnConfirm="SaveDialog" />
         </FooterContent>
     </DialogModal>
+    </div>
 }
 
 @code {
     [Parameter] public VendorBody? VendorBodyRef { get; set; }
     [Parameter] public List<string> BusinessTypes { get; set; } = new();
+    [Parameter] public List<string> BusinessLocations { get; set; } = new();
 
     public bool ShowEditDialog { get; set; }
     public bool ShowAddDialog { get; set; }
     private VendorItem? EditingItem;
     private bool ShowBizTypeDropdown = false;
+    private bool ShowLocationDropdown = false;
 
     private string FeaturedImageUrl = "", LogoUrl = "";
     private List<string> GalleryImages = new();
@@ -253,6 +275,7 @@
         Services = ""; WebsiteUrl = ""; Email = ""; Map = "";
         SelectedBusinessTypes = new(); HotelBusinessAddress = "";
         ShowBizTypeDropdown = false;
+        ShowLocationDropdown = false;
         ShowAddDialog = true;
         StateHasChanged();
     }
@@ -271,6 +294,7 @@
         Map = ""; SelectedBusinessTypes = new() { item.BusinessType };
         HotelBusinessAddress = item.Location;
         ShowBizTypeDropdown = false;
+        ShowLocationDropdown = false;
         ShowEditDialog = true;
         StateHasChanged();
     }
@@ -281,6 +305,7 @@
         ShowEditDialog = false;
         EditingItem = null;
         ShowBizTypeDropdown = false;
+        ShowLocationDropdown = false;
     }
 
     private void SaveDialog()
@@ -326,10 +351,26 @@
 
     private void ToggleBizTypeDropdown() => ShowBizTypeDropdown = !ShowBizTypeDropdown;
 
+    private void ToggleLocationDropdown() => ShowLocationDropdown = !ShowLocationDropdown;
+
     private void ToggleBizType(string bt, bool selected)
     {
         if (selected) SelectedBusinessTypes.Add(bt);
         else SelectedBusinessTypes.Remove(bt);
+    }
+
+    private void HandleOutsideClick()
+    {
+        if (ShowBizTypeDropdown)
+        {
+            ShowBizTypeDropdown = false;
+            StateHasChanged();
+        }
+        if (ShowLocationDropdown)
+        {
+            ShowLocationDropdown = false;
+            StateHasChanged();
+        }
     }
 
     private async Task OnFeaturedImageSelected(InputFileChangeEventArgs e)

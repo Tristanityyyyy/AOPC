@@ -21,7 +21,6 @@ public class HotelsService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Hotels API Response: {content.Substring(0, Math.Min(500, content.Length))}...");
                 
                 // Try direct array first
                 try
@@ -29,7 +28,6 @@ public class HotelsService
                     var data = JsonSerializer.Deserialize<List<HotelDto>>(content, _options);
                     if (data != null && data.Count > 0)
                     {
-                        Console.WriteLine($"Hotels: Successfully parsed {data.Count} items");
                         return data;
                     }
                 }
@@ -39,19 +37,14 @@ public class HotelsService
                     var wrappedData = JsonSerializer.Deserialize<ApiResponse>(content, _options);
                     if (wrappedData?.Data != null)
                     {
-                        Console.WriteLine($"Hotels: Successfully parsed {wrappedData.Data.Count} items from wrapped response");
                         return wrappedData.Data;
                     }
                 }
             }
-            else
-            {
-                Console.WriteLine($"Hotels API error: {response.StatusCode}");
-            }
         }
         catch (Exception ex) 
         { 
-            Console.WriteLine($"Hotels API exception: {ex.Message}"); 
+            // Log error if needed
         }
         return new List<HotelDto>();
     }

@@ -21,7 +21,6 @@ public class LocationsService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Locations API Response: {content.Substring(0, Math.Min(500, content.Length))}...");
                 
                 // Try to deserialize as direct array first
                 try
@@ -29,7 +28,6 @@ public class LocationsService
                     var data = JsonSerializer.Deserialize<List<LocationDto>>(content, _options);
                     if (data != null && data.Count > 0)
                     {
-                        Console.WriteLine($"Locations: Successfully parsed {data.Count} items as array");
                         return data;
                     }
                 }
@@ -39,19 +37,14 @@ public class LocationsService
                     var wrappedData = JsonSerializer.Deserialize<ApiResponse>(content, _options);
                     if (wrappedData?.Data != null)
                     {
-                        Console.WriteLine($"Locations: Successfully parsed {wrappedData.Data.Count} items from wrapped response");
                         return wrappedData.Data;
                     }
                 }
             }
-            else
-            {
-                Console.WriteLine($"Locations API error: {response.StatusCode}");
-            }
         }
         catch (Exception ex) 
         { 
-            Console.WriteLine($"Locations error: {ex.Message}"); 
+            // Log error if needed
         }
         return new List<LocationDto>();
     }

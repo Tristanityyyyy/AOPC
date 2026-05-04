@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build:css": "npx tailwindcss -i ./wwwroot/css/app.css -o ./wwwroot/css/output.css",
+so    "build:css": "npx tailwindcss -i ./wwwroot/css/app.css -o ./wwwroot/css/output.css",
     "watch:css": "npx tailwindcss -i ./wwwroot/css/app.css -o ./wwwroot/css/output.css --watch"
   },
   "keywords": [],
