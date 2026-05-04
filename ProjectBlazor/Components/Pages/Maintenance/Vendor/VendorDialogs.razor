@@ -229,7 +229,10 @@
                                 </div>
                                 @foreach (var location in BusinessLocations)
                                 {
-                                    <div @onclick="() => { HotelBusinessAddress = location; ShowLocationDropdown = false; }" class="text-xs text-gray-700 cursor-pointer py-1.5 px-3 hover:bg-gray-50">
+                                    var isSelected = location.Equals(HotelBusinessAddress, StringComparison.OrdinalIgnoreCase);
+                                    <div @onclick="() => { HotelBusinessAddress = location; ShowLocationDropdown = false; }" 
+                                         class="text-xs cursor-pointer py-1.5 px-3 hover:bg-gray-50"
+                                         style="@(isSelected ? $"color:{ThemeConfig.Colors.Primary}; font-weight:600;" : "color:#374151;")">
                                         @location
                                     </div>
                                 }
@@ -284,15 +287,43 @@
     {
         EditingItem = item;
         FeaturedImageUrl = item.ImageUrl;
-        LogoUrl = ""; GalleryImages = new();
+        LogoUrl = string.Empty;
+        GalleryImages = new();
         VendorName = item.Name;
         Email = item.Email;
         ContactNumber = item.ContactNumber;
         Description = item.Description;
         Address = item.Location;
-        Services = ""; WebsiteUrl = item.WebsiteUrl;
-        Map = ""; SelectedBusinessTypes = new() { item.BusinessType };
-        HotelBusinessAddress = item.Location;
+        Services = string.Empty;
+        WebsiteUrl = item.WebsiteUrl;
+        Map = string.Empty;
+        
+        // Set business type - match exactly or case-insensitive
+        SelectedBusinessTypes = new();
+        if (!string.IsNullOrEmpty(item.BusinessType))
+        {
+            var matchingType = BusinessTypes.FirstOrDefault(bt => 
+                bt.Equals(item.BusinessType, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrEmpty(matchingType))
+            {
+                SelectedBusinessTypes.Add(matchingType);
+            }
+            else
+            {
+                // If no exact match, add the original value
+                SelectedBusinessTypes.Add(item.BusinessType);
+            }
+        }
+        
+        // Set location - match city name
+        HotelBusinessAddress = string.Empty;
+        if (!string.IsNullOrEmpty(item.Location))
+        {
+            var matchingLocation = BusinessLocations.FirstOrDefault(loc => 
+                loc.Equals(item.Location, StringComparison.OrdinalIgnoreCase));
+            HotelBusinessAddress = matchingLocation ?? item.Location;
+        }
+        
         ShowBizTypeDropdown = false;
         ShowLocationDropdown = false;
         ShowEditDialog = true;
