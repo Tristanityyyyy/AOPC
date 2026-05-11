@@ -72,6 +72,8 @@
 
 @code {
     [Parameter] public TypesBody? TypesBodyRef { get; set; }
+    [Inject] private TypesService? TypesService { get; set; }
+    [Inject] private ISnackbar? Snackbar { get; set; }
     
     private TypesBody? TypesBody => TypesBodyRef;
 
@@ -80,6 +82,7 @@
     private BusinessTypeItem? EditingItem;
     private string EditImageUrl = "", EditTypeName = "", EditTypeDescription = "", EditTypePromo = "";
     private string AddImageUrl = "", AddTypeName = "", AddTypeDescription = "", AddTypePromo = "";
+    private bool IsProcessing = false;
 
     public void OpenAdd()
     {
@@ -91,6 +94,7 @@
     private void Add()
     {
         TypesBody?.Items.Insert(0, new BusinessTypeItem(
+            0,
             $"BT-{TypesBody.Items.Count + 1:D3}",
             AddTypeName,
             AddImageUrl,
@@ -112,24 +116,57 @@
         StateHasChanged();
     }
 
-    private void SaveEdit()
+    private async Task SaveEdit()
     {
-        if (EditingItem != null && TypesBody != null)
+        if (EditingItem == null || IsProcessing) return;
+        
+        IsProcessing = true;
+        try
         {
-            var i = TypesBody.Items.FindIndex(x => x.Code == EditingItem.Code);
-            if (i >= 0)
+            var success = await TypesService!.UpdateBusinessTypeAsync(
+                EditingItem.Id,
+                EditTypeName,
+                EditTypeDescription,
+                EditImageUrl,
+                EditTypePromo,
+                EditingItem.Code,
+                DateTime.Parse(EditingItem.DateCreated)
+            );
+
+            if (success)
             {
-                TypesBody.Items[i] = new BusinessTypeItem(
-                    EditingItem.Code,
-                    EditTypeName,
-                    EditImageUrl,
-                    EditTypePromo,
-                    EditTypeDescription,
-                    EditingItem.DateCreated
-                );
+                if (TypesBody != null)
+                {
+                    var i = TypesBody.Items.FindIndex(x => x.Id == EditingItem.Id);
+                    if (i >= 0)
+                    {
+                        TypesBody.Items[i] = new BusinessTypeItem(
+                            EditingItem.Id,
+                            EditingItem.Code,
+                            EditTypeName,
+                            EditImageUrl,
+                            EditTypePromo,
+                            EditTypeDescription,
+                            EditingItem.DateCreated
+                        );
+                    }
+                }
+                Snackbar?.Add("Business type updated successfully", Severity.Success);
+                ShowEditDialog = false;
+            }
+            else
+            {
+                Snackbar?.Add("Failed to update business type", Severity.Error);
             }
         }
-        ShowEditDialog = false;
+        catch (Exception ex)
+        {
+            Snackbar?.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
     public void CancelEdit() => ShowEditDialog = false;

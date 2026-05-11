@@ -41,6 +41,7 @@
 
     [Inject] private LocationsService? LocationsService { get; set; }
     [Inject] private IHttpClientFactory? HttpClientFactory { get; set; }
+    [Inject] private ISnackbar? Snackbar { get; set; }
 
     public LocationsBody()
     {
@@ -62,6 +63,21 @@
         {
             Dialogs.OpenEdit(item);
             StateHasChanged();
+        }
+    }
+
+    public async Task DeleteLocation(LocationItem item)
+    {
+        var success = await LocationsService!.DeleteLocationAsync(item.Id);
+        if (success)
+        {
+            Items.Remove(item);
+            Snackbar?.Add("Location deleted successfully", Severity.Success);
+            StateHasChanged();
+        }
+        else
+        {
+            Snackbar?.Add("Failed to delete location", Severity.Error);
         }
     }
 
@@ -99,6 +115,7 @@
             Console.WriteLine($"Locations count: {locations.Count}");
             
             Items = locations.Select(l => new LocationItem(
+                l.Id,
                 l.BusinessLocID,
                 l.City,
                 l.PostalCode ?? "",
@@ -124,7 +141,7 @@
                                 <button @onclick="() => OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
                                     <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
                                 </button>
-                                <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                <button @onclick="() => DeleteLocation(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
                                     <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
                                 </button>
                             </div>

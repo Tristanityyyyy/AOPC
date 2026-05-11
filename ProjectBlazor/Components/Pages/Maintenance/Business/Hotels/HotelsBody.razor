@@ -49,6 +49,7 @@
     {
         var hotels = await HotelsService!.GetHotelsAsync();
         Items = hotels.Select(h => new HotelItem(
+            int.TryParse(h.Id, out var id) ? id : 0,
             h.BusinessID,
             h.BusinessName,
             h.FeatureImg,

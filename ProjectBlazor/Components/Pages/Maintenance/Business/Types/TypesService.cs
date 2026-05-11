@@ -48,6 +48,48 @@ public class TypesService
         }
         return new List<BusinessTypeDto>();
     }
+
+    public async Task<bool> UpdateBusinessTypeAsync(int id, string businessTypeName, string description, string imgURL, string promoText, string businessTypeID, DateTime dateCreated)
+    {
+        try
+        {
+            var payload = new
+            {
+                id,
+                businessTypeName,
+                description,
+                imgURL,
+                promoText,
+                status = 1,
+                isVIP = 0,
+                businessTypeID,
+                dateCreated
+            };
+
+            var response = await _http.PostAsJsonAsync("api/ApiBusinessType/UpdateBusinessType", payload);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Update Business Type error: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteBusinessTypeAsync(int id)
+    {
+        try
+        {
+            var payload = new { id };
+            var response = await _http.PostAsJsonAsync("api/ApiBusinessType/DeleteBusinessType", payload);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Delete Business Type error: {ex.Message}");
+            return false;
+        }
+    }
 }
 
 public class BusinessTypeDto

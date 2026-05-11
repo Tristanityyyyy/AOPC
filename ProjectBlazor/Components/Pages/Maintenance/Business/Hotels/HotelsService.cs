@@ -48,6 +48,41 @@ public class HotelsService
         }
         return new List<HotelDto>();
     }
+
+    public async Task<bool> SaveBusinessAsync(int id, string businessName, int typeId, int locationID, string description, string address, string cno, string email, string url, string services, string featureImg, string gallery, string map, string businessID, DateTime dateCreated)
+    {
+        try
+        {
+            var payload = new
+            {
+                id,
+                businessName,
+                typeId,
+                locationID,
+                description,
+                address,
+                cno,
+                email,
+                url,
+                services,
+                featureImg,
+                gallery,
+                active = 1,
+                filePath = featureImg,
+                map,
+                businessID,
+                dateCreated
+            };
+
+            var response = await _http.PostAsJsonAsync("api/ApiBusiness/SaveBusiness", payload);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Save Business error: {ex.Message}");
+            return false;
+        }
+    }
 }
 
 public class ApiResponse

@@ -2,6 +2,8 @@
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Shared.Form
 @using ProjectBlazor.Components.Shared.Table
+@using ProjectBlazor.Components.Pages.Maintenance.Business.Locations
+@using ProjectBlazor.Components.Pages.Maintenance.Business.Types
 @rendermode InteractiveServer
 
 @if (ShowEditDialog)
@@ -13,9 +15,14 @@
                MaxWidth="2xl"
                OnClose="CancelEdit">
         <ChildContent>
-            <FormField Label="Profile Picture">
-                <ImageUpload @bind-ImageUrl="EditHotelImageUrl" ImageClass="w-16 h-16 rounded-lg" PlaceholderIcon="@Icons.Material.Filled.Hotel" />
-            </FormField>
+            <FormGrid Columns="2">
+                <FormField Label="Profile Picture">
+                    <ImageUpload @bind-ImageUrl="EditHotelImageUrl" ImageClass="w-16 h-16 rounded-lg" PlaceholderIcon="@Icons.Material.Filled.Hotel" />
+                </FormField>
+                <FormField Label="Hotel Pictures">
+                    <MultiImageUpload @bind-ImageUrls="EditHotelImages" MaxImages="10" />
+                </FormField>
+            </FormGrid>
 
             <FormGrid Columns="2">
                 <FormField Label="Hotel Name" Required>
@@ -24,9 +31,10 @@
                 <FormField Label="Business Location">
                     <SelectInput @bind-Value="EditHotelLocation">
                         <option value="">Select Location</option>
-                        <option value="Istanbul">Istanbul</option>
-                        <option value="Doha">Doha</option>
-                        <option value="The Pearl">The Pearl</option>
+                        @foreach (var loc in Locations)
+                        {
+                            <option value="@loc.City">@loc.City</option>
+                        }
                     </SelectInput>
                 </FormField>
                 <FormField Label="Contact Number">
@@ -73,9 +81,14 @@
                MaxWidth="2xl"
                OnClose="() => ShowAddDialog = false">
         <ChildContent>
-            <FormField Label="Profile Picture">
-                <ImageUpload @bind-ImageUrl="AddHotelImageUrl" ImageClass="w-16 h-16 rounded-lg" PlaceholderIcon="@Icons.Material.Filled.Hotel" />
-            </FormField>
+            <FormGrid Columns="2">
+                <FormField Label="Profile Picture">
+                    <ImageUpload @bind-ImageUrl="AddHotelImageUrl" ImageClass="w-16 h-16 rounded-lg" PlaceholderIcon="@Icons.Material.Filled.Hotel" />
+                </FormField>
+                <FormField Label="Hotel Pictures">
+                    <MultiImageUpload @bind-ImageUrls="AddHotelImages" MaxImages="10" />
+                </FormField>
+            </FormGrid>
 
             <FormGrid Columns="2">
                 <FormField Label="Hotel Name" Required>
@@ -84,9 +97,10 @@
                 <FormField Label="Business Location">
                     <SelectInput @bind-Value="AddHotelLocation">
                         <option value="">Select Location</option>
-                        <option value="Istanbul">Istanbul</option>
-                        <option value="Doha">Doha</option>
-                        <option value="The Pearl">The Pearl</option>
+                        @foreach (var loc in Locations)
+                        {
+                            <option value="@loc.City">@loc.City</option>
+                        }
                     </SelectInput>
                 </FormField>
                 <FormField Label="Contact Number">
@@ -126,8 +140,21 @@
 
 @code {
     [Parameter] public HotelsBody? HotelsBodyRef { get; set; }
+    [Inject] private LocationsService? LocationsService { get; set; }
+    [Inject] private TypesService? TypesService { get; set; }
+    [Inject] private HotelsService? HotelsService { get; set; }
+    [Inject] private ISnackbar? Snackbar { get; set; }
     
     private HotelsBody? HotelsBody => HotelsBodyRef;
+    private List<LocationDto> Locations = new();
+    private List<BusinessTypeDto> BusinessTypes = new();
+    private bool IsProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Locations = await LocationsService!.GetLocationsAsync();
+        BusinessTypes = await TypesService!.GetBusinessTypesAsync();
+    }
 
     public bool ShowEditDialog { get; set; }
     public bool ShowAddDialog { get; set; }
@@ -135,10 +162,12 @@
     private string EditHotelImageUrl = "", EditHotelName = "", EditHotelLocation = "";
     private string EditHotelAddress = "", EditHotelContactNo = "", EditHotelEmail = "";
     private string EditHotelUrl = "", EditHotelDescription = "", EditHotelServices = "", EditHotelMap = "";
+    private int EditHotelTypeId = 0, EditHotelLocationId = 0;
     private List<string> EditHotelImages = new();
     private string AddHotelImageUrl = "", AddHotelName = "", AddHotelLocation = "";
     private string AddHotelAddress = "", AddHotelContactNo = "", AddHotelEmail = "";
     private string AddHotelUrl = "", AddHotelDescription = "", AddHotelServices = "", AddHotelMap = "";
+    private int AddHotelTypeId = 0, AddHotelLocationId = 0;
     private List<string> AddHotelImages = new();
 
     public void OpenAdd()
@@ -146,32 +175,62 @@
         AddHotelImageUrl = ""; AddHotelImages = new(); AddHotelName = ""; AddHotelLocation = "";
         AddHotelAddress = ""; AddHotelContactNo = ""; AddHotelEmail = ""; AddHotelUrl = "";
         AddHotelDescription = ""; AddHotelServices = ""; AddHotelMap = "";
+        AddHotelTypeId = 0; AddHotelLocationId = 0;
         ShowAddDialog = true;
         StateHasChanged();
     }
 
-    private void Add()
+    private async Task Add()
     {
-        HotelsBody?.Items.Insert(0, new HotelItem(
-            $"HTL-{HotelsBody.Items.Count + 1:D3}",
-            AddHotelName,
-            AddHotelImageUrl,
-            AddHotelLocation,
-            AddHotelAddress,
-            AddHotelContactNo,
-            AddHotelEmail,
-            AddHotelUrl,
-            AddHotelDescription,
-            DateTime.Now.ToString("MM/dd/yyyy")
-        ));
-        ShowAddDialog = false;
+        if (IsProcessing) return;
+        
+        IsProcessing = true;
+        try
+        {
+            var gallery = string.Join(",", AddHotelImages);
+            var success = await HotelsService!.SaveBusinessAsync(
+                0,
+                AddHotelName,
+                AddHotelTypeId,
+                AddHotelLocationId,
+                AddHotelDescription,
+                AddHotelAddress,
+                AddHotelContactNo,
+                AddHotelEmail,
+                AddHotelUrl,
+                AddHotelServices,
+                AddHotelImageUrl,
+                gallery,
+                AddHotelMap,
+                $"HTL-{DateTime.Now.Ticks}",
+                DateTime.Now
+            );
+
+            if (success)
+            {
+                Snackbar?.Add("Hotel added successfully. Please refresh to see changes.", Severity.Success);
+                ShowAddDialog = false;
+            }
+            else
+            {
+                Snackbar?.Add("Failed to add hotel", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar?.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
     public void OpenEdit(HotelItem item)
     {
         EditingItem = item;
         EditHotelImageUrl = item.ImageUrl;
-        EditHotelImages = new List<string> { item.ImageUrl };
+        EditHotelImages = string.IsNullOrEmpty(item.Gallery) ? new List<string>() : item.Gallery.Split(',').ToList();
         EditHotelName = item.Name;
         EditHotelLocation = item.Location;
         EditHotelAddress = item.Address;
@@ -179,34 +238,83 @@
         EditHotelEmail = item.Email;
         EditHotelUrl = item.Url;
         EditHotelDescription = item.Description;
-        EditHotelServices = "";
-        EditHotelMap = "";
+        EditHotelServices = item.Services;
+        EditHotelMap = item.Map;
+        EditHotelTypeId = item.TypeId;
+        EditHotelLocationId = item.LocationId;
         ShowEditDialog = true;
         StateHasChanged();
     }
 
-    private void SaveEdit()
+    private async Task SaveEdit()
     {
-        if (EditingItem != null && HotelsBody != null)
+        if (EditingItem == null || IsProcessing) return;
+        
+        IsProcessing = true;
+        try
         {
-            var i = HotelsBody.Items.FindIndex(x => x.Code == EditingItem.Code);
-            if (i >= 0)
+            var gallery = string.Join(",", EditHotelImages);
+            var success = await HotelsService!.SaveBusinessAsync(
+                EditingItem.Id,
+                EditHotelName,
+                EditHotelTypeId,
+                EditHotelLocationId,
+                EditHotelDescription,
+                EditHotelAddress,
+                EditHotelContactNo,
+                EditHotelEmail,
+                EditHotelUrl,
+                EditHotelServices,
+                EditHotelImageUrl,
+                gallery,
+                EditHotelMap,
+                EditingItem.Code,
+                DateTime.Parse(EditingItem.DateCreated)
+            );
+
+            if (success)
             {
-                HotelsBody.Items[i] = new HotelItem(
-                    EditingItem.Code,
-                    EditHotelName,
-                    EditHotelImageUrl,
-                    EditHotelLocation,
-                    EditHotelAddress,
-                    EditHotelContactNo,
-                    EditHotelEmail,
-                    EditHotelUrl,
-                    EditHotelDescription,
-                    EditingItem.DateCreated
-                );
+                if (HotelsBody != null)
+                {
+                    var i = HotelsBody.Items.FindIndex(x => x.Id == EditingItem.Id);
+                    if (i >= 0)
+                    {
+                        HotelsBody.Items[i] = new HotelItem(
+                            EditingItem.Id,
+                            EditingItem.Code,
+                            EditHotelName,
+                            EditHotelImageUrl,
+                            EditHotelLocation,
+                            EditHotelAddress,
+                            EditHotelContactNo,
+                            EditHotelEmail,
+                            EditHotelUrl,
+                            EditHotelDescription,
+                            EditingItem.DateCreated,
+                            EditHotelTypeId,
+                            EditHotelLocationId,
+                            EditHotelServices,
+                            gallery,
+                            EditHotelMap
+                        );
+                    }
+                }
+                Snackbar?.Add("Hotel updated successfully", Severity.Success);
+                ShowEditDialog = false;
+            }
+            else
+            {
+                Snackbar?.Add("Failed to update hotel", Severity.Error);
             }
         }
-        ShowEditDialog = false;
+        catch (Exception ex)
+        {
+            Snackbar?.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
     public void CancelEdit() => ShowEditDialog = false;

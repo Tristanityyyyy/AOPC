@@ -1,6 +1,7 @@
 namespace ProjectBlazor.Components.Pages.Maintenance.Business.Hotels;
 
 public record HotelItem(
+    int Id,
     string Code, 
     string Name, 
     string ImageUrl, 
@@ -10,4 +11,9 @@ public record HotelItem(
     string Email, 
     string Url, 
     string Description, 
-    string DateCreated);
+    string DateCreated,
+    int TypeId = 0,
+    int LocationId = 0,
+    string Services = "",
+    string Gallery = "",
+    string Map = "");

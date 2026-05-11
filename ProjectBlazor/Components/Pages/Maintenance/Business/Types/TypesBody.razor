@@ -50,6 +50,7 @@
             var types = await TypesService!.GetBusinessTypesAsync();
             
             Items = types.Select(t => new BusinessTypeItem(
+                t.Id,
                 t.BusinessTypeID,
                 t.BusinessTypeName,
                 t.ImgURL,

@@ -48,6 +48,45 @@ public class LocationsService
         }
         return new List<LocationDto>();
     }
+
+    public async Task<bool> UpdateLocationAsync(int id, string city, string postalCode, string country, string businessLocID, DateTime dateCreated)
+    {
+        try
+        {
+            var payload = new
+            {
+                id,
+                country,
+                city,
+                postalCode,
+                active = 1,
+                dateCreated,
+                businessLocID
+            };
+
+            var response = await _http.PostAsJsonAsync("api/ApiBusinessLoc/UpdateBusinessLoc", payload);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Update Location error: {ex.Message}");
+            return false;
+        }
+    }
+    public async Task<bool> DeleteLocationAsync(int id)
+    {
+        try
+        {
+            var payload = new { id };
+            var response = await _http.PostAsJsonAsync("api/ApiBusinessLoc/DeleteBusinessLoc", payload);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Delete Location error: {ex.Message}");
+            return false;
+        }
+    }
 }
 
 public class LocationDto

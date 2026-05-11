@@ -62,6 +62,8 @@
 
 @code {
     [Parameter] public LocationsBody? LocationsBodyRef { get; set; }
+    [Inject] private LocationsService? LocationsService { get; set; }
+    [Inject] private ISnackbar? Snackbar { get; set; }
     
     private LocationsBody? LocationsBody => LocationsBodyRef;
 
@@ -70,25 +72,88 @@
     private LocationItem? EditingItem;
     private string EditName = "", EditPostalCode = "", EditCountry = "";
     private string AddName = "", AddPostalCode = "", AddCountry = "";
+    private bool IsProcessing = false;
 
     public void OpenAdd() { AddName = ""; AddPostalCode = ""; AddCountry = ""; ShowAddDialog = true; StateHasChanged(); }
 
-    private void Add()
+    private async Task Add()
     {
-        LocationsBody?.Items.Insert(0, new LocationItem($"LOC-{LocationsBody.Items.Count + 1:D3}", AddName, AddPostalCode, AddCountry, DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")));
-        ShowAddDialog = false;
+        if (IsProcessing) return;
+        
+        IsProcessing = true;
+        try
+        {
+            var success = await LocationsService!.UpdateLocationAsync(
+                0,
+                AddName,
+                AddPostalCode,
+                AddCountry,
+                $"LOC-{DateTime.Now.Ticks}",
+                DateTime.Now
+            );
+
+            if (success)
+            {
+                LocationsBody?.Items.Insert(0, new LocationItem(0, $"LOC-{LocationsBody.Items.Count + 1:D3}", AddName, AddPostalCode, AddCountry, DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")));
+                Snackbar?.Add("Location added successfully", Severity.Success);
+                ShowAddDialog = false;
+            }
+            else
+            {
+                Snackbar?.Add("Failed to add location", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar?.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
     public void OpenEdit(LocationItem item) { EditingItem = item; EditName = item.Name; EditPostalCode = item.PostalCode; EditCountry = item.Country; ShowEditDialog = true; StateHasChanged(); }
 
-    private void SaveEdit()
+    private async Task SaveEdit()
     {
-        if (EditingItem != null && LocationsBody != null)
+        if (EditingItem == null || IsProcessing) return;
+        
+        IsProcessing = true;
+        try
         {
-            var i = LocationsBody.Items.FindIndex(x => x.Code == EditingItem.Code);
-            if (i >= 0) LocationsBody.Items[i] = new LocationItem(EditingItem.Code, EditName, EditPostalCode, EditCountry, EditingItem.DateCreated);
+            var success = await LocationsService!.UpdateLocationAsync(
+                EditingItem.Id,
+                EditName,
+                EditPostalCode,
+                EditCountry,
+                EditingItem.Code,
+                DateTime.Parse(EditingItem.DateCreated)
+            );
+
+            if (success)
+            {
+                if (LocationsBody != null)
+                {
+                    var i = LocationsBody.Items.FindIndex(x => x.Id == EditingItem.Id);
+                    if (i >= 0) LocationsBody.Items[i] = new LocationItem(EditingItem.Id, EditingItem.Code, EditName, EditPostalCode, EditCountry, EditingItem.DateCreated);
+                }
+                Snackbar?.Add("Location updated successfully", Severity.Success);
+                ShowEditDialog = false;
+            }
+            else
+            {
+                Snackbar?.Add("Failed to update location", Severity.Error);
+            }
         }
-        ShowEditDialog = false;
+        catch (Exception ex)
+        {
+            Snackbar?.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
     public void CancelEdit() => ShowEditDialog = false;
