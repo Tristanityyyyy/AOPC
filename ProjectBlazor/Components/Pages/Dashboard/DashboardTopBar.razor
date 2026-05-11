@@ -1,0 +1,42 @@
+@* Dashboard top bar with date and export controls *@
+
+<div class="bg-white rounded-lg border border-gray-200 shadow-md h-16 flex items-center justify-end gap-2 p-4">
+    <button class="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm cursor-pointer border-none"
+            style="background: @ThemeConfig.Colors.Primary;" @onclick="OnSelectDate">
+        <MudIcon Icon="@Icons.Material.Filled.DateRange" Style="font-size: 16px; color: white;" />
+        Select Date
+    </button>
+    <div class="relative inline-block">
+        <button @onclick="OnToggleDropdown"
+                class="flex items-center justify-between gap-2 px-4 py-2 rounded-full text-white text-sm cursor-pointer border-none w-36"
+                style="background: @ThemeConfig.Colors.Primary;">
+            @SelectedDays
+            <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="white">
+                <path d="M7 10l5 5 5-5z" />
+            </svg>
+        </button>
+        @if (DropdownOpen)
+        {
+            <div class="absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-md rounded-lg z-50">
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 7 Days"))' class="px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-t-lg">Last 7 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 14 Days"))' class="px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 14 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 30 Days"))' class="px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 30 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 90 Days"))' class="px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-b-lg">Last 90 Days</div>
+            </div>
+        }
+    </div>
+    <button class="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm cursor-pointer border-none"
+            style="background: @ThemeConfig.Colors.Primary;" @onclick="OnExport">
+        <MudIcon Icon="@Icons.Material.Filled.FileDownload" Style="font-size: 16px; color: white;" />
+        Export
+    </button>
+</div>
+
+@code {
+    [Parameter] public string SelectedDays { get; set; } = "Filter Days";
+    [Parameter] public bool DropdownOpen { get; set; }
+    [Parameter] public EventCallback OnSelectDate { get; set; }
+    [Parameter] public EventCallback OnToggleDropdown { get; set; }
+    [Parameter] public EventCallback<string> OnDaySelected { get; set; }
+    [Parameter] public EventCallback OnExport { get; set; }
+}

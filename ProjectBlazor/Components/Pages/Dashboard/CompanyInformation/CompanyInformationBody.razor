@@ -1,0 +1,181 @@
+@namespace ProjectBlazor.Components.Pages.Dashboard.CompanyInformation
+
+<CompanyInformationHeader />
+
+<div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4">
+
+    @* Header Bar *@
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium" style="color: @ThemeConfig.Colors.Primary;">@CompanyInformationHeader.Title</h3>
+        <button class="flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm cursor-pointer border-none"
+                style="background: @ThemeConfig.Colors.Primary;">
+            <MudIcon Icon="@Icons.Material.Filled.FileDownload" Style="font-size: 16px; color: white;" />
+            Export
+        </button>
+    </div>
+
+    @* Controls: entries per page + search *@
+    <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+            <select class="border border-gray-300 rounded px-2 py-1 text-xs" @bind="PageSize">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+            entries per page
+        </div>
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+            Search:
+            <input type="text" @bind="SearchText" @bind:event="oninput"
+                   class="border border-gray-300 rounded px-2 py-1 text-xs w-48" />
+        </div>
+    </div>
+
+    @* Table *@
+    <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+            <thead>
+                <tr class="border-b-2 border-gray-200">
+                    <th class="text-left py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                        @onclick='() => Sort("CompanyName")'>
+                        Company Name
+                        <span class="text-gray-400">@SortIcon("CompanyName")</span>
+                    </th>
+                    <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                        @onclick='() => Sort("RegisteredUsers")'>
+                        Registered Users
+                        <span class="text-gray-400">@SortIcon("RegisteredUsers")</span>
+                    </th>
+                    <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                        @onclick='() => Sort("UnregisteredUsers")'>
+                        Unregistered Users
+                        <span class="text-gray-400">@SortIcon("UnregisteredUsers")</span>
+                    </th>
+                    <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                        @onclick='() => Sort("VipRegistered")'>
+                        VIP Registered
+                        <span class="text-gray-400">@SortIcon("VipRegistered")</span>
+                    </th>
+                    <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                        @onclick='() => Sort("VipUserCount")'>
+                        VIP User Count
+                        <span class="text-gray-400">@SortIcon("VipUserCount")</span>
+                    </th>
+                    <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                        @onclick='() => Sort("UserCount")'>
+                        User Count
+                        <span class="text-gray-400">@SortIcon("UserCount")</span>
+                    </th>
+                    <th class="text-center py-2 px-3 font-semibold text-gray-700 cursor-pointer select-none"
+                        @onclick='() => Sort("TotalUsers")'>
+                        Total Users
+                        <span class="text-gray-400">@SortIcon("TotalUsers")</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in FilteredItems)
+                {
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-3 text-gray-700">@item.CompanyName</td>
+                        <td class="py-3 px-3 text-center text-gray-600">@item.RegisteredUsers</td>
+                        <td class="py-3 px-3 text-center text-gray-600">
+                            <div>@item.UnregisteredUsers</div>
+                            <div class="text-gray-400" style="font-size: 10px;">Unregistered VIP count: @item.UnregisteredVipCount</div>
+                        </td>
+                        <td class="py-3 px-3 text-center text-gray-600">
+                            <div>@item.VipRegistered</div>
+                            <div class="text-gray-400" style="font-size: 10px;">Remaining VIP count: @item.RemainingVipCount</div>
+                        </td>
+                        <td class="py-3 px-3 text-center text-gray-600">@item.VipUserCount</td>
+                        <td class="py-3 px-3 text-center text-gray-600">@item.UserCount</td>
+                        <td class="py-3 px-3 text-center text-gray-600">@item.TotalUsers</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @* Footer: showing X to Y + pagination *@
+    <div class="flex items-center justify-between mt-4">
+        <span class="text-xs text-gray-500">
+            Showing @From to @To of @Items.Count entries
+        </span>
+        <div class="flex items-center gap-1">
+            <PaginationControl CurrentPage="@Page" TotalPages="@TotalPages" OnPageChanged="@(p => Page = p)" />
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Inject] private CompanyInformationService? CompanyInformationService { get; set; }
+
+    public CompanyInformationHeader CompanyInformationHeader { get; set; } = new();
+
+    private string SearchText = "";
+    private int PageSize = 10;
+    private int Page = 1;
+    private string SortCol = "CompanyName";
+    private bool SortAsc = true;
+
+    private List<CompanyInformationItem> Items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var companies = await CompanyInformationService!.GetCompanyListAsync();
+        Items = companies.Select(c => new CompanyInformationItem(
+            c.CorporateName,
+            int.TryParse(c.Registered, out var reg) ? reg : 0,
+            int.TryParse(c.Unregistered, out var unreg) ? unreg : 0,
+            int.TryParse(c.UnregisteredVIP, out var unregVip) ? unregVip : 0,
+            int.TryParse(c.RegisteredVIP, out var regVip) ? regVip : 0,
+            int.TryParse(c.TotalVIP, out var totalVip) ? totalVip : 0,
+            int.TryParse(c.UserCount, out var userCount) ? userCount : 0,
+            int.TryParse(c.TotalUser, out var totalUser) ? totalUser : 0,
+            int.TryParse(c.RemainingVip, out var remainingVip) ? remainingVip : 0
+        )).ToList();
+    }
+
+    private IEnumerable<CompanyInformationItem> FilteredItems =>
+        SortItems(
+            Items.Where(x =>
+                string.IsNullOrEmpty(SearchText) ||
+                x.CompanyName.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+        )
+        .Skip((Page - 1) * PageSize)
+        .Take(PageSize);
+
+    private IEnumerable<CompanyInformationItem> SortItems(IEnumerable<CompanyInformationItem> items) =>
+        (SortCol, SortAsc) switch
+        {
+            ("CompanyName", true) => items.OrderBy(x => x.CompanyName),
+            ("CompanyName", false) => items.OrderByDescending(x => x.CompanyName),
+            ("RegisteredUsers", true) => items.OrderBy(x => x.RegisteredUsers),
+            ("RegisteredUsers", false) => items.OrderByDescending(x => x.RegisteredUsers),
+            ("UnregisteredUsers", true) => items.OrderBy(x => x.UnregisteredUsers),
+            ("UnregisteredUsers", false) => items.OrderByDescending(x => x.UnregisteredUsers),
+            ("VipRegistered", true) => items.OrderBy(x => x.VipRegistered),
+            ("VipRegistered", false) => items.OrderByDescending(x => x.VipRegistered),
+            ("VipUserCount", true) => items.OrderBy(x => x.VipUserCount),
+            ("VipUserCount", false) => items.OrderByDescending(x => x.VipUserCount),
+            ("UserCount", true) => items.OrderBy(x => x.UserCount),
+            ("UserCount", false) => items.OrderByDescending(x => x.UserCount),
+            ("TotalUsers", true) => items.OrderBy(x => x.TotalUsers),
+            ("TotalUsers", false) => items.OrderByDescending(x => x.TotalUsers),
+            _ => items
+        };
+
+    private void Sort(string col)
+    {
+        if (SortCol == col) SortAsc = !SortAsc;
+        else { SortCol = col; SortAsc = true; }
+        Page = 1;
+    }
+
+    private string SortIcon(string col) => SortCol == col ? (SortAsc ? "↑" : "↓") : "⇅";
+
+    private int TotalPages => (int)Math.Ceiling(Items.Count / (double)PageSize);
+    private int From => (Page - 1) * PageSize + 1;
+    private int To => Math.Min(Page * PageSize, Items.Count);
+}

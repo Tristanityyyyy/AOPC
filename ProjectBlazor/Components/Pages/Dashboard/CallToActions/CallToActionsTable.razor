@@ -1,0 +1,7 @@
+@namespace ProjectBlazor.Components.Pages.Dashboard.CallToActions
+
+<CallToActionsBody OnOpenDatePicker="@OnOpenDatePicker" />
+
+@code {
+    [Parameter] public EventCallback<string> OnOpenDatePicker { get; set; }
+}

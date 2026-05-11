@@ -1,0 +1,119 @@
+@namespace ProjectBlazor.Components.Pages.Dashboard.ModuleClickCount
+
+<ModuleClickCountHeader />
+
+<DataTableCard TItem="ModuleClickCountItem" Title="@ModuleClickCountHeader.Title"
+               ShowClearFilter="true"
+               ShowSelectDate="true"
+               ShowFilterDays="true"
+               ShowSelectCategory="false"
+               SelectedDays="@SelectedDays"
+               DaysDropdownOpen="@DaysDropdownOpen"
+               OnClearFilter="@ClearFilter"
+               OnSelectDate="@OpenDatePicker"
+               OnToggleDropdown="@ToggleDropdown"
+               OnDaySelected="@SelectDay"
+               SearchText="@SearchText"
+               SearchTextChanged="@((v) => SearchText = v)"
+               SearchInputStyle="width: 7rem;"
+               PageSize="@PageSize"
+               PageSizeChanged="@((v) => PageSize = v)"
+               PaginationText="@($"Showing {From} to {To} of {Items.Count} entries")"
+               ExportButtonColor="@ModuleClickCountHeader.ExportButtonColor"
+               OnExport="@(() => { })">
+    <HeaderContent>
+        <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => Sort("Module")'>
+            Module <span class="text-gray-400">@SortIcon("Module")</span>
+        </th>
+        <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => Sort("Count")'>
+            Count <span class="text-gray-400">@SortIcon("Count")</span>
+        </th>
+    </HeaderContent>
+    <RowContent>
+        @foreach (var item in FilteredItems)
+        {
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="py-2 px-2 text-gray-700">@item.Module</td>
+                <td class="py-2 px-2 text-gray-600">@item.Count</td>
+            </tr>
+        }
+        @for (int i = FilteredItems.Count(); i < PageSize; i++)
+        {
+            <tr class="border-b border-gray-100">
+                <td class="py-2 px-2">&nbsp;</td>
+                <td class="py-2 px-2"></td>
+            </tr>
+        }
+    </RowContent>
+    <PaginationContent>
+        <PaginationControl CurrentPage="@Page" TotalPages="@TotalPages" OnPageChanged="@(p => Page = p)" />
+    </PaginationContent>
+</DataTableCard>
+
+@code {
+    [Parameter] public EventCallback<string> OnOpenDatePicker { get; set; }
+
+    public ModuleClickCountHeader ModuleClickCountHeader { get; set; } = new();
+
+    private string SelectedDays = "Filter Days";
+    private bool DaysDropdownOpen = false;
+    private string SearchText = "";
+    private int PageSize = 10;
+    private int Page = 1;
+    private string SortCol = "";
+    private bool SortAsc = true;
+
+    private List<ModuleClickCountItem> Items = new()
+    {
+        new("Access to co-working spaces",   2),
+        new("Alfardan Jewellery",            0),
+        new("Alfardan Jewellery Oman",       1),
+        new("Food & Beverages",              3),
+        new("Food & Beverages Oman",         0),
+        new("Health",                        0),
+        new("International Privileges",      1),
+        new("International Privileges Oman", 2),
+        new("Rooms & Suites",                3),
+        new("Rooms & Suites Oman",           0),
+        new("Module 11",                     0),
+        new("Module 12",                     0),
+        new("Module 13",                     0),
+    };
+
+    private IEnumerable<ModuleClickCountItem> FilteredItems =>
+        SortItems(
+            Items.Where(x =>
+                string.IsNullOrEmpty(SearchText) ||
+                x.Module.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+        )
+        .Skip((Page - 1) * PageSize)
+        .Take(PageSize);
+
+    private IEnumerable<ModuleClickCountItem> SortItems(IEnumerable<ModuleClickCountItem> items) =>
+        (SortCol, SortAsc) switch
+        {
+            ("Module", true) => items.OrderBy(x => x.Module),
+            ("Module", false) => items.OrderByDescending(x => x.Module),
+            ("Count", true) => items.OrderBy(x => x.Count),
+            ("Count", false) => items.OrderByDescending(x => x.Count),
+            _ => items
+        };
+
+    private void ToggleDropdown() => DaysDropdownOpen = !DaysDropdownOpen;
+    private void SelectDay(string day) { SelectedDays = day; DaysDropdownOpen = false; }
+    private void ClearFilter() { SelectedDays = "Filter Days"; DaysDropdownOpen = false; }
+    private void OpenDatePicker() => OnOpenDatePicker.InvokeAsync("module");
+
+    private void Sort(string col)
+    {
+        if (SortCol == col) SortAsc = !SortAsc;
+        else { SortCol = col; SortAsc = true; }
+        Page = 1;
+    }
+
+    private string SortIcon(string col) => SortCol == col ? (SortAsc ? "↑" : "↓") : "⇅";
+
+    private int TotalPages => (int)Math.Ceiling(Items.Count / (double)PageSize);
+    private int From => (Page - 1) * PageSize + 1;
+    private int To => Math.Min(Page * PageSize, Items.Count);
+}

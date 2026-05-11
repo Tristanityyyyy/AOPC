@@ -1,0 +1,56 @@
+@* Reusable registration card component *@
+
+<div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="@Style">
+    <div class="relative">
+        <CardHeader Title="@Title"
+                    ShowClearFilter="true"
+                    ShowSelectDate="true"
+                    ShowFilterDays="true"
+                    ShowSelectCategory="false"
+                    SelectedDays="@SelectedDays"
+                    OnClearFilter="OnClearFilter"
+                    OnSelectDate="OnSelectDate"
+                    OnToggleDropdown="OnToggleDropdown" />
+        @if (DropdownOpen)
+        {
+            <div class="absolute right-0 mt-1 w-28 bg-white border border-gray-200 shadow-md rounded-lg z-50">
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 7 Days"))' class="px-2 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-t-lg">Last 7 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 14 Days"))' class="px-2 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 14 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 30 Days"))' class="px-2 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 30 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 90 Days"))' class="px-2 py-1.5 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-b-lg">Last 90 Days</div>
+            </div>
+        }
+        <div class="flex flex-col mt-2 flex-1 justify-between items-center w-full">
+            <div class="flex items-center gap-3">
+                <div class="flex flex-col items-center">
+                    <span class="text-8xl font-bold" style="color: @ThemeConfig.Colors.Primary;">@NewUsers</span>
+                    <span class="text-xs text-gray-500 text-center">New User(s)</span>
+                </div>
+                <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="@ThemeConfig.Colors.Text.Muted" stroke-width="2">
+                    <path d="M3 12h18M15 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="flex flex-col items-center">
+                    <span class="text-8xl font-bold" style="color: @ThemeConfig.Colors.Primary;">@TotalActiveUsers</span>
+                    <span class="text-xs text-gray-500 text-center">Total Active User(s)</span>
+                </div>
+            </div>
+            <p class="text-xs m-0" style="color: @ThemeConfig.Colors.Primary;">
+                @RegistrationPercent.ToString("F2")% of expected user(s) are registered.
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "New User Registration";
+    [Parameter] public int NewUsers { get; set; }
+    [Parameter] public int TotalActiveUsers { get; set; }
+    [Parameter] public double RegistrationPercent { get; set; }
+    [Parameter] public string SelectedDays { get; set; } = "Filter Days";
+    [Parameter] public bool DropdownOpen { get; set; }
+    [Parameter] public EventCallback OnClearFilter { get; set; }
+    [Parameter] public EventCallback OnSelectDate { get; set; }
+    [Parameter] public EventCallback OnToggleDropdown { get; set; }
+    [Parameter] public EventCallback<string> OnDaySelected { get; set; }
+    [Parameter] public string Style { get; set; } = "height: 190px;";
+}

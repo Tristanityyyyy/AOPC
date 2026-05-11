@@ -1,0 +1,286 @@
+@page "/dashboardadmin"
+@rendermode InteractiveServer
+@namespace ProjectBlazor.Components.Pages.Dashboard
+@using ProjectBlazor.Components.Pages.Dashboard.CallToActions
+@using ProjectBlazor.Components.Pages.Dashboard.ModuleClickCount
+@using ProjectBlazor.Components.Pages.Dashboard.CompanyInformation
+
+<style>
+    .mud-carousel-indicators {
+        display: none !important;
+    }
+</style>
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Dashboard Admin</h3>
+
+<div class="grid grid-cols-12 gap-4">
+
+    @* ── Top Bar ── *@
+    <div class="col-span-12">
+        <DashboardTopBar SelectedDays="@_selectedDays"
+                         DropdownOpen="@_dropdownOpen"
+                         OnSelectDate="@(() => OpenDatePicker())" 
+                         OnToggleDropdown="@ToggleDropdown"
+                         OnDaySelected="@SelectDay"
+                         OnExport="@(() => { })" />
+    </div>
+
+    @* ── Total User Chart (left) ── *@
+    <div class="col-span-7">
+        <LineChartCard Title="Total User"
+                       ChartSeries="@_series"
+                       ChartLabels="@_xAxisLabels"
+                       ChartOptions="@_options" />
+    </div>
+
+    @* ── New User Registration + Support Center (right) ── *@
+    <div class="col-span-5 flex flex-col gap-4">
+
+        @* New User Registration *@
+        <RegistrationCard NewUsers="@_newUsers"
+                          TotalActiveUsers="@_totalActiveUsers"
+                          RegistrationPercent="@_registrationPercent"
+                          SelectedDays="@_selectedDays2"
+                          DropdownOpen="@_dropdownOpen2"
+                          OnClearFilter="@ClearFilter2"
+                          OnSelectDate="@OpenDatePicker2"
+                          OnToggleDropdown="@ToggleDropdown2"
+                          OnDaySelected="@SelectDay2" />
+
+        @* Support Center *@
+        <StatCard Title="Support Center"
+                  Value="@_concerns.ToString()"
+                  Label="Total concern that need to attends" />
+    </div>
+
+    @* ── Donut Carousel ── *@
+    <div class="col-span-12 flex">
+        <MudCarousel TData="string"
+                     Class="w-full rounded-xl"
+                     Style="height: 250px;"
+                     ShowArrows="true"
+                     ShowBullets="false"
+                     AutoCycle="false">
+            <MudCarouselItem>
+                <div class="flex gap-4 w-full h-full">
+                    <DonutChartCard Title="Top 3 Restaurant" Data="@_restaurantData" Labels="@_restaurantLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                    <DonutChartCard Title="Top 3 Hotels" Data="@_hotelData" Labels="@_hotelLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                    <DonutChartCard Title="Top 3 Store" Data="@_storeData" Labels="@_storeLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                </div>
+            </MudCarouselItem>
+            <MudCarouselItem>
+                <div class="flex gap-4 w-full h-full">
+                    <DonutChartCard Title="Top 3 Hotels" Data="@_hotelData" Labels="@_hotelLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                    <DonutChartCard Title="Top 3 Store" Data="@_storeData" Labels="@_storeLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                    <DonutChartCard Title="Top 3 Wellness" Data="@_wellnessData" Labels="@_wellnessLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                </div>
+            </MudCarouselItem>
+            <MudCarouselItem>
+                <div class="flex gap-4 w-full h-full">
+                    <DonutChartCard Title="Top 3 Store" Data="@_storeData" Labels="@_storeLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                    <DonutChartCard Title="Top 3 Wellness" Data="@_wellnessData" Labels="@_wellnessLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                    <DonutChartCard Title="Top 3 Offers" Data="@_offersData" Labels="@_offersLabels"
+                                    SelectedDays="@_donutSelectedDays" DropdownOpen="@_donutDropdownOpen"
+                                    OnSelectDate="@(() => OpenDatePicker("donut"))" OnToggleDropdown="@ToggleDonutDropdown"
+                                    OnViewDetails="@(() => { })" OnDaySelected="@SelectDonutDay" />
+                </div>
+            </MudCarouselItem>
+        </MudCarousel>
+    </div>
+
+    @* ── Call to Actions (left) ── *@
+    <div class="col-span-8">
+        <CallToActionsTable OnOpenDatePicker="@OpenDatePicker" />
+    </div>
+
+    @* ── Module Click Count (right) ── *@
+    <div class="col-span-4">
+        <ModuleClickCountTable OnOpenDatePicker="@OpenDatePicker" />
+    </div>
+
+    @if (_datePickerOpen)
+    {
+        <div class="fixed inset-0 z-50 flex items-center justify-center"
+             style="background: rgba(0,0,0,0.3);"
+             @onclick="CloseDatePicker">
+            <div class="bg-white rounded-2xl shadow-2xl p-6 w-96"
+                 @onclick:stopPropagation="true">
+
+                @* Header *@
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold" style="color: @ThemeConfig.Colors.Text.Primary;">Select Date Range</h2>
+                    <button @onclick="CloseDatePicker"
+                            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer border-none bg-transparent text-lg">
+                        ✕
+                    </button>
+                </div>
+
+                @* Date Inputs *@
+                <div class="flex gap-4 mb-6">
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">From Date</label>
+                        <div class="flex items-center border-b-2 pb-2"
+                             style="border-color: @ThemeConfig.Colors.Primary;">
+                            <input type="date"
+                                   @bind="_dateFrom"
+                                   class="flex-1 text-sm text-gray-700 border-none outline-none bg-transparent cursor-pointer"
+                                   style="color-scheme: light;" />
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">To Date</label>
+                        <div class="flex items-center border-b-2 pb-2"
+                             style="border-color: @ThemeConfig.Colors.Primary;">
+                            <input type="date"
+                                   @bind="_dateTo"
+                                   class="flex-1 text-sm text-gray-700 border-none outline-none bg-transparent cursor-pointer"
+                                   style="color-scheme: light;" />
+                        </div>
+                    </div>
+                </div>
+
+                @* Error message *@
+                @if (_dateError)
+                {
+                    <p class="text-xs text-red-500 mb-3">"From Date" must be before "To Date".</p>
+                }
+
+                @* Actions *@
+                <div class="flex justify-end gap-2">
+                    <button @onclick="CloseDatePicker"
+                            class="px-4 py-2 text-xs rounded-full cursor-pointer border"
+                            style="color: @ThemeConfig.Colors.Primary; border-color: @ThemeConfig.Colors.Primary; background: transparent;">
+                        Cancel
+                    </button>
+                    <button @onclick="ApplyDateRange"
+                            class="px-4 py-2 text-xs rounded-full text-white cursor-pointer border-none"
+                            style="background: @ThemeConfig.Colors.Primary;">
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* ── Company Information Table ── *@
+    <div class="col-span-12">
+        <CompanyInformationTable />
+    </div>
+</div>
+
+
+
+
+
+@code {
+
+    // DONUT CHARTTTTTTTTTTTTTTTTTTTTTTTTTTT
+    private double[] _restaurantData = { 65.00, 35.00 };
+    private string[] _restaurantLabels = { "Bebabel", "Scalini" };
+    private double[] _hotelData = { 25, 75 };
+    private string[] _hotelLabels = { "St. Regis", "Four Seasons" };
+    private double[] _storeData = { 60, 40 };
+    private string[] _storeLabels = { "Store A", "Store B" };
+    private double[] _wellnessData = { 70, 30 };
+    private string[] _wellnessLabels = { "Spa A", "Spa B" };
+    private double[] _offersData = { 70, 30 };
+    private string[] _offersLabels = { "Etc A", "Etc B" };
+
+    // TOP BARRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+    private string _selectedDays = "Filter Days";
+    private bool _dropdownOpen = false;
+    private void ToggleDropdown() => _dropdownOpen = !_dropdownOpen;
+    private void SelectDay(string day) { _selectedDays = day; _dropdownOpen = false; }
+
+    // NEW USER REGISTRATIONNNNNNNNNNNNNNN
+    private string _selectedDays2 = "Filter Days";
+    private bool _dropdownOpen2 = false;
+    private int _newUsers = 0;
+    private int _totalActiveUsers = 1427;
+    private double _registrationPercent = 0.00;
+    private void ToggleDropdown2() => _dropdownOpen2 = !_dropdownOpen2;
+    private void SelectDay2(string day) { _selectedDays2 = day; _dropdownOpen2 = false; }
+    private void ClearFilter2() { _selectedDays2 = "Filter Days"; _dropdownOpen2 = false; }
+    private void OpenDatePicker2() => OpenDatePicker("newuser");
+
+    // SUPPORT CENTERRRRRRRRRRRRRRR
+    private int _concerns = 1427;
+
+    // LINE CHARTTTTTTTTTTTTTT
+    private LineChartOptions _options = new() { YAxisTicks = 5, LineStrokeWidth = 2 };
+    private List<ChartSeries<double>> _series = new()
+    {
+        new ChartSeries<double> { Data = new double[] { 120, 250, 180, 400, 350, 550, 480, 700, 650, 800 } }
+    };
+    private string[] _xAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct" };
+
+
+
+
+
+
+
+    private string _donutSelectedDays = "Filter Days";
+    private bool _donutDropdownOpen = false;
+
+    private void ToggleDonutDropdown() => _donutDropdownOpen = !_donutDropdownOpen;
+    private void SelectDonutDay(string day) { _donutSelectedDays = day; _donutDropdownOpen = false; }
+
+    // DATE PICKER
+    private bool _datePickerOpen = false;
+    private DateTime _dateFrom = DateTime.Today.AddDays(-7);
+    private DateTime _dateTo = DateTime.Today;
+    private bool _dateError = false;
+    private string _activeDateTarget = ""; // tracks which card opened it
+
+    private void OpenDatePicker(string target = "")
+    {
+        _activeDateTarget = target;
+        _dateError = false;
+        _datePickerOpen = true;
+    }
+
+    private void CloseDatePicker()
+    {
+        _datePickerOpen = false;
+        _dateError = false;
+    }
+
+    private void ApplyDateRange()
+    {
+        if (_dateFrom > _dateTo)
+        {
+            _dateError = true;
+            return;
+        }
+        // Use _activeDateTarget to know which card to apply to
+        // e.g. if (_activeDateTarget == "cta") { ... }
+        _datePickerOpen = false;
+    }
+
+
+}

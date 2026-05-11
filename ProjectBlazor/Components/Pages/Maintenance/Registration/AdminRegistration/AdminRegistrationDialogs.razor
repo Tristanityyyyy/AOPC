@@ -1,0 +1,245 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Registration.AdminRegistration
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components.Shared.Table
+@using ProjectBlazor.Components
+
+@if (_showAddDialog)
+{
+    <DialogModal IsVisible="_showAddDialog"
+                 Title="Admin Registration Form"
+                 Icon="@Icons.Material.Filled.AdminPanelSettings"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="() => _showAddDialog = false">
+        <ChildContent>
+            <div class="flex items-center gap-6 mb-4">
+                <div class="w-24 h-24 rounded-full border-2 border-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center bg-gray-100">
+                    @if (!string.IsNullOrEmpty(_imageUrl))
+                    {
+                        <img src="@_imageUrl" class="w-full h-full object-cover" />
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Style="@($"font-size:40px; color:{ThemeConfig.Colors.Text.LightGray};")" />
+                    }
+                </div>
+                <label class="flex items-center gap-2 px-6 py-2 rounded-lg text-white text-xs font-medium cursor-pointer" style="background:@ThemeConfig.Colors.Primary;">
+                    <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:14px;" Color="Color.Inherit" />
+                    Upload Image
+                    <InputFile OnChange="OnImageSelected" accept="image/*" class="hidden" />
+                </label>
+            </div>
+
+            <FormGrid Columns="2">
+                <FormField Label="Employee ID" Required>
+                    <TextInput @bind-Value="_employeeId" Placeholder="Enter employee ID" />
+                </FormField>
+                <FormField Label="Email" Required>
+                    <TextInput Type="email" @bind-Value="_email" Placeholder="Enter email" />
+                </FormField>
+                <FormField Label="First Name" Required>
+                    <TextInput @bind-Value="_fname" Placeholder="Enter first name" />
+                </FormField>
+                <FormField Label="Last Name" Required>
+                    <TextInput @bind-Value="_lname" Placeholder="Enter last name" />
+                </FormField>
+                <FormField Label="Username" Required>
+                    <TextInput @bind-Value="_username" Placeholder="Enter username" />
+                </FormField>
+                <FormField Label="Password" Required>
+                    <TextInput Type="password" @bind-Value="_password" Placeholder="Enter password" />
+                </FormField>
+                <FormField Label="Gender">
+                    <SelectInput @bind-Value="_gender">
+                        <option value="">-Select Gender-</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </SelectInput>
+                </FormField>
+            </FormGrid>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Admin"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => _showAddDialog = false"
+                          OnConfirm="AddAdmin" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@if (_showEditDialog)
+{
+    <DialogModal IsVisible="_showEditDialog"
+                 Title="Edit Admin"
+                 Icon="@Icons.Material.Filled.AdminPanelSettings"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="CancelEdit">
+        <ChildContent>
+            <div class="flex items-center gap-6 mb-4">
+                <div class="w-24 h-24 rounded-full border-2 border-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center bg-gray-100">
+                    @if (!string.IsNullOrEmpty(_imageUrl))
+                    {
+                        <img src="@_imageUrl" class="w-full h-full object-cover" />
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Style="@($"font-size:40px; color:{ThemeConfig.Colors.Text.LightGray};")" />
+                    }
+                </div>
+                <label class="flex items-center gap-2 px-6 py-2 rounded-lg text-white text-xs font-medium cursor-pointer" style="background:@ThemeConfig.Colors.Primary;">
+                    <MudIcon Icon="@Icons.Material.Filled.Upload" Style="font-size:14px;" Color="Color.Inherit" />
+                    Upload Image
+                    <InputFile OnChange="OnImageSelected" accept="image/*" class="hidden" />
+                </label>
+            </div>
+
+            <FormGrid Columns="2">
+                <FormField Label="Employee ID">
+                    <TextInput @bind-Value="_employeeId" />
+                </FormField>
+                <FormField Label="Email">
+                    <TextInput Type="email" @bind-Value="_email" />
+                </FormField>
+                <FormField Label="First Name">
+                    <TextInput @bind-Value="_fname" />
+                </FormField>
+                <FormField Label="Last Name">
+                    <TextInput @bind-Value="_lname" />
+                </FormField>
+                <FormField Label="Username">
+                    <TextInput @bind-Value="_username" />
+                </FormField>
+                <FormField Label="Gender">
+                    <SelectInput @bind-Value="_gender">
+                        <option value="">-Select Gender-</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </SelectInput>
+                </FormField>
+            </FormGrid>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEdit"
+                          OnConfirm="SaveEdit" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    private bool _showAddDialog;
+    private bool _showEditDialog;
+    private AdminRegistrationItem? _editingItem;
+
+    private string _imageUrl = "";
+    private string _employeeId = "";
+    private string _email = "";
+    private string _fname = "";
+    private string _lname = "";
+    private string _username = "";
+    private string _password = "";
+    private string _gender = "";
+
+    [Parameter] public EventCallback<AdminRegistrationItem> OnAdd { get; set; }
+    [Parameter] public EventCallback<AdminRegistrationItem> OnEdit { get; set; }
+
+    public void OpenAdd()
+    {
+        _imageUrl = "";
+        _employeeId = "";
+        _email = "";
+        _fname = "";
+        _lname = "";
+        _username = "";
+        _password = "";
+        _gender = "";
+        _showAddDialog = true;
+    }
+
+    public void OpenEdit(AdminRegistrationItem item)
+    {
+        _editingItem = item;
+        _imageUrl = item.FilePath;
+        _employeeId = item.EmployeeID;
+        _email = item.Email;
+        _fname = item.Fname;
+        _lname = item.Lname;
+        _username = item.Username;
+        _password = "";
+        _gender = item.Gender;
+        _showEditDialog = true;
+    }
+
+    private void CancelEdit()
+    {
+        _showEditDialog = false;
+        _editingItem = null;
+    }
+
+    private async void AddAdmin()
+    {
+        var newItem = new AdminRegistrationItem(
+            0,
+            _employeeId,
+            $"{_fname} {_lname}",
+            _username,
+            _fname,
+            _lname,
+            _email,
+            _gender,
+            "",
+            "",
+            1,
+            "ADMIN",
+            DateTime.Now,
+            "",
+            "",
+            "",
+            "REGISTERED",
+            _imageUrl,
+            false
+        );
+        await OnAdd.InvokeAsync(newItem);
+        _showAddDialog = false;
+    }
+
+    private async void SaveEdit()
+    {
+        if (_editingItem != null)
+        {
+            var updatedItem = new AdminRegistrationItem(
+                _editingItem.Id,
+                _employeeId,
+                $"{_fname} {_lname}",
+                _username,
+                _fname,
+                _lname,
+                _email,
+                _gender,
+                _editingItem.Position,
+                _editingItem.Corporatename,
+                _editingItem.UserTypeId,
+                _editingItem.UserType,
+                _editingItem.DateCreated,
+                _editingItem.CorporateID,
+                _editingItem.MembershipID,
+                _editingItem.PositionID,
+                _editingItem.Status,
+                _imageUrl,
+                _editingItem.IsVIP
+            );
+            await OnEdit.InvokeAsync(updatedItem);
+        }
+        _showEditDialog = false;
+        _editingItem = null;
+    }
+
+    private async Task OnImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream(5 * 1024 * 1024).ReadAsync(buffer);
+        _imageUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    }
+}

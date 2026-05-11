@@ -1,0 +1,55 @@
+@* Reusable pagination control component *@
+
+<button disabled="@(CurrentPage == 1)" @onclick="@(() => OnPageChanged.InvokeAsync(1))"
+        class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+    «
+</button>
+<button disabled="@(CurrentPage == 1)" @onclick="@(() => OnPageChanged.InvokeAsync(CurrentPage - 1))"
+        class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+    ‹
+</button>
+
+@foreach (var p in GetPages())
+{
+    if (p == null)
+    {
+        <span class="px-1 text-xs text-gray-400">…</span>
+    }
+    else
+    {
+        var pg = p.Value;
+        <button @onclick="@(() => OnPageChanged.InvokeAsync(pg))"
+                class="@($"px-2 py-0.5 text-xs border rounded {(pg == CurrentPage ? "text-white border-transparent" : "border-gray-300 hover:bg-gray-100")}")"
+                style="@(pg == CurrentPage ? $"background:{ThemeConfig.Colors.Primary};" : "")">
+            @pg
+        </button>
+    }
+}
+
+<button disabled="@(CurrentPage == TotalPages)" @onclick="@(() => OnPageChanged.InvokeAsync(CurrentPage + 1))"
+        class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+    ›
+</button>
+<button disabled="@(CurrentPage == TotalPages)" @onclick="@(() => OnPageChanged.InvokeAsync(TotalPages))"
+        class="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-40">
+    »
+</button>
+
+@code {
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public int TotalPages { get; set; } = 1;
+    [Parameter] public EventCallback<int> OnPageChanged { get; set; }
+
+    private List<int?> GetPages()
+    {
+        var pages = new List<int?>();
+        for (int i = 1; i <= TotalPages; i++)
+        {
+            if (i == 1 || i == TotalPages || (i >= CurrentPage - 1 && i <= CurrentPage + 1))
+                pages.Add(i);
+            else if (pages.Count > 0 && pages.Last() != null)
+                pages.Add(null);
+        }
+        return pages;
+    }
+}

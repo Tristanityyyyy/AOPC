@@ -1,0 +1,115 @@
+@typeparam TItem
+
+<div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="@Style">
+    <div class="relative">
+        <CardHeader Title="@Title"
+                    ShowClearFilter="@ShowClearFilter"
+                    ShowSelectDate="@ShowSelectDate"
+                    ShowFilterDays="@ShowFilterDays"
+                    ShowSelectCategory="@ShowSelectCategory"
+                    SelectedDays="@SelectedDays"
+                    SelectedCategory="@SelectedCategory"
+                    CategoryDropdownOpen="@CategoryDropdownOpen"
+                    Categories="@Categories"
+                    OnClearFilter="OnClearFilter"
+                    OnSelectDate="OnSelectDate"
+                    OnToggleDropdown="OnToggleDropdown"
+                    OnToggleCategoryDropdown="OnToggleCategoryDropdown"
+                    OnCategorySelected="OnCategorySelected" />
+        @if (DaysDropdownOpen)
+        {
+            <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 7 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-t-lg">Last 7 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 14 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 14 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 30 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer">Last 30 Days</div>
+                <div @onclick='@(() => OnDaySelected.InvokeAsync("Last 90 Days"))' class="px-3 py-2 text-xs text-gray-700 hover:bg-amber-50 hover:text-amber-700 cursor-pointer rounded-b-lg">Last 90 Days</div>
+            </div>
+        }
+    </div>
+
+    <div class="flex items-center justify-between mt-3 mb-2">
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+            <select class="border border-gray-300 rounded px-2 py-1 text-xs" @bind="PageSize" @bind:after="OnPageSizeChange">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+            entries per page
+        </div>
+        <div class="flex items-center gap-2 text-xs text-gray-600">
+            Search:
+            <input type="text" @bind="SearchText" @bind:event="oninput" @bind:after="OnSearchTextChange"
+                   class="border border-gray-300 rounded px-2 py-1 text-xs" style="@SearchInputStyle" />
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto" style="min-height: 0;">
+        <table class="w-full text-xs">
+            <thead>
+                <tr class="border-b border-gray-200">
+                    @HeaderContent
+                </tr>
+            </thead>
+            <tbody>
+                @RowContent
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex items-center justify-between mt-3">
+        <span class="text-xs text-gray-500">@PaginationText</span>
+        <div class="flex items-center gap-1">
+            @PaginationContent
+        </div>
+    </div>
+    @if (ShowExportButton)
+    {
+        <div class="flex justify-end mt-2">
+            <button class="px-3 py-1.5 text-xs text-white rounded" style="background: @ExportButtonColor;" @onclick="OnExport">
+                Export Excel File
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Style { get; set; } = "height: 550px;";
+    [Parameter] public string SearchInputStyle { get; set; } = "width: 10rem;";
+    [Parameter] public bool ShowClearFilter { get; set; } = true;
+    [Parameter] public bool ShowSelectDate { get; set; } = true;
+    [Parameter] public bool ShowFilterDays { get; set; } = true;
+    [Parameter] public bool ShowSelectCategory { get; set; }
+    [Parameter] public string SelectedDays { get; set; } = "Filter Days";
+    [Parameter] public string SelectedCategory { get; set; } = "Select Category";
+    [Parameter] public bool DaysDropdownOpen { get; set; }
+    [Parameter] public bool CategoryDropdownOpen { get; set; }
+    [Parameter] public List<string> Categories { get; set; } = new();
+    [Parameter] public EventCallback OnClearFilter { get; set; }
+    [Parameter] public EventCallback OnSelectDate { get; set; }
+    [Parameter] public EventCallback OnToggleDropdown { get; set; }
+    [Parameter] public EventCallback OnToggleCategoryDropdown { get; set; }
+    [Parameter] public EventCallback<string> OnCategorySelected { get; set; }
+    [Parameter] public EventCallback<string> OnDaySelected { get; set; }
+    [Parameter] public RenderFragment HeaderContent { get; set; } = default!;
+    [Parameter] public RenderFragment RowContent { get; set; } = default!;
+    [Parameter] public RenderFragment PaginationContent { get; set; } = default!;
+    [Parameter] public string PaginationText { get; set; } = string.Empty;
+    [Parameter] public string SearchText { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> SearchTextChanged { get; set; }
+    [Parameter] public int PageSize { get; set; } = 10;
+    [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
+    [Parameter] public bool ShowExportButton { get; set; } = true;
+    [Parameter] public string ExportButtonColor { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnExport { get; set; }
+
+    private async Task OnSearchTextChange()
+    {
+        await SearchTextChanged.InvokeAsync(SearchText);
+    }
+
+    private async Task OnPageSizeChange()
+    {
+        await PageSizeChanged.InvokeAsync(PageSize);
+    }
+}

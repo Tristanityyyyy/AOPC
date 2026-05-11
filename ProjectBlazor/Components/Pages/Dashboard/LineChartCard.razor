@@ -1,0 +1,22 @@
+@* Reusable line chart card component *@
+
+<div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="@Style">
+    <p class="text-base font-medium mb-2" style="color: @ThemeConfig.Colors.Primary;">@Title</p>
+    <div class="w-full" style="height: 320px;">
+        <MudChart ChartType="ChartType.Line"
+                  ChartSeries="@ChartSeries"
+                  ChartLabels="@ChartLabels"
+                  ChartOptions="@ChartOptions"
+                  Width="100%"
+                  Height="320px"
+                  ShowLegend="false" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public List<ChartSeries<double>> ChartSeries { get; set; } = new();
+    [Parameter] public string[] ChartLabels { get; set; } = Array.Empty<string>();
+    [Parameter] public LineChartOptions ChartOptions { get; set; } = new() { YAxisTicks = 5, LineStrokeWidth = 2 };
+    [Parameter] public string Style { get; set; } = "height: 396px; overflow: hidden;";
+}

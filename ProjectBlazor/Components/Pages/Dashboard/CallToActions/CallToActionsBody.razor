@@ -1,0 +1,160 @@
+@namespace ProjectBlazor.Components.Pages.Dashboard.CallToActions
+
+<CallToActionsHeader />
+
+<DataTableCard TItem="CallToActionsItem" Title="@CallToActionsHeader.Title"
+               ShowClearFilter="true"
+               ShowSelectDate="true"
+               ShowFilterDays="true"
+               ShowSelectCategory="true"
+               SelectedDays="@SelectedDays"
+               SelectedCategory="@SelectedCategory"
+               DaysDropdownOpen="@DaysDropdownOpen"
+               CategoryDropdownOpen="@CategoryDropdownOpen"
+               Categories="@Categories"
+               OnClearFilter="@ClearFilter"
+               OnSelectDate="@OpenDatePicker"
+               OnToggleDropdown="@ToggleDropdown"
+               OnToggleCategoryDropdown="@ToggleCategoryDropdown"
+               OnCategorySelected="@SelectCategory"
+               OnDaySelected="@SelectDay"
+               SearchText="@SearchText"
+               SearchTextChanged="@((v) => SearchText = v)"
+               PageSize="@PageSize"
+               PageSizeChanged="@((v) => PageSize = v)"
+               PaginationText="@($"Showing {From} to {To} of {Items.Count} entries")"
+               ExportButtonColor="@CallToActionsHeader.ExportButtonColor"
+               OnExport="@(() => { })">
+    <HeaderContent>
+        <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => Sort("Name")'>
+            Name <span class="text-gray-400">@SortIcon("Name")</span>
+        </th>
+        <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => Sort("Category")'>
+            Categories <span class="text-gray-400">@SortIcon("Category")</span>
+        </th>
+        <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => Sort("Call")'>
+            Call <span class="text-gray-400">@SortIcon("Call")</span>
+        </th>
+        <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => Sort("Email")'>
+            Email <span class="text-gray-400">@SortIcon("Email")</span>
+        </th>
+        <th class="text-left py-2 px-2 font-semibold text-gray-700 cursor-pointer select-none" @onclick='() => Sort("Book")'>
+            Book <span class="text-gray-400">@SortIcon("Book")</span>
+        </th>
+    </HeaderContent>
+    <RowContent>
+        @foreach (var item in FilteredItems)
+        {
+            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="py-2 px-2 text-gray-700">@item.Name</td>
+                <td class="py-2 px-2 text-gray-600">@item.Category</td>
+                <td class="py-2 px-2 text-gray-600">@item.Call</td>
+                <td class="py-2 px-2 text-gray-600">@item.Email</td>
+                <td class="py-2 px-2 text-gray-600">@item.Book</td>
+            </tr>
+        }
+        @for (int i = FilteredItems.Count(); i < PageSize; i++)
+        {
+            <tr class="border-b border-gray-100">
+                <td class="py-2 px-2">&nbsp;</td>
+                <td class="py-2 px-2"></td>
+                <td class="py-2 px-2"></td>
+                <td class="py-2 px-2"></td>
+                <td class="py-2 px-2"></td>
+            </tr>
+        }
+    </RowContent>
+    <PaginationContent>
+        <PaginationControl CurrentPage="@Page" TotalPages="@TotalPages" OnPageChanged="@(p => Page = p)" />
+    </PaginationContent>
+</DataTableCard>
+
+@code {
+    [Parameter] public EventCallback<string> OnOpenDatePicker { get; set; }
+
+    public CallToActionsHeader CallToActionsHeader { get; set; } = new();
+
+    private string SelectedDays = "Filter Days";
+    private string SelectedCategory = "Select Category";
+    private bool DaysDropdownOpen = false;
+    private bool CategoryDropdownOpen = false;
+    private string SearchText = "";
+    private int PageSize = 10;
+    private int Page = 1;
+    private string SortCol = "";
+    private bool SortAsc = true;
+
+    private List<string> Categories = new()
+    {
+        "Restaurant", "Hotel", "Health",
+        "Shops & Services", "News", "Wellness",
+        "Access to co-working spaces"
+    };
+
+    private List<CallToActionsItem> Items = new()
+    {
+        new("1860 Lounge",             "Food & Beverages",        0, 0, 0),
+        new("Ahwet Zeitouna",          "Food & Beverages",        0, 0, 0),
+        new("Alfardan Jewellery",      "Alfardan Jewellery",      0, 0, 0),
+        new("Alfardan Jewellery Oman", "Alfardan Jewellery Oman", 0, 0, 0),
+        new("Alfardan Spa",            "Wellness",                0, 0, 0),
+        new("Al Sufra",                "Food & Beverages",        0, 0, 0),
+        new("AMNM",                    "Health",                  0, 0, 0),
+        new("Astor Grill",             "Food & Beverages",        0, 0, 0),
+        new("Babel",                   "Food & Beverages",        0, 0, 0),
+        new("Bay View",                "Food & Beverages",        0, 0, 0),
+        new("Item 11",                 "Wellness",                0, 0, 0),
+    };
+
+    private IEnumerable<CallToActionsItem> FilteredItems =>
+        SortItems(
+            Items.Where(x =>
+                string.IsNullOrEmpty(SearchText) ||
+                x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                x.Category.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+        )
+        .Skip((Page - 1) * PageSize)
+        .Take(PageSize);
+
+    private IEnumerable<CallToActionsItem> SortItems(IEnumerable<CallToActionsItem> items) =>
+        (SortCol, SortAsc) switch
+        {
+            ("Name", true) => items.OrderBy(x => x.Name),
+            ("Name", false) => items.OrderByDescending(x => x.Name),
+            ("Category", true) => items.OrderBy(x => x.Category),
+            ("Category", false) => items.OrderByDescending(x => x.Category),
+            ("Call", true) => items.OrderBy(x => x.Call),
+            ("Call", false) => items.OrderByDescending(x => x.Call),
+            ("Email", true) => items.OrderBy(x => x.Email),
+            ("Email", false) => items.OrderByDescending(x => x.Email),
+            ("Book", true) => items.OrderBy(x => x.Book),
+            ("Book", false) => items.OrderByDescending(x => x.Book),
+            _ => items
+        };
+
+    private void ToggleDropdown() { DaysDropdownOpen = !DaysDropdownOpen; CategoryDropdownOpen = false; }
+    private void ToggleCategoryDropdown() { CategoryDropdownOpen = !CategoryDropdownOpen; DaysDropdownOpen = false; }
+    private void SelectDay(string day) { SelectedDays = day; DaysDropdownOpen = false; }
+    private void SelectCategory(string c) { SelectedCategory = c; CategoryDropdownOpen = false; }
+    private void OpenDatePicker() => OnOpenDatePicker.InvokeAsync("cta");
+    private void ClearFilter()
+    {
+        SelectedDays = "Filter Days";
+        SelectedCategory = "Select Category";
+        DaysDropdownOpen = false;
+        CategoryDropdownOpen = false;
+    }
+
+    private void Sort(string col)
+    {
+        if (SortCol == col) SortAsc = !SortAsc;
+        else { SortCol = col; SortAsc = true; }
+        Page = 1;
+    }
+
+    private string SortIcon(string col) => SortCol == col ? (SortAsc ? "↑" : "↓") : "⇅";
+
+    private int TotalPages => (int)Math.Ceiling(Items.Count / (double)PageSize);
+    private int From => (Page - 1) * PageSize + 1;
+    private int To => Math.Min(Page * PageSize, Items.Count);
+}

@@ -1,0 +1,49 @@
+@page "/maintenance/registration"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Pages.Maintenance.Registration.UserRegistration
+@using ProjectBlazor.Components.Pages.Maintenance.Registration.AdminRegistration
+@using ProjectBlazor.Components.Pages.Maintenance.Registration.CorporateAdminRegistration
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Registration</h3>
+
+<div class="flex border-b border-gray-200 mb-4">
+    <button @onclick='() => _activeTab = "user"'
+            class="flex items-center gap-1 px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "user" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
+        <MudIcon Icon="@Icons.Material.Filled.Group" Style="font-size: 14px;" Color="Color.Inherit" />
+        User Registration
+    </button>
+    <button @onclick='() => _activeTab = "admin"'
+            class="flex items-center gap-1 px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "admin" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
+        <MudIcon Icon="@Icons.Material.Filled.AdminPanelSettings" Style="font-size: 14px;" Color="Color.Inherit" />
+        Admin Registration
+    </button>
+    <button @onclick='() => _activeTab = "corporate"'
+            class="flex items-center gap-1 px-5 py-2 text-xs font-medium border-b-2 transition"
+            style="@(_activeTab == "corporate" ? $"border-color:{ThemeConfig.Colors.Primary}; color:{ThemeConfig.Colors.Primary};" : $"border-color:transparent; color:{ThemeConfig.Colors.Text.Secondary};")">
+        <MudIcon Icon="@Icons.Material.Filled.Business" Style="font-size: 14px;" Color="Color.Inherit" />
+        Corporate Admin Registration
+    </button>
+</div>
+
+<div class="grid grid-cols-12 gap-4">
+    @if (_activeTab == "user")
+    {
+        <UserRegistration />
+    }
+    @if (_activeTab == "admin")
+    {
+        <AdminRegistration />
+    }
+    @if (_activeTab == "corporate")
+    {
+        <CorporateAdminRegistration />
+    }
+</div>
+
+@code {
+    private string _activeTab = "user";
+}

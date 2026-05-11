@@ -1,0 +1,19 @@
+@* Reusable stat card component for displaying single statistics *@
+
+<div class="bg-white rounded-lg border border-gray-200 shadow-md flex flex-col p-4" style="@Style">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <p class="text-base font-medium mb-4" style="color: @ThemeConfig.Colors.Primary;">@Title</p>
+    }
+    <div class="flex flex-col items-center justify-center flex-1 w-full">
+        <span class="text-8xl font-bold" style="color: @ThemeConfig.Colors.Primary;">@Value</span>
+        <span class="text-xs text-gray-500 text-center">@Label</span>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string Value { get; set; } = "0";
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string Style { get; set; } = "height: 190px;";
+}

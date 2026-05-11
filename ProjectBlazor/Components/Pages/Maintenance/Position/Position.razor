@@ -1,0 +1,15 @@
+@page "/maintenance/position"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using ProjectBlazor.Components
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Pages.Maintenance.Position
+
+<h3 class="text-2xl font-medium mb-4" style="@ThemeConfig.Styles.TextPrimary">Position Maintenance</h3>
+
+<div class="grid grid-cols-12 gap-4">
+    <PositionBody @ref="Body" />
+</div>
+
+@code {
+    private PositionBody Body { get; set; } = null!;
+}

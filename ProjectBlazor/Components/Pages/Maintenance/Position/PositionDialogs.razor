@@ -1,0 +1,121 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Position
+@using ProjectBlazor.Components.Shared
+@using ProjectBlazor.Components.Shared.Form
+@using ProjectBlazor.Components.Shared.Table
+@using ProjectBlazor.Components
+
+@if (_showAddDialog)
+{
+    <DialogModal IsVisible="_showAddDialog"
+                 Title="Add Position"
+                 Icon="@Icons.Material.Filled.Work"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="() => _showAddDialog = false">
+        <ChildContent>
+            <FormField Label="Position Name" Required>
+                <TextInput @bind-Value="_addName" Placeholder="Enter position name" />
+            </FormField>
+            <FormField Label="Position Description">
+                <TextAreaInput @bind-Value="_addDescription" Rows="3" Placeholder="Enter position description" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Add Position"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="() => _showAddDialog = false"
+                          OnConfirm="AddPosition" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@if (_showEditDialog)
+{
+    <DialogModal IsVisible="_showEditDialog"
+                 Title="Edit Position"
+                 Icon="@Icons.Material.Filled.Work"
+                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 OnClose="CancelEdit">
+        <ChildContent>
+            <FormField Label="Position Name" Required>
+                <TextInput @bind-Value="_editName" />
+            </FormField>
+            <FormField Label="Position Description">
+                <TextAreaInput @bind-Value="_editDescription" Rows="3" />
+            </FormField>
+        </ChildContent>
+        <FooterContent>
+            <DialogFooter ConfirmText="Save Changes"
+                          ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
+                          OnCancel="CancelEdit"
+                          OnConfirm="SaveEdit" />
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    private bool _showAddDialog;
+    private bool _showEditDialog;
+    private PositionItem? _editingItem;
+
+    private string _addName = "";
+    private string _addDescription = "";
+
+    private string _editName = "";
+    private string _editDescription = "";
+
+    [Parameter] public EventCallback<PositionItem> OnAdd { get; set; }
+    [Parameter] public EventCallback<PositionItem> OnEdit { get; set; }
+
+    public void OpenAdd()
+    {
+        _addName = "";
+        _addDescription = "";
+        _showAddDialog = true;
+    }
+
+    public void OpenEdit(PositionItem item)
+    {
+        _editingItem = item;
+        _editName = item.Name;
+        _editDescription = item.Description;
+        _showEditDialog = true;
+    }
+
+    private void CancelEdit()
+    {
+        _showEditDialog = false;
+        _editingItem = null;
+    }
+
+    private async void AddPosition()
+    {
+        var newItem = new PositionItem(
+            0,
+            $"POS-{DateTime.Now.Ticks}",
+            _addName,
+            _addDescription,
+            DateTime.Now,
+            5
+        );
+        await OnAdd.InvokeAsync(newItem);
+        _showAddDialog = false;
+    }
+
+    private async void SaveEdit()
+    {
+        if (_editingItem != null)
+        {
+            var updatedItem = new PositionItem(
+                _editingItem.Id,
+                _editingItem.PositionID,
+                _editName,
+                _editDescription,
+                _editingItem.DateCreated,
+                _editingItem.Status
+            );
+            await OnEdit.InvokeAsync(updatedItem);
+        }
+        _showEditDialog = false;
+        _editingItem = null;
+    }
+}

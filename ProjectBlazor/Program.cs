@@ -11,6 +11,9 @@ using ProjectBlazor.Components.Pages.Maintenance.Corporate;
 using ProjectBlazor.Components.Pages.Maintenance.Vendor;
 using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Privileges;
 using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers;
+using ProjectBlazor.Components.Pages.Maintenance.Position;
+using ProjectBlazor.Components.Pages.Maintenance.Registration.AdminRegistration;
+using ProjectBlazor.Components.Pages.Dashboard.CompanyInformation;
 using DotNetEnv;
 
 Env.Load();
@@ -75,6 +78,24 @@ builder.Services.AddHttpClient<TiersService>(client =>
 });
 
 builder.Services.AddHttpClient<VendorService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
+});
+
+builder.Services.AddHttpClient<PositionService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
+});
+
+builder.Services.AddHttpClient<AdminRegistrationService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
+});
+
+builder.Services.AddHttpClient<CompanyInformationService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
     client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);

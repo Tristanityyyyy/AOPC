@@ -1,0 +1,86 @@
+@namespace ProjectBlazor.Components.Pages.Maintenance.Position
+@using ProjectBlazor.Components.Shared
+
+<PositionHeader />
+
+<div class="col-span-12">
+    <DataTable T="PositionItem"
+               Title="@PositionHeader.Title"
+               Items="Items"
+               Columns="Columns"
+               ButtonColor="@PositionHeader.ButtonColor"
+               HeaderGradient="@PositionHeader.HeaderGradient"
+               OnAddClick="OpenAdd" />
+</div>
+
+<PositionDialogs @ref="Dialogs" OnAdd="HandleAdd" OnEdit="HandleEdit" />
+
+@code {
+    [Parameter] public List<PositionItem> Items { get; set; } = new();
+
+    [Parameter] public List<TableColumn<PositionItem>> Columns { get; set; } = new();
+
+    public PositionDialogs Dialogs { get; set; } = null!;
+    public PositionHeader PositionHeader { get; set; } = new();
+
+    [Inject] private PositionService? PositionService { get; set; }
+
+    public void OpenAdd() => Dialogs.OpenAdd();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var positions = await PositionService!.GetPositionsAsync();
+        Items = positions.Select(p => new PositionItem(
+            p.Id,
+            p.PositionID,
+            p.Name,
+            p.Description,
+            DateTime.TryParse(p.DateCreated, out var dc) ? dc : DateTime.Now,
+            p.Status
+        )).ToList();
+
+        Columns = new List<TableColumn<PositionItem>>
+        {
+            new() {
+                Header = "Name", Width = "30%", SortField = "Name",
+                RenderCell = item => __builder =>
+                {
+                    <div class="relative w-full" style="height:64px;">
+                        <div class="absolute left-0 text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200" style="top:8px;">@item.PositionID</div>
+                        <div class="absolute left-0 font-medium text-gray-700 transition-transform duration-200 group-hover:translate-y-2 overflow-hidden text-ellipsis whitespace-nowrap" style="top:16px; max-width: 90%; padding-right: 8px;" title="@item.Name">@item.Name</div>
+                        <div class="absolute left-0 flex gap-2 transition-transform duration-200 group-hover:translate-y-2" style="top:36px;">
+                            <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
+                                <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
+                            </button>
+                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                                <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
+                            </button>
+                        </div>
+                    </div>
+                    ;
+                }
+            },
+            new() {
+                Header = "Description", Width = "50%", SortField = "Description",
+                RenderCell = item => __builder => { <span class="text-gray-600">@item.Description</span>; }
+            },
+            new() {
+                Header = "Date Created", Width = "20%", SortField = "DateCreated",
+                RenderCell = item => __builder => { <span class="text-gray-600 whitespace-nowrap">@item.DateCreated.ToString("M/d/yyyy")</span>; }
+            }
+        };
+    }
+
+    private async Task HandleAdd(PositionItem item)
+    {
+        Items.Add(item);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleEdit(PositionItem item)
+    {
+        var index = Items.FindIndex(i => i.Id == item.Id);
+        if (index >= 0) Items[index] = item;
+        await InvokeAsync(StateHasChanged);
+    }
+}
