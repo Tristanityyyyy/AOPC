@@ -63,7 +63,7 @@ public class TypesService
                 description,
                 imgURL,
                 promoText,
-                status = 1,
+                status = 0,
                 isVIP = 0,
                 businessTypeID,
                 dateCreated

@@ -52,6 +52,27 @@ public class HotelsService
         return new List<HotelDto>();
     }
 
+    public async Task<bool> DeleteBusinessAsync(int id, HotelDto? deletedData = null)
+    {
+        try
+        {
+            var payload = new { id };
+            var response = await _http.PostAsJsonAsync("api/ApiBusiness/DeleteBusiness", payload);
+            if (response.IsSuccessStatusCode)
+            {
+                var auditData = deletedData ?? new HotelDto { Id = id.ToString() };
+                await _auditLog.LogDeleteAsync("Hotel", auditData);
+                return true;
+            }
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Delete Business error: {ex.Message}");
+            return false;
+        }
+    }
+
     public async Task<bool> SaveBusinessAsync(int id, string businessName, int typeId, int locationID, string description, string address, string cno, string email, string url, string services, string featureImg, string gallery, string map, string businessID, DateTime dateCreated, HotelDto? beforeData = null)
     {
         try

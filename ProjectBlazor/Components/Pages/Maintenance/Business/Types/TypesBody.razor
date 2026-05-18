@@ -75,7 +75,7 @@
         try
         {
             var types = await TypesService!.GetBusinessTypesAsync();
-            
+
             Items = types.Select(t => new BusinessTypeItem(
                 t.Id,
                 t.BusinessTypeID,
@@ -126,10 +126,11 @@
                     ; }
                 }
             };
+
+            StateHasChanged();
         }
-        catch (Exception ex)
+        catch
         {
-            // Log error if needed
         }
     }
    }

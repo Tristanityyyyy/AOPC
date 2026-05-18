@@ -4,6 +4,7 @@
 @using ProjectBlazor.Components.Shared.Table
 @using ProjectBlazor.Components
 @using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+@using MudBlazor
 
 @if (_showAddDialog)
 {
@@ -109,9 +110,16 @@
 }
 
 @code {
+    [Parameter] public CorporateBody? CorporateBodyRef { get; set; }
+    [Inject] private CorporateService? CorporateService { get; set; }
+    [Inject] private ISnackbar? Snackbar { get; set; }
+
+    private CorporateBody? CorporateBody => CorporateBodyRef;
+
     private bool _showAddDialog;
     private bool _showEditDialog;
     private CorporateItem? _editingItem;
+    private bool _isProcessing;
 
     private string _addName = "";
     private string _addAddress = "";
@@ -131,8 +139,6 @@
     private DateTime _editDateStart = DateTime.Today;
     private DateTime _editDateEnd = DateTime.Today.AddYears(1);
 
-    [Parameter] public EventCallback<CorporateItem> OnAdd { get; set; }
-    [Parameter] public EventCallback<CorporateItem> OnEdit { get; set; }
     [Parameter] public List<MembershipTierDto> MembershipTiers { get; set; } = new();
 
     public void OpenAdd()
@@ -170,47 +176,158 @@
         _editingItem = null;
     }
 
-    private async void AddCorporate()
+    private int GetMembershipId()
     {
-        var newItem = new CorporateItem(
-            $"CM-001",
-            _addName,
-            _addAddress,
-            _addContactNumber,
-            _addEmailAddress,
-            _addMembershipTier,
-            0,
-            _addVipCount,
-            $"{_addMembershipTier} MEMBERSHIP",
-            DateTime.Now.ToString("MM/dd/yyyy"),
-            _addDateStart.ToString("yyyy-MM-dd"),
-            _addDateEnd.ToString("yyyy-MM-dd")
-        );
-        await OnAdd.InvokeAsync(newItem);
-        _showAddDialog = false;
+        var tier = MembershipTiers.FirstOrDefault(t => t.MembershipName == _addMembershipTier);
+        if (tier != null && int.TryParse(tier.Id, out var id))
+            return id;
+        return 0;
     }
 
-    private async void SaveEdit()
+    private int GetEditMembershipId()
     {
-        if (_editingItem != null)
+        var tier = MembershipTiers.FirstOrDefault(t => t.MembershipName == _editMembershipTier);
+        if (tier != null && int.TryParse(tier.Id, out var id))
+            return id;
+        return 0;
+    }
+
+    private async Task AddCorporate()
+    {
+        if (_isProcessing) return;
+        
+        _isProcessing = true;
+        try
         {
-            var updatedItem = new CorporateItem(
-                _editingItem.Code,
+            var membershipID = GetMembershipId();
+            var companyID = $"CM-{DateTime.Now.Ticks}";
+            
+            var success = await CorporateService!.UpdateCorporateAsync(
+                0,
+                _addName,
+                _addAddress,
+                _addContactNumber,
+                _addEmailAddress,
+                membershipID,
+                0,
+                _addVipCount,
+                companyID,
+                _addDateStart,
+                _addDateEnd,
+                DateTime.Now
+            );
+
+            if (success)
+            {
+                CorporateBody?.Items.Insert(0, new CorporateItem(
+                    0,
+                    companyID,
+                    _addName,
+                    _addAddress,
+                    _addContactNumber,
+                    _addEmailAddress,
+                    _addMembershipTier,
+                    0,
+                    _addVipCount,
+                    $"{_addMembershipTier} MEMBERSHIP",
+                    DateTime.Now.ToString("MM/dd/yyyy"),
+                    _addDateStart.ToString("yyyy-MM-dd"),
+                    _addDateEnd.ToString("yyyy-MM-dd")
+                ));
+                Snackbar?.Add("Corporate added successfully", Severity.Success);
+                _showAddDialog = false;
+            }
+            else
+            {
+                Snackbar?.Add("Failed to add corporate", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar?.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
+    }
+
+    private async Task SaveEdit()
+    {
+        if (_editingItem == null || _isProcessing) return;
+        
+        _isProcessing = true;
+        try
+        {
+            var membershipID = GetEditMembershipId();
+            
+            var beforeData = new CorporateDto
+            {
+                Id = _editingItem.Id,
+                CompanyID = _editingItem.Code,
+                CorporateName = _editingItem.Name,
+                Address = _editingItem.Address,
+                CNo = _editingItem.ContactNumber,
+                EmailAddress = _editingItem.EmailAddress,
+                DateCreated = _editingItem.DateCreated
+            };
+            
+            var success = await CorporateService!.UpdateCorporateAsync(
+                _editingItem.Id,
                 _editName,
                 _editAddress,
                 _editContactNumber,
                 _editEmailAddress,
-                _editMembershipTier,
+                membershipID,
                 _editingItem.UserCount,
                 _editVipCount,
-                _editingItem.MembershipDescription,
-                _editingItem.DateCreated,
-                _editDateStart.ToString("yyyy-MM-dd"),
-                _editDateEnd.ToString("yyyy-MM-dd")
+                _editingItem.Code,
+                _editDateStart,
+                _editDateEnd,
+                DateTime.Parse(_editingItem.DateCreated),
+                beforeData
             );
-            await OnEdit.InvokeAsync(updatedItem);
+
+            if (success)
+            {
+                if (CorporateBody != null)
+                {
+                    var i = CorporateBody.Items.FindIndex(x => x.Code == _editingItem.Code);
+                    if (i >= 0)
+                    {
+                        CorporateBody.Items[i] = new CorporateItem(
+                            _editingItem.Id,
+                            _editingItem.Code,
+                            _editName,
+                            _editAddress,
+                            _editContactNumber,
+                            _editEmailAddress,
+                            _editMembershipTier,
+                            _editingItem.UserCount,
+                            _editVipCount,
+                            _editingItem.MembershipDescription,
+                            _editingItem.DateCreated,
+                            _editDateStart.ToString("yyyy-MM-dd"),
+                            _editDateEnd.ToString("yyyy-MM-dd")
+                        );
+                    }
+                }
+                Snackbar?.Add("Corporate updated successfully", Severity.Success);
+                _showEditDialog = false;
+                _editingItem = null;
+            }
+            else
+            {
+                Snackbar?.Add("Failed to update corporate", Severity.Error);
+            }
         }
-        _showEditDialog = false;
-        _editingItem = null;
+        catch (Exception ex)
+        {
+            Snackbar?.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
     }
 }

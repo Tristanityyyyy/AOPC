@@ -1,6 +1,7 @@
 @namespace ProjectBlazor.Components.Pages.Maintenance.Corporate
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Pages.Maintenance.MembershipPrivilege.Tiers
+@using MudBlazor
 
 <CorporateHeader />
 
@@ -21,7 +22,7 @@
                OnExportTemplateClick="HandleExportTemplate" />
 </div>
 
-<CorporateDialogs @ref="Dialogs" OnAdd="HandleAdd" OnEdit="HandleEdit" MembershipTiers="MembershipTiers" />
+<CorporateDialogs @ref="Dialogs" CorporateBodyRef="this" MembershipTiers="MembershipTiers" />
 
 @code {
     [Parameter] public List<CorporateItem> Items { get; set; } = new();
@@ -33,10 +34,46 @@
 
     [Inject] private CorporateService? CorporateService { get; set; }
     [Inject] private TiersService? TiersService { get; set; }
+    [Inject] private ISnackbar? Snackbar { get; set; }
 
     private List<MembershipTierDto> MembershipTiers { get; set; } = new();
 
     public void OpenAdd() => Dialogs.OpenAdd();
+
+    public void OpenEdit(CorporateItem item)
+    {
+        if (Dialogs != null)
+        {
+            Dialogs.OpenEdit(item);
+            StateHasChanged();
+        }
+    }
+
+    public async Task DeleteCorporate(CorporateItem item)
+    {
+        var deletedData = new CorporateDto
+        {
+            Id = item.Id,
+            CompanyID = item.Code,
+            CorporateName = item.Name,
+            Address = item.Address,
+            CNo = item.ContactNumber,
+            EmailAddress = item.EmailAddress,
+            DateCreated = item.DateCreated
+        };
+        
+        var success = await CorporateService!.DeleteCorporateAsync(item.Id, deletedData);
+        if (success)
+        {
+            Items.Remove(item);
+            Snackbar?.Add("Corporate deleted successfully", Severity.Success);
+            StateHasChanged();
+        }
+        else
+        {
+            Snackbar?.Add("Failed to delete corporate", Severity.Error);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,6 +81,7 @@
         
         var corporates = await CorporateService!.GetCorporatesAsync();
         Items = corporates.Select(c => new CorporateItem(
+            c.Id,
             c.CompanyID,
             c.CorporateName,
             c.Address,
@@ -71,7 +109,7 @@
                             <button @onclick="() => Dialogs.OpenEdit(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent" style="color:@ThemeConfig.Colors.Primary;">
                                 <MudIcon Icon="@Icons.Material.Filled.Edit" Style="font-size:14px;" Color="Color.Inherit" /> Edit
                             </button>
-                            <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
+                            <button @onclick="() => DeleteCorporate(item)" class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-red-500">
                                 <MudIcon Icon="@Icons.Material.Filled.Delete" Style="font-size:14px;" Color="Color.Inherit" /> Delete
                             </button>
                             <button class="flex items-center gap-1 text-xs cursor-pointer border-none bg-transparent text-gray-600">
@@ -128,16 +166,4 @@
     private Task HandleImportClick() => Task.CompletedTask;
     private Task HandleExportTemplate() => Task.CompletedTask;
 
-    private async Task HandleAdd(CorporateItem item)
-    {
-        Items.Add(item);
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task HandleEdit(CorporateItem item)
-    {
-        var index = Items.FindIndex(i => i.Code == item.Code);
-        if (index >= 0) Items[index] = item;
-        await InvokeAsync(StateHasChanged);
-    }
 }

@@ -1,6 +1,7 @@
 namespace ProjectBlazor.Components.Pages.Maintenance.Corporate;
 
 public record CorporateItem(
+    int Id,
     string Code, 
     string Name, 
     string Address, 
