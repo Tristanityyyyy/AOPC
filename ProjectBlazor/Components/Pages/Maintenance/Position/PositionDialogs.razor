@@ -3,14 +3,15 @@
 @using ProjectBlazor.Components.Shared.Form
 @using ProjectBlazor.Components.Shared.Table
 @using ProjectBlazor.Components
+@using MudBlazor
 
-@if (_showAddDialog)
+@if (ShowAddDialog)
 {
-    <DialogModal IsVisible="_showAddDialog"
+    <DialogModal IsVisible="true"
                  Title="Add Position"
                  Icon="@Icons.Material.Filled.Work"
-                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
-                 OnClose="() => _showAddDialog = false">
+                 HeaderGradient="@PositionBodyRef.PositionHeader.HeaderGradient"
+                 OnClose="() => ShowAddDialog = false">
         <ChildContent>
             <FormField Label="Position Name" Required>
                 <TextInput @bind-Value="_addName" Placeholder="Enter position name" />
@@ -22,18 +23,18 @@
         <FooterContent>
             <DialogFooter ConfirmText="Add Position"
                           ButtonStyle="@ThemeConfig.Styles.ButtonPrimary"
-                          OnCancel="() => _showAddDialog = false"
+                          OnCancel="() => ShowAddDialog = false"
                           OnConfirm="AddPosition" />
         </FooterContent>
     </DialogModal>
 }
 
-@if (_showEditDialog)
+@if (ShowEditDialog)
 {
-    <DialogModal IsVisible="_showEditDialog"
+    <DialogModal IsVisible="true"
                  Title="Edit Position"
                  Icon="@Icons.Material.Filled.Work"
-                 HeaderGradient="@ThemeConfig.Styles.HeaderGradient"
+                 HeaderGradient="@PositionBodyRef.PositionHeader.HeaderGradient"
                  OnClose="CancelEdit">
         <ChildContent>
             <FormField Label="Position Name" Required>
@@ -53,9 +54,15 @@
 }
 
 @code {
-    private bool _showAddDialog;
-    private bool _showEditDialog;
+    [Parameter] public PositionBody? PositionBodyRef { get; set; }
+    [Inject] private PositionService? PositionService { get; set; }
+
+    private PositionBody? PositionBody => PositionBodyRef;
+
+    public bool ShowAddDialog { get; set; }
+    public bool ShowEditDialog { get; set; }
     private PositionItem? _editingItem;
+    private bool _isProcessing;
 
     private string _addName = "";
     private string _addDescription = "";
@@ -63,14 +70,10 @@
     private string _editName = "";
     private string _editDescription = "";
 
-    [Parameter] public EventCallback<PositionItem> OnAdd { get; set; }
-    [Parameter] public EventCallback<PositionItem> OnEdit { get; set; }
-
     public void OpenAdd()
     {
-        _addName = "";
-        _addDescription = "";
-        _showAddDialog = true;
+        _addName = ""; _addDescription = "";
+        ShowAddDialog = true;
     }
 
     public void OpenEdit(PositionItem item)
@@ -78,44 +81,103 @@
         _editingItem = item;
         _editName = item.Name;
         _editDescription = item.Description;
-        _showEditDialog = true;
+        ShowEditDialog = true;
     }
 
     private void CancelEdit()
     {
-        _showEditDialog = false;
+        ShowEditDialog = false;
         _editingItem = null;
     }
 
-    private async void AddPosition()
+    private async Task AddPosition()
     {
-        var newItem = new PositionItem(
-            0,
-            $"POS-{DateTime.Now.Ticks}",
-            _addName,
-            _addDescription,
-            DateTime.Now,
-            5
-        );
-        await OnAdd.InvokeAsync(newItem);
-        _showAddDialog = false;
+        if (_isProcessing) return;
+        _isProcessing = true;
+        try
+        {
+            var positionID = $"POS-{DateTime.Now.Ticks}";
+            var success = await PositionService!.SavePositionAsync(
+                0,
+                _addName,
+                _addDescription,
+                positionID,
+                DateTime.Now
+            );
+
+            if (success)
+            {
+                PositionBody?.Items.Insert(0, new PositionItem(
+                    0,
+                    positionID,
+                    _addName,
+                    _addDescription,
+                    DateTime.Now,
+                    5
+                ));
+                ShowAddDialog = false;
+            }
+        }
+        catch
+        {
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
     }
 
-    private async void SaveEdit()
+    private async Task SaveEdit()
     {
-        if (_editingItem != null)
+        if (_editingItem == null || _isProcessing) return;
+        _isProcessing = true;
+        try
         {
-            var updatedItem = new PositionItem(
+            var beforeData = new PositionDto
+            {
+                Id = _editingItem.Id,
+                PositionID = _editingItem.PositionID,
+                Name = _editingItem.Name,
+                Description = _editingItem.Description,
+                DateCreated = _editingItem.DateCreated.ToString("o")
+            };
+
+            var success = await PositionService!.SavePositionAsync(
                 _editingItem.Id,
-                _editingItem.PositionID,
                 _editName,
                 _editDescription,
+                _editingItem.PositionID,
                 _editingItem.DateCreated,
-                _editingItem.Status
+                beforeData
             );
-            await OnEdit.InvokeAsync(updatedItem);
+
+            if (success)
+            {
+                if (PositionBody != null)
+                {
+                    var i = PositionBody.Items.FindIndex(x => x.Id == _editingItem.Id);
+                    if (i >= 0)
+                    {
+                        PositionBody.Items[i] = new PositionItem(
+                            _editingItem.Id,
+                            _editingItem.PositionID,
+                            _editName,
+                            _editDescription,
+                            _editingItem.DateCreated,
+                            _editingItem.Status
+                        );
+                    }
+                }
+                ShowEditDialog = false;
+                _editingItem = null;
+            }
         }
-        _showEditDialog = false;
-        _editingItem = null;
+        catch
+        {
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
     }
 }

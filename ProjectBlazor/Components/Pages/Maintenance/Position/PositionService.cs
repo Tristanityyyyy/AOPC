@@ -6,11 +6,13 @@ namespace ProjectBlazor.Components.Pages.Maintenance.Position;
 public class PositionService
 {
     private readonly HttpClient _http;
+    private readonly PositionAuditLogService _auditLog;
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
 
     public PositionService(HttpClient http)
     {
         _http = http;
+        _auditLog = new PositionAuditLogService();
     }
 
     public async Task<List<PositionDto>> GetPositionsAsync()
@@ -21,21 +23,67 @@ public class PositionService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Position API Response: {content.Substring(0, Math.Min(500, content.Length))}...");
-                
                 var data = JsonSerializer.Deserialize<List<PositionDto>>(content, _options);
                 return data ?? new List<PositionDto>();
             }
-            else
-            {
-                Console.WriteLine($"Position API error: {response.StatusCode}");
-            }
         }
-        catch (Exception ex) 
-        { 
-            Console.WriteLine($"Position API exception: {ex.Message}"); 
+        catch
+        {
         }
         return new List<PositionDto>();
+    }
+
+    public async Task<bool> SavePositionAsync(int id, string name, string description, string positionID, DateTime dateCreated, PositionDto? beforeData = null)
+    {
+        try
+        {
+            var payload = new
+            {
+                id,
+                name,
+                description
+            };
+
+            var response = await _http.PostAsJsonAsync("api/ApiRegister/SavePosition", payload);
+            if (response.IsSuccessStatusCode)
+            {
+                if (id == 0)
+                {
+                    await _auditLog.LogAddAsync("Position", payload);
+                }
+                else
+                {
+                    var auditData = beforeData ?? new PositionDto { Id = id, Name = name, Description = description, PositionID = positionID };
+                    await _auditLog.LogUpdateAsync("Position", auditData, payload);
+                }
+                return true;
+            }
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> DeletePositionAsync(int id, PositionDto? deletedData = null)
+    {
+        try
+        {
+            var payload = new { id };
+            var response = await _http.PostAsJsonAsync("api/ApiRegister/DeletePosition", payload);
+            if (response.IsSuccessStatusCode)
+            {
+                var auditData = deletedData ?? new PositionDto { Id = id };
+                await _auditLog.LogDeleteAsync("Position", auditData);
+                return true;
+            }
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }
 

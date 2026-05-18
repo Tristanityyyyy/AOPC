@@ -63,11 +63,11 @@
         };
         
         var success = await CorporateService!.DeleteCorporateAsync(item.Id, deletedData);
+        Items.Remove(item);
+        StateHasChanged();
         if (success)
         {
-            Items.Remove(item);
             Snackbar?.Add("Corporate deleted successfully", Severity.Success);
-            StateHasChanged();
         }
         else
         {

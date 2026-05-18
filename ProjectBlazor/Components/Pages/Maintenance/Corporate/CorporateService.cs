@@ -81,7 +81,7 @@ public class CorporateService
         try
         {
             var payload = new { id };
-            var response = await _http.PostAsJsonAsync("api/ApiCorporate/DeleteCorporate", payload);
+            var response = await _http.PostAsJsonAsync("api/ApiCorporate/DeleteCorproate", payload);
             if (response.IsSuccessStatusCode)
             {
                 var auditData = deletedData ?? new CorporateDto { Id = id };

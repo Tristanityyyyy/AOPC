@@ -219,21 +219,25 @@
 
             if (success)
             {
-                CorporateBody?.Items.Insert(0, new CorporateItem(
-                    0,
-                    companyID,
-                    _addName,
-                    _addAddress,
-                    _addContactNumber,
-                    _addEmailAddress,
-                    _addMembershipTier,
-                    0,
-                    _addVipCount,
-                    $"{_addMembershipTier} MEMBERSHIP",
-                    DateTime.Now.ToString("MM/dd/yyyy"),
-                    _addDateStart.ToString("yyyy-MM-dd"),
-                    _addDateEnd.ToString("yyyy-MM-dd")
-                ));
+                var corporates = await CorporateService!.GetCorporatesAsync();
+                if (CorporateBody != null)
+                {
+                    CorporateBody.Items = corporates.Select(c => new CorporateItem(
+                        c.Id,
+                        c.CompanyID,
+                        c.CorporateName,
+                        c.Address,
+                        c.CNo,
+                        c.EmailAddress,
+                        c.Tier,
+                        int.TryParse(c.UserCount, out var uc) ? uc : 0,
+                        int.TryParse(c.VipCount, out var vc) ? vc : 0,
+                        c.Description,
+                        c.DateCreated,
+                        c.DateUsed,
+                        c.DateEnded
+                    )).ToList();
+                }
                 Snackbar?.Add("Corporate added successfully", Severity.Success);
                 _showAddDialog = false;
             }
