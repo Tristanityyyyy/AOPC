@@ -1,0 +1,46 @@
+@namespace ProjectBlazor.Components.Shared
+@using MudBlazor
+
+@if (IsVisible)
+{
+    <DialogModal IsVisible="IsVisible"
+               Title="@Title"
+               Icon="@Icons.Material.Filled.CheckCircle"
+               HeaderGradient="linear-gradient(135deg, #4CAF50, #45a049)"
+               CenterVertically="true"
+               OnClose="OnCancel">
+        <ChildContent>
+            <MudText>@Message</MudText>
+        </ChildContent>
+        <FooterContent>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="OnCancel">
+                    Cancel
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="OnOk">
+                    OK
+                </MudButton>
+            </div>
+        </FooterContent>
+    </DialogModal>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public string Title { get; set; } = "Success";
+    [Parameter] public string Message { get; set; } = "";
+    [Parameter] public EventCallback OnOkCallback { get; set; }
+    [Parameter] public EventCallback OnCancelCallback { get; set; }
+
+    private async Task OnOk()
+    {
+        await OnOkCallback.InvokeAsync();
+        IsVisible = false;
+    }
+
+    private async Task OnCancel()
+    {
+        await OnCancelCallback.InvokeAsync();
+        IsVisible = false;
+    }
+}

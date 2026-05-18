@@ -2,7 +2,7 @@
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Shared.Form
 @using ProjectBlazor.Components.Shared.Table
-@rendermode InteractiveServer
+@using MudBlazor
 
 @if (ShowEditDialog)
 {
@@ -91,18 +91,50 @@
         StateHasChanged();
     }
 
-    private void Add()
+    private async Task Add()
     {
-        TypesBody?.Items.Insert(0, new BusinessTypeItem(
-            0,
-            $"BT-{TypesBody.Items.Count + 1:D3}",
-            AddTypeName,
-            AddImageUrl,
-            AddTypePromo,
-            AddTypeDescription,
-            DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
-        ));
-        ShowAddDialog = false;
+        if (IsProcessing) return;
+        
+        IsProcessing = true;
+        try
+        {
+            var success = await TypesService!.UpdateBusinessTypeAsync(
+                0,
+                AddTypeName,
+                AddTypeDescription,
+                AddImageUrl,
+                AddTypePromo,
+                $"BT-{TypesBody?.Items.Count + 1:D3}",
+                DateTime.Now
+            );
+
+            if (success)
+            {
+                TypesBody?.Items.Insert(0, new BusinessTypeItem(
+                    0,
+                    $"BT-{TypesBody.Items.Count + 1:D3}",
+                    AddTypeName,
+                    AddImageUrl,
+                    AddTypePromo,
+                    AddTypeDescription,
+                    DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
+                ));
+                Snackbar?.Add("Business type added successfully", Severity.Success);
+                ShowAddDialog = false;
+            }
+            else
+            {
+                Snackbar?.Add("Failed to add business type", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar?.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
     public void OpenEdit(BusinessTypeItem item)
@@ -123,6 +155,17 @@
         IsProcessing = true;
         try
         {
+            var beforeData = new BusinessTypeDto
+            {
+                Id = EditingItem.Id,
+                BusinessTypeID = EditingItem.Code,
+                BusinessTypeName = EditingItem.Name,
+                ImgURL = EditingItem.ImageUrl,
+                PromoText = EditingItem.Promo,
+                Description = EditingItem.Description,
+                DateCreated = EditingItem.DateCreated
+            };
+            
             var success = await TypesService!.UpdateBusinessTypeAsync(
                 EditingItem.Id,
                 EditTypeName,
@@ -130,7 +173,8 @@
                 EditImageUrl,
                 EditTypePromo,
                 EditingItem.Code,
-                DateTime.Parse(EditingItem.DateCreated)
+                DateTime.Parse(EditingItem.DateCreated),
+                beforeData
             );
 
             if (success)

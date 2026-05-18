@@ -68,7 +68,17 @@
 
     public async Task DeleteLocation(LocationItem item)
     {
-        var success = await LocationsService!.DeleteLocationAsync(item.Id);
+        var deletedData = new LocationDto
+        {
+            Id = item.Id,
+            BusinessLocID = item.Code,
+            City = item.Name,
+            PostalCode = item.PostalCode,
+            Country = item.Country,
+            DateCreated = item.DateCreated
+        };
+        
+        var success = await LocationsService!.DeleteLocationAsync(item.Id, deletedData);
         if (success)
         {
             Items.Remove(item);

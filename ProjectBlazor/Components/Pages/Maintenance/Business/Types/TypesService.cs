@@ -1,16 +1,19 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using ProjectBlazor.Components.Pages.Maintenance.Business;
 
 namespace ProjectBlazor.Components.Pages.Maintenance.Business.Types;
 
 public class TypesService
 {
     private readonly HttpClient _http;
+    private readonly BusinessAuditLogService _auditLog;
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
 
     public TypesService(HttpClient http)
     {
         _http = http;
+        _auditLog = new BusinessAuditLogService();
     }
 
     public async Task<List<BusinessTypeDto>> GetBusinessTypesAsync()
@@ -49,7 +52,7 @@ public class TypesService
         return new List<BusinessTypeDto>();
     }
 
-    public async Task<bool> UpdateBusinessTypeAsync(int id, string businessTypeName, string description, string imgURL, string promoText, string businessTypeID, DateTime dateCreated)
+    public async Task<bool> UpdateBusinessTypeAsync(int id, string businessTypeName, string description, string imgURL, string promoText, string businessTypeID, DateTime dateCreated, BusinessTypeDto? beforeData = null)
     {
         try
         {
@@ -67,7 +70,20 @@ public class TypesService
             };
 
             var response = await _http.PostAsJsonAsync("api/ApiBusinessType/UpdateBusinessType", payload);
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+            {
+                if (id == 0)
+                {
+                    await _auditLog.LogAddAsync("BusinessType", payload);
+                }
+                else
+                {
+                    var auditData = beforeData ?? new BusinessTypeDto { Id = id, BusinessTypeName = businessTypeName, Description = description, ImgURL = imgURL, PromoText = promoText, BusinessTypeID = businessTypeID };
+                    await _auditLog.LogUpdateAsync("BusinessType", auditData, payload);
+                }
+                return true;
+            }
+            return false;
         }
         catch (Exception ex)
         {
@@ -76,13 +92,19 @@ public class TypesService
         }
     }
 
-    public async Task<bool> DeleteBusinessTypeAsync(int id)
+    public async Task<bool> DeleteBusinessTypeAsync(int id, BusinessTypeDto? deletedData = null)
     {
         try
         {
             var payload = new { id };
             var response = await _http.PostAsJsonAsync("api/ApiBusinessType/DeleteBusinessType", payload);
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+            {
+                var auditData = deletedData ?? new BusinessTypeDto { Id = id };
+                await _auditLog.LogDeleteAsync("BusinessType", auditData);
+                return true;
+            }
+            return false;
         }
         catch (Exception ex)
         {

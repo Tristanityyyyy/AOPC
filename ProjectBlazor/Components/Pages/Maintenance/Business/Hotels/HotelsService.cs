@@ -1,16 +1,19 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using ProjectBlazor.Components.Pages.Maintenance.Business;
 
 namespace ProjectBlazor.Components.Pages.Maintenance.Business.Hotels;
 
 public class HotelsService
 {
     private readonly HttpClient _http;
+    private readonly BusinessAuditLogService _auditLog;
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
 
     public HotelsService(HttpClient http)
     {
         _http = http;
+        _auditLog = new BusinessAuditLogService();
     }
 
     public async Task<List<HotelDto>> GetHotelsAsync()
@@ -49,7 +52,7 @@ public class HotelsService
         return new List<HotelDto>();
     }
 
-    public async Task<bool> SaveBusinessAsync(int id, string businessName, int typeId, int locationID, string description, string address, string cno, string email, string url, string services, string featureImg, string gallery, string map, string businessID, DateTime dateCreated)
+    public async Task<bool> SaveBusinessAsync(int id, string businessName, int typeId, int locationID, string description, string address, string cno, string email, string url, string services, string featureImg, string gallery, string map, string businessID, DateTime dateCreated, HotelDto? beforeData = null)
     {
         try
         {
@@ -75,7 +78,20 @@ public class HotelsService
             };
 
             var response = await _http.PostAsJsonAsync("api/ApiBusiness/SaveBusiness", payload);
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+            {
+                if (id == 0)
+                {
+                    await _auditLog.LogAddAsync("Hotel", payload);
+                }
+                else
+                {
+                    var auditData = beforeData ?? new HotelDto { Id = id.ToString(), BusinessName = businessName, Description = description, Address = address, Cno = cno, Email = email, Url = url, FeatureImg = featureImg, BusinessID = businessID };
+                    await _auditLog.LogUpdateAsync("Hotel", auditData, payload);
+                }
+                return true;
+            }
+            return false;
         }
         catch (Exception ex)
         {

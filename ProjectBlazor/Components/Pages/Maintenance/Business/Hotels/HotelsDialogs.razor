@@ -4,7 +4,7 @@
 @using ProjectBlazor.Components.Shared.Table
 @using ProjectBlazor.Components.Pages.Maintenance.Business.Locations
 @using ProjectBlazor.Components.Pages.Maintenance.Business.Types
-@rendermode InteractiveServer
+@using MudBlazor
 
 @if (ShowEditDialog)
 {
@@ -208,7 +208,7 @@
 
             if (success)
             {
-                Snackbar?.Add("Hotel added successfully. Please refresh to see changes.", Severity.Success);
+                Snackbar?.Add("Hotel added successfully", Severity.Success);
                 ShowAddDialog = false;
             }
             else
@@ -253,6 +253,21 @@
         IsProcessing = true;
         try
         {
+            var beforeData = new HotelDto
+            {
+                Id = EditingItem.Id.ToString(),
+                BusinessID = EditingItem.Code,
+                BusinessName = EditingItem.Name,
+                FeatureImg = EditingItem.ImageUrl,
+                City = EditingItem.Location,
+                Address = EditingItem.Address,
+                Cno = EditingItem.ContactNo,
+                Email = EditingItem.Email,
+                Url = EditingItem.Url,
+                Description = EditingItem.Description,
+                DateCreated = EditingItem.DateCreated
+            };
+            
             var gallery = string.Join(",", EditHotelImages);
             var success = await HotelsService!.SaveBusinessAsync(
                 EditingItem.Id,
@@ -269,7 +284,8 @@
                 gallery,
                 EditHotelMap,
                 EditingItem.Code,
-                DateTime.Parse(EditingItem.DateCreated)
+                DateTime.Parse(EditingItem.DateCreated),
+                beforeData
             );
 
             if (success)

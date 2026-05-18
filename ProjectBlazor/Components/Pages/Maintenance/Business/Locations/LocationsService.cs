@@ -1,16 +1,19 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using ProjectBlazor.Components.Pages.Maintenance.Business;
 
 namespace ProjectBlazor.Components.Pages.Maintenance.Business.Locations;
 
 public class LocationsService
 {
     private readonly HttpClient _http;
+    private readonly BusinessAuditLogService _auditLog;
     private static readonly JsonSerializerOptions _options = new() { PropertyNameCaseInsensitive = true };
 
     public LocationsService(HttpClient http)
     {
         _http = http;
+        _auditLog = new BusinessAuditLogService();
     }
 
     public async Task<List<LocationDto>> GetLocationsAsync()
@@ -49,7 +52,7 @@ public class LocationsService
         return new List<LocationDto>();
     }
 
-    public async Task<bool> UpdateLocationAsync(int id, string city, string postalCode, string country, string businessLocID, DateTime dateCreated)
+    public async Task<bool> UpdateLocationAsync(int id, string city, string postalCode, string country, string businessLocID, DateTime dateCreated, LocationDto? beforeData = null)
     {
         try
         {
@@ -65,7 +68,21 @@ public class LocationsService
             };
 
             var response = await _http.PostAsJsonAsync("api/ApiBusinessLoc/UpdateBusinessLoc", payload);
-            return response.IsSuccessStatusCode;
+            Console.WriteLine($"UpdateLocation Response: {response.StatusCode}");
+            if (response.IsSuccessStatusCode)
+            {
+                if (id == 0)
+                {
+                    await _auditLog.LogAddAsync("Location", payload);
+                }
+                else
+                {
+                    var auditData = beforeData ?? new LocationDto { Id = id, City = city, PostalCode = postalCode, Country = country, BusinessLocID = businessLocID };
+                    await _auditLog.LogUpdateAsync("Location", auditData, payload);
+                }
+                return true;
+            }
+            return false;
         }
         catch (Exception ex)
         {
@@ -73,13 +90,19 @@ public class LocationsService
             return false;
         }
     }
-    public async Task<bool> DeleteLocationAsync(int id)
+    public async Task<bool> DeleteLocationAsync(int id, LocationDto? deletedData = null)
     {
         try
         {
             var payload = new { id };
             var response = await _http.PostAsJsonAsync("api/ApiBusinessLoc/DeleteBusinessLoc", payload);
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+            {
+                var auditData = deletedData ?? new LocationDto { Id = id };
+                await _auditLog.LogDeleteAsync("Location", auditData);
+                return true;
+            }
+            return false;
         }
         catch (Exception ex)
         {

@@ -2,7 +2,7 @@
 @using ProjectBlazor.Components.Shared
 @using ProjectBlazor.Components.Shared.Form
 @using ProjectBlazor.Components.Shared.Table
-@rendermode InteractiveServer
+@using MudBlazor
 
 @if (ShowAddDialog)
 {
@@ -122,13 +122,24 @@
         IsProcessing = true;
         try
         {
+            var beforeData = new LocationDto
+            {
+                Id = EditingItem.Id,
+                BusinessLocID = EditingItem.Code,
+                City = EditingItem.Name,
+                PostalCode = EditingItem.PostalCode,
+                Country = EditingItem.Country,
+                DateCreated = EditingItem.DateCreated
+            };
+            
             var success = await LocationsService!.UpdateLocationAsync(
                 EditingItem.Id,
                 EditName,
                 EditPostalCode,
                 EditCountry,
                 EditingItem.Code,
-                DateTime.Parse(EditingItem.DateCreated)
+                DateTime.Parse(EditingItem.DateCreated),
+                beforeData
             );
 
             if (success)
